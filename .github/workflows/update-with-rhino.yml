@@ -1,0 +1,15 @@
+name: update with rhino rhino-master
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  update-with-rhino:
+    name: Update with rhino
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./tools/ci/linux/update-with-rhino.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
