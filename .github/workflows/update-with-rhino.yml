@@ -10,6 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: fwilhe2/setup-kotlin@0.0.3
+        with:
+          version: 1.4.10
       - run: ./tools/ci/linux/update-with-rhino.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
