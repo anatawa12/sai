@@ -4,12 +4,12 @@ RHINO_REPO="https://github.com/mozilla/rhino.git"
 
 shallow_fetch_branch() {
   git remote set-branches --add "$1" "$2"
-  git fetch "$1" "$2" --depth 1
+  git fetch "$@"
 }
 
 main() {
   set -eu
-  shallow_fetch_branch origin rhino-master
+  shallow_fetch_branch origin rhino-master --depth 1
   git checkout rhino-master
   git remote add rhino "$RHINO_REPO"
   shallow_fetch_branch rhino master
