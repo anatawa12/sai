@@ -42,7 +42,7 @@ Requires Ant version 1.2
   <target name="clean" depends="properties">
     <delete includeEmptyDirs="true">
       <fileset dir="${classes}"
-               includes="org/mozilla/javascript/tools/**"/>
+               includes="com/anatawa12/sai/tools/**"/>
     </delete>
   </target>
 

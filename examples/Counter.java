@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.annotations.JSConstructor;
-import org.mozilla.javascript.annotations.JSFunction;
-import org.mozilla.javascript.annotations.JSGetter;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.annotations.JSConstructor;
+import com.anatawa12.sai.annotations.JSFunction;
+import com.anatawa12.sai.annotations.JSGetter;
 
 public class Counter extends ScriptableObject {
     private static final long serialVersionUID = 438270592527335642L;

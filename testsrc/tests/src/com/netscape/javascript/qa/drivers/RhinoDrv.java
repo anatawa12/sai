@@ -6,7 +6,7 @@ package com.netscape.javascript.qa.drivers;
 
 import java.io.File;
 
-import org.mozilla.javascript.*;
+import com.anatawa12.sai.*;
 
 /**
     RhinoDrv is an application for executing JavaScript tests against the

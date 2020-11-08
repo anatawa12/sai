@@ -120,7 +120,7 @@ function setDynamicScope(flag)
 {
   if (this.Packages)
   {
-    var cx = this.Packages.org.mozilla.javascript.Context.getCurrentContext();
+    var cx = this.Packages.com.anatawa12.sai.Context.getCurrentContext();
     cx.setCompileFunctionsWithDynamicScope(flag);
   }
 }

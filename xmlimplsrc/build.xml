@@ -62,7 +62,7 @@
   <target name="clean">
     <delete includeEmptyDirs="true">
       <fileset dir="${classes}"
-               includes="org/mozilla/javascript/xmlimpl/**"
+               includes="com/anatawa12/sai/xmlimpl/**"
       />
     </delete>
   </target>

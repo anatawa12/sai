@@ -6,8 +6,8 @@ package com.netscape.javascript.qa.drivers;
 
 import java.io.*;
 import com.netscape.javascript.*;
-import org.mozilla.javascript.*;
-import org.mozilla.javascript.tools.shell.*;
+import com.anatawa12.sai.*;
+import com.anatawa12.sai.tools.shell.*;
 
 /**
         This class creates a javax.javascript.Context, which evaluates

@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.annotations.JSFunction;
-import org.mozilla.javascript.annotations.JSGetter;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.annotations.JSFunction;
+import com.anatawa12.sai.annotations.JSGetter;
 
 /**
  * An example host object class.
@@ -45,9 +45,9 @@ import org.mozilla.javascript.annotations.JSGetter;
  * js>
  * </pre>
  *
- * @see org.mozilla.javascript.Context
- * @see org.mozilla.javascript.Scriptable
- * @see org.mozilla.javascript.ScriptableObject
+ * @see com.anatawa12.sai.Context
+ * @see com.anatawa12.sai.Scriptable
+ * @see com.anatawa12.sai.ScriptableObject
  *
  * @author Norris Boyd
  */
@@ -121,7 +121,7 @@ public class Foo extends ScriptableObject {
      * @return computes the string values and types of 'this' and
      * of each of the supplied arguments and returns them in a string.
      *
-     * @see org.mozilla.javascript.ScriptableObject#getTopLevelScope
+     * @see com.anatawa12.sai.ScriptableObject#getTopLevelScope
      */
     @JSFunction
     public static Object varargs(Context cx, Scriptable thisObj,
