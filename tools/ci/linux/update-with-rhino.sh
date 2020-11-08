@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# the script to sync with rhino
+# this script should be executed when rhino released new version.
+
 RHINO_REPO="https://github.com/mozilla/rhino.git"
 pr_label="rhino-sync-pr"
 
@@ -12,7 +15,6 @@ main() {
   set -eu
   move_package_kts="tools/ci/linux/MovePackage-back.kts"
   cp tools/ci/linux/MovePackage.kts "$move_package_kts"
-  shallow_fetch_branch origin rhino-master --depth 1
   git checkout rhino-master
   git remote add rhino "$RHINO_REPO"
   shallow_fetch_branch rhino master
@@ -37,7 +39,6 @@ main() {
   kotlinc-jvm -script "$move_package_kts" run-and-commit
 
   # merge to modified-rhino
-  shallow_fetch_branch origin modified-rhino --depth 4
   git checkout modified-rhino
   git merge "$branch_name" --no-edit
   git branch -d "$branch_name"
