@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * This class provides support for implementing Java-style synchronized
@@ -14,7 +14,7 @@ package org.mozilla.javascript;
  *
  * Synchronized functions are created from ordinary Javascript
  * functions by the <code>Synchronizer</code> constructor, e.g.
- * <code>new Packages.org.mozilla.javascript.Synchronizer(fun)</code>.
+ * <code>new Packages.com.anatawa12.sai.Synchronizer(fun)</code>.
  * The resulting object is a function that establishes an exclusive
  * lock on the <code>this</code> object of its invocation.
  *
@@ -22,7 +22,7 @@ package org.mozilla.javascript;
  * synchronized methods: <code>sync(fun)</code> has the same effect as
  * calling the above constructor.
  *
- * @see org.mozilla.javascript.Delegator
+ * @see com.anatawa12.sai.Delegator
  * @author Matthias Radestock
  */
 
@@ -52,7 +52,7 @@ public class Synchronizer extends Delegator {
     }
 
     /**
-     * @see org.mozilla.javascript.Function#call
+     * @see com.anatawa12.sai.Function#call
      */
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj,

@@ -28,7 +28,7 @@
 // Ported to Java from Mozilla's version of V8-dtoa by Hannes Wallnoefer.
 // The original revision was 67d1049b0bf9 from the mozilla-central tree.
 
-package org.mozilla.javascript.v8dtoa;
+package com.anatawa12.sai.v8dtoa;
 
 // This "Do It Yourself Floating Point" class implements a floating-point number
 // with a uint64 significand and an int exponent. Normalized DiyFp numbers will

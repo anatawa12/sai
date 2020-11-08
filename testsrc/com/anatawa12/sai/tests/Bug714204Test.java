@@ -5,17 +5,17 @@
 /**
  * 
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  * @author André Bargull

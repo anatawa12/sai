@@ -5,13 +5,13 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
 
 /**
  * @author Ronald Brill

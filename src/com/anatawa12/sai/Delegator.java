@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * This is a helper class for implementing wrappers around Scriptable
@@ -34,7 +34,7 @@ public class Delegator
      * This constructor should only be used for creating prototype
      * objects of Delegator.
      *
-     * @see org.mozilla.javascript.Delegator#construct
+     * @see com.anatawa12.sai.Delegator#construct
      */
     public Delegator() {
     }
@@ -44,7 +44,7 @@ public class Delegator
      * Scriptable object.
      *
      * @param obj the delegee
-     * @see org.mozilla.javascript.Scriptable
+     * @see com.anatawa12.sai.Scriptable
      */
     public Delegator(Scriptable obj) {
         this.obj = obj;
@@ -78,14 +78,14 @@ public class Delegator
      * Set the delegee.
      *
      * @param obj the delegee
-     * @see org.mozilla.javascript.Scriptable
+     * @see com.anatawa12.sai.Scriptable
      */
     public void setDelegee(Scriptable obj) {
         this.obj = obj;
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#getClassName
+     * @see com.anatawa12.sai.Scriptable#getClassName
      */
     @Override
     public String getClassName() {
@@ -93,7 +93,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#get(String, Scriptable)
+     * @see com.anatawa12.sai.Scriptable#get(String, Scriptable)
      */
     @Override
     public Object get(String name, Scriptable start) {
@@ -110,7 +110,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#get(int, Scriptable)
+     * @see com.anatawa12.sai.Scriptable#get(int, Scriptable)
      */
     @Override
     public Object get(int index, Scriptable start) {
@@ -118,7 +118,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#has(String, Scriptable)
+     * @see com.anatawa12.sai.Scriptable#has(String, Scriptable)
      */
     @Override
     public boolean has(String name, Scriptable start) {
@@ -135,7 +135,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#has(int, Scriptable)
+     * @see com.anatawa12.sai.Scriptable#has(int, Scriptable)
      */
     @Override
     public boolean has(int index, Scriptable start) {
@@ -143,7 +143,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#put(String, Scriptable, Object)
+     * @see com.anatawa12.sai.Scriptable#put(String, Scriptable, Object)
      */
     @Override
     public void put(String name, Scriptable start, Object value) {
@@ -151,7 +151,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.SymbolScriptable#put(Symbol, Scriptable, Object)
+     * @see com.anatawa12.sai.SymbolScriptable#put(Symbol, Scriptable, Object)
      */
     @Override
     public void put(Symbol symbol, Scriptable start, Object value) {
@@ -162,7 +162,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#put(int, Scriptable, Object)
+     * @see com.anatawa12.sai.Scriptable#put(int, Scriptable, Object)
      */
     @Override
     public void put(int index, Scriptable start, Object value) {
@@ -170,7 +170,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#delete(String)
+     * @see com.anatawa12.sai.Scriptable#delete(String)
      */
     @Override
     public void delete(String name) {
@@ -186,7 +186,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#delete(int)
+     * @see com.anatawa12.sai.Scriptable#delete(int)
      */
     @Override
     public void delete(int index) {
@@ -194,7 +194,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#getPrototype
+     * @see com.anatawa12.sai.Scriptable#getPrototype
      */
     @Override
     public Scriptable getPrototype() {
@@ -202,7 +202,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#setPrototype
+     * @see com.anatawa12.sai.Scriptable#setPrototype
      */
     @Override
     public void setPrototype(Scriptable prototype) {
@@ -210,7 +210,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#getParentScope
+     * @see com.anatawa12.sai.Scriptable#getParentScope
      */
     @Override
     public Scriptable getParentScope() {
@@ -218,7 +218,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#setParentScope
+     * @see com.anatawa12.sai.Scriptable#setParentScope
      */
     @Override
     public void setParentScope(Scriptable parent) {
@@ -226,7 +226,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#getIds
+     * @see com.anatawa12.sai.Scriptable#getIds
      */
     @Override
     public Object[] getIds() {
@@ -243,7 +243,7 @@ public class Delegator
      * @param hint the type hint
      * @return the default value
      *
-     * @see org.mozilla.javascript.Scriptable#getDefaultValue
+     * @see com.anatawa12.sai.Scriptable#getDefaultValue
      */
     @Override
     public Object getDefaultValue(Class<?> hint) {
@@ -254,7 +254,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Scriptable#hasInstance
+     * @see com.anatawa12.sai.Scriptable#hasInstance
      */
     @Override
     public boolean hasInstance(Scriptable instance) {
@@ -262,7 +262,7 @@ public class Delegator
     }
 
     /**
-     * @see org.mozilla.javascript.Function#call
+     * @see com.anatawa12.sai.Function#call
      */
     @Override
     public Object call(Context cx, Scriptable scope, Scriptable thisObj,

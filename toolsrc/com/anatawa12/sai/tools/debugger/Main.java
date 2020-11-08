@@ -4,18 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.debugger;
+package com.anatawa12.sai.tools.debugger;
 
 import java.io.InputStream;
 import java.io.PrintStream;
 
 import javax.swing.JFrame;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.tools.shell.Global;
 
 /**
  * Rhino script debugger main class.  This class links together a
@@ -202,7 +202,7 @@ public class Main {
 
     /**
      * Main entry point.  Creates a debugger attached to a Rhino
-     * {@link org.mozilla.javascript.tools.shell.Main} shell session.
+     * {@link com.anatawa12.sai.tools.shell.Main} shell session.
      */
     public static void main(String[] args) {
         Main main = new Main("Rhino JavaScript Debugger");
@@ -213,13 +213,13 @@ public class Main {
         System.setOut(main.getOut());
         System.setErr(main.getErr());
 
-        Global global = org.mozilla.javascript.tools.shell.Main.getGlobal();
+        Global global = com.anatawa12.sai.tools.shell.Main.getGlobal();
         global.setIn(main.getIn());
         global.setOut(main.getOut());
         global.setErr(main.getErr());
 
         main.attachTo(
-            org.mozilla.javascript.tools.shell.Main.shellContextFactory);
+            com.anatawa12.sai.tools.shell.Main.shellContextFactory);
 
         main.setScope(global);
 
@@ -227,7 +227,7 @@ public class Main {
         main.setSize(600, 460);
         main.setVisible(true);
 
-        org.mozilla.javascript.tools.shell.Main.exec(args);
+        com.anatawa12.sai.tools.shell.Main.exec(args);
     }
 
     /**

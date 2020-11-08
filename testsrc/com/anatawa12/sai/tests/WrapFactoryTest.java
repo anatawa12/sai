@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,10 +9,10 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ImporterTopLevel;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  *

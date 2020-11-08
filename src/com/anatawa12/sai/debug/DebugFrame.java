@@ -6,10 +6,10 @@
 
 // API class
 
-package org.mozilla.javascript.debug;
+package com.anatawa12.sai.debug;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
 
 /**
 Interface to implement if the application is interested in receiving debug

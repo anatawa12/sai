@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.es6;
+package com.anatawa12.sai.tests.es6;
 
 import static org.junit.Assert.assertEquals;
 
@@ -13,7 +13,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import org.junit.Test;
-import org.mozilla.javascript.NativeWeakMap;
+import com.anatawa12.sai.NativeWeakMap;
 
 public class NativeWeakMap2Test
 {

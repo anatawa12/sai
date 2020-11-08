@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
 
 /**
  * Base type for {@link AstRoot} and {@link FunctionNode} nodes, which need to
@@ -121,7 +121,7 @@ public class ScriptNode extends Scope {
      * for use in implementing the {@code Object.toSource} method of
      * JavaScript objects.  This source encoding is only recorded during code
      * generation.  It must be passed back to
-     * {@link org.mozilla.javascript.Decompiler#decompile} to construct the
+     * {@link com.anatawa12.sai.Decompiler#decompile} to construct the
      * human-readable source string.<p>
      *
      * Given a parsed AST, you can always convert it to source code using the

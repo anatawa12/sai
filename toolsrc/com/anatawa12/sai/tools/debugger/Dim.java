@@ -3,7 +3,7 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tools.debugger;
+package com.anatawa12.sai.tools.debugger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,23 +15,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.NativeCall;
-import org.mozilla.javascript.ObjArray;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.SecurityUtilities;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.debug.DebugFrame;
-import org.mozilla.javascript.debug.DebuggableObject;
-import org.mozilla.javascript.debug.DebuggableScript;
-import org.mozilla.javascript.debug.Debugger;
+import com.anatawa12.sai.Callable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextAction;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.ImporterTopLevel;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.NativeCall;
+import com.anatawa12.sai.ObjArray;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.SecurityUtilities;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.debug.DebugFrame;
+import com.anatawa12.sai.debug.DebuggableObject;
+import com.anatawa12.sai.debug.DebuggableScript;
+import com.anatawa12.sai.debug.Debugger;
 
 /**
  * Dim or Debugger Implementation for Rhino.

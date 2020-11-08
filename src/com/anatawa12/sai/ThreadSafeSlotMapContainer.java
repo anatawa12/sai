@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.util.Iterator;
 import java.util.concurrent.locks.StampedLock;
 
-import org.mozilla.javascript.ScriptableObject.Slot;
-import org.mozilla.javascript.ScriptableObject.SlotAccess;
+import com.anatawa12.sai.ScriptableObject.Slot;
+import com.anatawa12.sai.ScriptableObject.SlotAccess;
 
 /**
  * This class extends the SlotMapContainer so that we have thread-safe access to all

@@ -2,15 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.BaseFunction;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextAction;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 import junit.framework.TestCase;
 

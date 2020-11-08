@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 public class IdFunctionObject extends BaseFunction
 {

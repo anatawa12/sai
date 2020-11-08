@@ -1,4 +1,4 @@
-package org.mozilla.javascript.drivers;
+package com.anatawa12.sai.drivers;
 
 import static java.lang.annotation.ElementType.TYPE;
 

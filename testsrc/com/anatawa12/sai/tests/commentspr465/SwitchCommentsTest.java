@@ -1,16 +1,16 @@
-package org.mozilla.javascript.tests.commentspr465;
+package com.anatawa12.sai.tests.commentspr465;
 
 import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.AstNode;
-import org.mozilla.javascript.ast.Comment;
-import org.mozilla.javascript.ast.Scope;
-import org.mozilla.javascript.ast.SwitchCase;
-import org.mozilla.javascript.ast.SwitchStatement;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.AstNode;
+import com.anatawa12.sai.ast.Comment;
+import com.anatawa12.sai.ast.Scope;
+import com.anatawa12.sai.ast.SwitchCase;
+import com.anatawa12.sai.ast.SwitchStatement;
 
 /**
  *

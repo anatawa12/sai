@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
@@ -13,11 +13,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.BaseFunction;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.NativeArray;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.Undefined;
 
 public class UndefinedOrNullThisInFunctionCallOrApplyTest {
 

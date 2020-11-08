@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertTrue;
 
@@ -18,10 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.drivers.TestUtils;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.drivers.TestUtils;
+import com.anatawa12.sai.tools.shell.Global;
 
 /**
  * Run doctests in folder testsrc/doctests.

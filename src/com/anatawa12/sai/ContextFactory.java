@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -29,7 +29,7 @@ import java.security.PrivilegedAction;
  * scripts running more then 10 seconds and to provide better compatibility
  * with JavaScript code using MSIE-specific features.
  * <pre>
- * import org.mozilla.javascript.*;
+ * import com.anatawa12.sai.*;
  *
  * class MyFactory extends ContextFactory
  * {
@@ -321,7 +321,7 @@ public class ContextFactory
 
     /**
      * Provides a default
-     * {@link org.mozilla.javascript.xml.XMLLib.Factory XMLLib.Factory}
+     * {@link com.anatawa12.sai.xml.XMLLib.Factory XMLLib.Factory}
      * to be used by the <code>Context</code> instances produced by this
      * factory. See {@link Context#getE4xImplementationFactory} for details.
      *
@@ -330,7 +330,7 @@ public class ContextFactory
      *
      * The default implementation now prefers the DOM3 E4X implementation.
      */
-    protected org.mozilla.javascript.xml.XMLLib.Factory
+    protected com.anatawa12.sai.xml.XMLLib.Factory
         getE4xImplementationFactory()
     {
         // Must provide default implementation, rather than abstract method,
@@ -340,8 +340,8 @@ public class ContextFactory
         // neither have XMLBeans nor a DOM3 implementation present.
 
         if (isDom3Present()) {
-            return org.mozilla.javascript.xml.XMLLib.Factory.create(
-                "org.mozilla.javascript.xmlimpl.XMLLibImpl"
+            return com.anatawa12.sai.xml.XMLLib.Factory.create(
+                "com.anatawa12.sai.xmlimpl.XMLLibImpl"
             );
         }
         return null;

@@ -1,10 +1,10 @@
-package org.mozilla.javascript.tests.es5;
+package com.anatawa12.sai.tests.es5;
 
 import static org.junit.Assert.assertFalse;
-import static org.mozilla.javascript.tests.Evaluator.eval;
+import static com.anatawa12.sai.tests.Evaluator.eval;
 
 import org.junit.Test;
-import org.mozilla.javascript.NativeObject;
+import com.anatawa12.sai.NativeObject;
 
 /**
  * When calling <b>propertyIsEnumerable</b> on a <b>String</b>, missing properties should return <b>false</b> instead of

@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -9,7 +9,7 @@ import java.util.Random;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.Sorting;
+import com.anatawa12.sai.Sorting;
 
 public class SortingTest {
     private static final int BIG_ARRAY = 100000;

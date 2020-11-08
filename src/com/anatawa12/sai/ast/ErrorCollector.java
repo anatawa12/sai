@@ -4,17 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mozilla.javascript.EvaluatorException;
+import com.anatawa12.sai.EvaluatorException;
 
 /**
  * An error reporter that gathers the errors and warnings for later display.
- * This a useful {@link org.mozilla.javascript.ErrorReporter} when the
- * {@link org.mozilla.javascript.CompilerEnvirons} is set to
+ * This a useful {@link com.anatawa12.sai.ErrorReporter} when the
+ * {@link com.anatawa12.sai.CompilerEnvirons} is set to
  * ide-mode (for IDEs).
  *
  * @author Steve Yegge

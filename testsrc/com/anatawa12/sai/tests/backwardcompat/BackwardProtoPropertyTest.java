@@ -1,8 +1,8 @@
-package org.mozilla.javascript.tests.backwardcompat;
+package com.anatawa12.sai.tests.backwardcompat;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.drivers.LanguageVersion;
-import org.mozilla.javascript.drivers.RhinoTest;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.drivers.LanguageVersion;
+import com.anatawa12.sai.drivers.RhinoTest;
 
 @RhinoTest("testsrc/jstests/backwardcompat/backward-proto-property.js")
 @LanguageVersion(Context.VERSION_1_8)

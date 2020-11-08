@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Stack;
 
-import org.mozilla.javascript.json.JsonParser;
+import com.anatawa12.sai.json.JsonParser;
 
 /**
  * This class implements the JSON native object.

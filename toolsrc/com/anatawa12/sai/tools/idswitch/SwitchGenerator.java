@@ -3,10 +3,10 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tools.idswitch;
+package com.anatawa12.sai.tools.idswitch;
 
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.tools.ToolErrorReporter;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.tools.ToolErrorReporter;
 
 public class SwitchGenerator {
 

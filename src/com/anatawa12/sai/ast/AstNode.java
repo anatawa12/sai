@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
 import java.io.Serializable;
 import java.util.Comparator;
@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
 
 /**
  * Base class for AST node types.  The goal of the AST is to represent the

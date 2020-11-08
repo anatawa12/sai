@@ -129,7 +129,7 @@ task runtimeJar(type: Jar) {
     dependsOn compileJava
     archiveBaseName = 'rhino-runtime'
     from sourceSets.main.output
-    excludes = ["org/mozilla/javascript/tools", "org/mozilla/javascript/engine/**", "META-INF/services/**"]
+    excludes = ["com/anatawa12/sai/tools", "com/anatawa12/sai/engine/**", "META-INF/services/**"]
     manifest {
         attributes(
             "Manifest-Version": "1.0",
@@ -142,7 +142,7 @@ task runtimeJar(type: Jar) {
             "Bundle-ManifestVersion": "2",
             "Bundle-SymbolicName": "org.mozilla.rhino-runtime",
             "Bundle-Version": project.version.replaceAll("-.*", ""),
-            "Export-Package": "org.mozilla.javascript,org.mozilla.javascript.ast,org.mozilla.javascript.annotations"
+            "Export-Package": "com.anatawa12.sai,com.anatawa12.sai.ast,com.anatawa12.sai.annotations"
         )
     }
 }
@@ -151,7 +151,7 @@ task engineJar(type: Jar) {
     dependsOn compileJava
     archiveBaseName = 'rhino-engine'
     from (sourceSets.main.output) {
-        include 'org/mozilla/javascript/engine/**'
+        include 'com/anatawa12/sai/engine/**'
         include 'META-INF/services/**'
     }
     manifest {
@@ -170,11 +170,11 @@ task engineJar(type: Jar) {
 jar {
     dependsOn runtimeJar, engineJar
     from "LICENSE.txt"
-    excludes = ["org/mozilla/javascript/engine/**", "META-INF/services/**"]
+    excludes = ["com/anatawa12/sai/engine/**", "META-INF/services/**"]
     manifest {
         attributes(
             "Manifest-Version": "1.0",
-            "Main-Class": "org.mozilla.javascript.tools.shell.Main",
+            "Main-Class": "com.anatawa12.sai.tools.shell.Main",
             "Implementation-Version": project.version,
             "Implementation-Title":  "Mozilla Rhino",
             "Implementation-Vendor": "Mozilla Foundation",
@@ -184,7 +184,7 @@ jar {
             "Bundle-ManifestVersion": "2",
             "Bundle-SymbolicName": "org.mozilla.rhino",
             "Bundle-Version": project.version.replaceAll("-.*", ""),
-            "Export-Package": "org.mozilla.javascript,org.mozilla.javascript.ast,org.mozilla.javascript.annotations"
+            "Export-Package": "com.anatawa12.sai,com.anatawa12.sai.ast,com.anatawa12.sai.annotations"
         )
     }
 }
@@ -203,13 +203,13 @@ task javadocJar(type: Jar) {
 task runtimeJavadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
-    exclude 'org/mozilla/javascript/tools', 'org/mozilla/javascript/engine'
+    exclude 'com/anatawa12/sai/tools', 'com/anatawa12/sai/engine'
 }
 
 task engineJavadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
-    include 'org/mozilla/javascript/engine/**'
+    include 'com/anatawa12/sai/engine/**'
 }
 
 task sourceJar(type: Jar) {
@@ -219,13 +219,13 @@ task sourceJar(type: Jar) {
 task runtimeSourceJar(type: Jar) {
     classifier 'sources'
     from sourceSets.main.allJava
-    exclude 'org/mozilla/javascript/tools', 'org/mozilla/javascript/engine'
+    exclude 'com/anatawa12/sai/tools', 'com/anatawa12/sai/engine'
 }
 
 task engineSourceJar(type: Jar) {
     classifier 'sources'
     from sourceSets.main.allJava
-    include 'org/mozilla/javascript/engine/**'
+    include 'com/anatawa12/sai/engine/**'
 }
 
 publishing {

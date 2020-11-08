@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import java.lang.reflect.Method;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.EcmaError;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  * Test that read-only properties can be... set when needed.

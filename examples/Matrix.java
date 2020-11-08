@@ -7,9 +7,9 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  * Matrix: An example host object class that implements the Scriptable interface.
@@ -41,8 +41,8 @@ import org.mozilla.javascript.ScriptableObject;
  * 2
  * </pre>
  *
- * @see org.mozilla.javascript.Context
- * @see org.mozilla.javascript.Scriptable
+ * @see com.anatawa12.sai.Context
+ * @see com.anatawa12.sai.Scriptable
  *
  * @author Norris Boyd
  */

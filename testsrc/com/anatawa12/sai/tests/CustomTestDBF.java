@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,7 +37,7 @@ public class CustomTestDBF extends DocumentBuilderFactory {
     @Override
     public void setFeature(String name, boolean value) throws ParserConfigurationException {
         if("http://apache.org/xml/features/disallow-doctype-decl".equals(name)){
-            org.mozilla.javascript.tests.XMLSecureParserTest.CALLED_BY_XML_PARSER = true;
+            com.anatawa12.sai.tests.XMLSecureParserTest.CALLED_BY_XML_PARSER = true;
         }
     }
     

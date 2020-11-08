@@ -3,7 +3,7 @@
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -22,7 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.mozilla.javascript.SecurityUtilities;
+import com.anatawa12.sai.SecurityUtilities;
 
 public class JSConsole extends JFrame implements ActionListener
 {

@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertFalse;
 
@@ -8,14 +8,14 @@ import java.io.IOException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ExternalArrayData;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.shell.Global;
-import org.mozilla.javascript.typedarrays.NativeFloat64Array;
-import org.mozilla.javascript.typedarrays.NativeInt16Array;
-import org.mozilla.javascript.typedarrays.NativeInt32Array;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ExternalArrayData;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.tools.shell.Global;
+import com.anatawa12.sai.typedarrays.NativeFloat64Array;
+import com.anatawa12.sai.typedarrays.NativeInt16Array;
+import com.anatawa12.sai.typedarrays.NativeInt32Array;
 
 public class ExternalArrayTest
 {

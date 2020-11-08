@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.backwardcompat;
+package com.anatawa12.sai.tests.backwardcompat;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -9,9 +9,9 @@ import java.io.InputStreamReader;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.tools.shell.Global;
 
 public class BackwardUseStrict {
   private static String source;

@@ -5,7 +5,7 @@
 package com.netscape.javascript.qa.drivers;
 
 //import netscape.javascript.*;
-//import org.mozilla.javascript.*;
+//import com.anatawa12.sai.*;
 import java.io.*;
 
 /**

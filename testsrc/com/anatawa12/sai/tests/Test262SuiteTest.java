@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mozilla.javascript.drivers.TestUtils.JS_FILE_FILTER;
-import static org.mozilla.javascript.drivers.TestUtils.recursiveListFilesHelper;
+import static com.anatawa12.sai.drivers.TestUtils.JS_FILE_FILTER;
+import static com.anatawa12.sai.drivers.TestUtils.recursiveListFilesHelper;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,14 +34,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.drivers.TestUtils;
-import org.mozilla.javascript.tools.SourceReader;
-import org.mozilla.javascript.tools.shell.ShellContextFactory;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.drivers.TestUtils;
+import com.anatawa12.sai.tools.SourceReader;
+import com.anatawa12.sai.tools.shell.ShellContextFactory;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 

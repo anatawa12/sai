@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertTrue;
 
@@ -11,8 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
 
 /**
  * Test cases for ToNumber conversion applied to a String type.

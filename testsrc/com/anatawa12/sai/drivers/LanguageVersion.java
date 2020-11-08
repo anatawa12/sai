@@ -1,4 +1,4 @@
-package org.mozilla.javascript.drivers;
+package com.anatawa12.sai.drivers;
 
 import static java.lang.annotation.ElementType.TYPE;
 
@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Intended to be used as an optional annotation for subclasses
- * of {@link org.mozilla.javascript.drivers.ScriptTestsBase}.
+ * of {@link com.anatawa12.sai.drivers.ScriptTestsBase}.
  * Sets the language version of test's script execution context.
  */
 @Target(TYPE)

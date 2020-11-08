@@ -5,11 +5,11 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.JavaScriptException;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Scriptable;
 
 import junit.framework.TestCase;
 

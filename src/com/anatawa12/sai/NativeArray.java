@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
-import static org.mozilla.javascript.ScriptRuntimeES6.requireObjectCoercible;
+import static com.anatawa12.sai.ScriptRuntimeES6.requireObjectCoercible;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import org.mozilla.javascript.regexp.NativeRegExp;
+import com.anatawa12.sai.regexp.NativeRegExp;
 
 /**
  * This class implements the Array native object.

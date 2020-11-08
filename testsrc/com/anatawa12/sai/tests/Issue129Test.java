@@ -1,7 +1,7 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -11,12 +11,12 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.AstNode;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.NodeVisitor;
-import org.mozilla.javascript.ast.ParenthesizedExpression;
+import com.anatawa12.sai.Parser;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.AstNode;
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.ast.NodeVisitor;
+import com.anatawa12.sai.ast.ParenthesizedExpression;
 
 /**
  * Tests position of ParenthesizedExpression node in  source code in different cases.

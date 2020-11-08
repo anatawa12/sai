@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  * Example of controlling the JavaScript with multiple scopes and threads.

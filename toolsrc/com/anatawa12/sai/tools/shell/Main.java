@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -25,21 +25,21 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.GeneratedClassLoader;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.SecurityController;
-import org.mozilla.javascript.commonjs.module.ModuleScope;
-import org.mozilla.javascript.commonjs.module.Require;
-import org.mozilla.javascript.tools.SourceReader;
-import org.mozilla.javascript.tools.ToolErrorReporter;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextAction;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.GeneratedClassLoader;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.NativeArray;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.SecurityController;
+import com.anatawa12.sai.commonjs.module.ModuleScope;
+import com.anatawa12.sai.commonjs.module.Require;
+import com.anatawa12.sai.tools.SourceReader;
+import com.anatawa12.sai.tools.ToolErrorReporter;
 
 /**
  * The shell program.
@@ -417,7 +417,7 @@ public class Main
     {
         Throwable exObj;
         try {
-            Class<?> cl = Class.forName("org.mozilla.javascript.tools.shell.JavaPolicySecurity");
+            Class<?> cl = Class.forName("com.anatawa12.sai.tools.shell.JavaPolicySecurity");
             securityImpl = (SecurityProxy)cl.newInstance();
             SecurityController.initGlobal(securityImpl);
             return;

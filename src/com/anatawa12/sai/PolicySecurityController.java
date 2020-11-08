@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.lang.ref.SoftReference;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -16,8 +16,8 @@ import java.security.SecureClassLoader;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import org.mozilla.classfile.ByteCode;
-import org.mozilla.classfile.ClassFileWriter;
+import com.anatawa12.sai.classfile.ByteCode;
+import com.anatawa12.sai.classfile.ClassFileWriter;
 
 /**
  * A security controller relying on Java {@link Policy} in effect. When you use
@@ -176,20 +176,20 @@ public class PolicySecurityController extends SecurityController
         cfw.add(ByteCode.RETURN);
         cfw.stopMethod((short)1);
         String callableCallSig =
-            "Lorg/mozilla/javascript/Context;" +
-            "Lorg/mozilla/javascript/Scriptable;" +
-            "Lorg/mozilla/javascript/Scriptable;" +
+            "Lcom/anatawa12/sai/Context;" +
+            "Lcom/anatawa12/sai/Scriptable;" +
+            "Lcom/anatawa12/sai/Scriptable;" +
             "[Ljava/lang/Object;)Ljava/lang/Object;";
 
         cfw.startMethod("call",
-                "(Lorg/mozilla/javascript/Callable;" + callableCallSig,
+                "(Lcom/anatawa12/sai/Callable;" + callableCallSig,
                 (short)(ClassFileWriter.ACC_PUBLIC
                         | ClassFileWriter.ACC_FINAL));
         for(int i = 1; i < 6; ++i) {
             cfw.addALoad(i);
         }
         cfw.addInvoke(ByteCode.INVOKEINTERFACE,
-                "org/mozilla/javascript/Callable", "call",
+                "com/anatawa12/sai/Callable", "call",
                 "(" + callableCallSig);
         cfw.add(ByteCode.ARETURN);
         cfw.stopMethod((short)6);

@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
-import static org.mozilla.javascript.UniqueTag.DOUBLE_MARK;
+import static com.anatawa12.sai.UniqueTag.DOUBLE_MARK;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -15,10 +15,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import org.mozilla.javascript.ScriptRuntime.NoSuchMethodShim;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.ScriptNode;
-import org.mozilla.javascript.debug.DebugFrame;
+import com.anatawa12.sai.ScriptRuntime.NoSuchMethodShim;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.debug.DebugFrame;
 
 public final class Interpreter extends Icode implements Evaluator
 {
@@ -859,7 +859,7 @@ public final class Interpreter extends Icode implements Evaluator
     public String getPatchedStack(RhinoException ex,
                                   String nativeStackTrace)
     {
-        String tag = "org.mozilla.javascript.Interpreter.interpretLoop";
+        String tag = "com.anatawa12.sai.Interpreter.interpretLoop";
         StringBuilder sb = new StringBuilder(nativeStackTrace.length() + 1000);
         String lineSeparator = SecurityUtilities.getSystemProperty("line.separator");
 

@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
-import static org.mozilla.javascript.ScriptableObject.DONTENUM;
-import static org.mozilla.javascript.ScriptableObject.PERMANENT;
-import static org.mozilla.javascript.ScriptableObject.READONLY;
+import static com.anatawa12.sai.ScriptableObject.DONTENUM;
+import static com.anatawa12.sai.ScriptableObject.PERMANENT;
+import static com.anatawa12.sai.ScriptableObject.READONLY;
 
 import java.io.Serializable;
 
-import org.mozilla.javascript.xml.XMLLib;
+import com.anatawa12.sai.xml.XMLLib;
 
 /**
  * This class implements the global native object (function and value

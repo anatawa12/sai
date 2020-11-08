@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.commonjs.module;
+package com.anatawa12.sai.tests.commonjs.module;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -6,12 +6,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.commonjs.module.Require;
-import org.mozilla.javascript.commonjs.module.provider.StrongCachingModuleScriptProvider;
-import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.commonjs.module.Require;
+import com.anatawa12.sai.commonjs.module.provider.StrongCachingModuleScriptProvider;
+import com.anatawa12.sai.commonjs.module.provider.UrlModuleSourceProvider;
 
 import junit.framework.TestCase;
 

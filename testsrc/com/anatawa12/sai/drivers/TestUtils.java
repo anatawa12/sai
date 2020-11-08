@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.drivers;
+package com.anatawa12.sai.drivers;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -14,7 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
-import org.mozilla.javascript.ContextFactory;
+import com.anatawa12.sai.ContextFactory;
 
 public class TestUtils {
     private static ContextFactory.GlobalSetter globalSetter;

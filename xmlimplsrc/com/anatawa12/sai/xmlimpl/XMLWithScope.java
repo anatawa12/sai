@@ -4,11 +4,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.xmlimpl;
+package com.anatawa12.sai.xmlimpl;
 
-import org.mozilla.javascript.NativeWith;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.xml.XMLObject;
+import com.anatawa12.sai.NativeWith;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.xml.XMLObject;
 
 final class XMLWithScope extends NativeWith
 {

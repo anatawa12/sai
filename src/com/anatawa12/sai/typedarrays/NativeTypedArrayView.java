@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.typedarrays;
+package com.anatawa12.sai.typedarrays;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -13,18 +13,18 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ExternalArrayData;
-import org.mozilla.javascript.IdFunctionObject;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeArrayIterator;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Symbol;
-import org.mozilla.javascript.SymbolKey;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.Wrapper;
-import org.mozilla.javascript.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ExternalArrayData;
+import com.anatawa12.sai.IdFunctionObject;
+import com.anatawa12.sai.NativeArray;
+import com.anatawa12.sai.NativeArrayIterator;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.Symbol;
+import com.anatawa12.sai.SymbolKey;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.Wrapper;
+import com.anatawa12.sai.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
 
 /**
  * This class is the abstract parent for all of the various typed arrays. Each one

@@ -1,4 +1,4 @@
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.Serializable;
 /* -*- Mode: java; tab-width: 8; indent-tabs-mode: nil; c-basic-offset: 4 -*-

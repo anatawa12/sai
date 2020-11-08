@@ -3,24 +3,24 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
-import org.mozilla.javascript.ArrowFunction;
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.ConsString;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ES6Generator;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.NativeFunction;
-import org.mozilla.javascript.NativeGenerator;
-import org.mozilla.javascript.NativeIterator;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.ArrowFunction;
+import com.anatawa12.sai.Callable;
+import com.anatawa12.sai.ConsString;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.ES6Generator;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.JavaScriptException;
+import com.anatawa12.sai.NativeFunction;
+import com.anatawa12.sai.NativeGenerator;
+import com.anatawa12.sai.NativeIterator;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.Undefined;
 
 public final class OptRuntime extends ScriptRuntime
 {
@@ -296,7 +296,7 @@ public final class OptRuntime extends ScriptRuntime
 
     public static class GeneratorState {
         static final String CLASS_NAME =
-            "org/mozilla/javascript/optimizer/OptRuntime$GeneratorState";
+            "com/anatawa12/sai/optimizer/OptRuntime$GeneratorState";
 
         @SuppressWarnings("unused")
         public int resumptionPoint;
@@ -307,7 +307,7 @@ public final class OptRuntime extends ScriptRuntime
         public Scriptable thisObj;
         static final String thisObj_NAME = "thisObj";
         static final String thisObj_TYPE =
-            "Lorg/mozilla/javascript/Scriptable;";
+            "Lcom/anatawa12/sai/Scriptable;";
 
         Object[] stackState;
         Object[] localsState;

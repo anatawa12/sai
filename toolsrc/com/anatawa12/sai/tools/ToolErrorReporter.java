@@ -4,21 +4,21 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools;
+package com.anatawa12.sai.tools;
 
 import java.io.PrintStream;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.SecurityUtilities;
-import org.mozilla.javascript.WrappedException;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EcmaError;
+import com.anatawa12.sai.ErrorReporter;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.JavaScriptException;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.SecurityUtilities;
+import com.anatawa12.sai.WrappedException;
 
 /**
  * Error reporter for tools.
@@ -38,7 +38,7 @@ public class ToolErrorReporter implements ErrorReporter {
 
     /**
      * Look up the message corresponding to messageId in the
-     * org.mozilla.javascript.tools.shell.resources.Messages property file.
+     * com.anatawa12.sai.tools.shell.resources.Messages property file.
      * For internationalization support.
      */
     public static String getMessage(String messageId) {
@@ -62,7 +62,7 @@ public class ToolErrorReporter implements ErrorReporter {
 
         // ResourceBundle does caching.
         ResourceBundle rb = ResourceBundle.getBundle
-            ("org.mozilla.javascript.tools.resources.Messages", locale);
+            ("com.anatawa12.sai.tools.resources.Messages", locale);
 
         String formatString;
         try {

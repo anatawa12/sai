@@ -5,7 +5,7 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,7 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import org.mozilla.javascript.Context;
+import com.anatawa12.sai.Context;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class ContextFactoryTest {

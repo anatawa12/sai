@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.commonjs.module;
+package com.anatawa12.sai.tests.commonjs.module;
 
 import java.io.File;
 import java.net.URI;
@@ -10,13 +10,13 @@ import java.util.List;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.commonjs.module.Require;
-import org.mozilla.javascript.commonjs.module.provider.StrongCachingModuleScriptProvider;
-import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.commonjs.module.Require;
+import com.anatawa12.sai.commonjs.module.provider.StrongCachingModuleScriptProvider;
+import com.anatawa12.sai.commonjs.module.provider.UrlModuleSourceProvider;
 
 import junit.framework.AssertionFailedError;
 
@@ -32,7 +32,7 @@ public class ComplianceTest {
     @Parameterized.Parameters(name = "/{0}")
     public static Collection<Object[]> data() {
         List<Object[]> retval = new ArrayList<Object[]>(16);
-        final File[] files = new File("testsrc/org/mozilla/javascript/tests/commonjs/module/1.0").listFiles();
+        final File[] files = new File("testsrc/com/anatawa12/sai/tests/commonjs/module/1.0").listFiles();
         for (File file : files) {
             if (file.isDirectory()) {
                 retval.add(new Object[]{file.getName(), file});

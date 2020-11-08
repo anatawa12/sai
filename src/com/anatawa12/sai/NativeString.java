@@ -4,17 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
-import static org.mozilla.javascript.ScriptRuntime.rangeError;
-import static org.mozilla.javascript.ScriptRuntimeES6.requireObjectCoercible;
+import static com.anatawa12.sai.ScriptRuntime.rangeError;
+import static com.anatawa12.sai.ScriptRuntimeES6.requireObjectCoercible;
 
 import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Locale;
 
-import org.mozilla.javascript.ScriptRuntime.StringIdOrIndex;
-import org.mozilla.javascript.regexp.NativeRegExp;
+import com.anatawa12.sai.ScriptRuntime.StringIdOrIndex;
+import com.anatawa12.sai.regexp.NativeRegExp;
 
 /**
  * This class implements the String native object.

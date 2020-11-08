@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * Interface to represent arbitrary action that requires to have Context

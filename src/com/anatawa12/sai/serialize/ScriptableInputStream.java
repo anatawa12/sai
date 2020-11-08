@@ -6,17 +6,17 @@
 
 // API class
 
-package org.mozilla.javascript.serialize;
+package com.anatawa12.sai.serialize;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectStreamClass;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.UniqueTag;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.UniqueTag;
 
 /**
  * Class ScriptableInputStream is used to read in a JavaScript

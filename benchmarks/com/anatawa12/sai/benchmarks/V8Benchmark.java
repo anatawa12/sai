@@ -1,11 +1,11 @@
-package org.mozilla.javascript.benchmarks;
+package com.anatawa12.sai.benchmarks;
 
 import java.io.FileReader;
 import java.io.IOException;
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Callable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 import org.openjdk.jmh.annotations.*;
 
 public class V8Benchmark {

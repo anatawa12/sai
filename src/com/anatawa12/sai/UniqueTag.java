@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.Serializable;
 
@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Class instances represent serializable tags to mark special Object values.
  * <p>
  * Compatibility note: under jdk 1.1 use
- * org.mozilla.javascript.serialize.ScriptableInputStream to read serialized
+ * com.anatawa12.sai.serialize.ScriptableInputStream to read serialized
  * instances of UniqueTag as under this JDK version the default
  * ObjectInputStream would not restore them correctly as it lacks support
  * for readResolve method

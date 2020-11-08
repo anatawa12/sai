@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
 
 /**
  * A JavaScript function declaration or expression.
@@ -264,7 +264,7 @@ public class FunctionNode extends ScriptNode {
     /**
      * Return true if this function requires an Ecma-262 Activation object.
      * The Activation object is implemented by
-     * {@link org.mozilla.javascript.NativeCall}, and is fairly expensive
+     * {@link com.anatawa12.sai.NativeCall}, and is fairly expensive
      * to create, so when possible, the interpreter attempts to use a plain
      * call frame instead.
      *

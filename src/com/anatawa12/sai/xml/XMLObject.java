@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.xml;
+package com.anatawa12.sai.xml;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.IdScriptableObject;
-import org.mozilla.javascript.NativeWith;
-import org.mozilla.javascript.Ref;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.IdScriptableObject;
+import com.anatawa12.sai.NativeWith;
+import com.anatawa12.sai.Ref;
+import com.anatawa12.sai.Scriptable;
 
 /**
  *  This Interface describes what all XML objects (XML, XMLList) should have in common.
@@ -104,7 +104,7 @@ public abstract class XMLObject extends IdScriptableObject
 
     /**
      * Gets the value returned by calling the typeof operator on this object.
-     * @see org.mozilla.javascript.ScriptableObject#getTypeOf()
+     * @see com.anatawa12.sai.ScriptableObject#getTypeOf()
      * @return "xml" or "undefined" if {@link #avoidObjectDetection()} returns <code>true</code>
      */
     @Override

@@ -1,22 +1,22 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.XmlMemberGet;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.Parser;
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.ast.XmlMemberGet;
 
 /**
  * Test resembles issue #483 with {@link XmlMemberGet#toSource()} implementation.
- * {@code toSource()} implementation calls {@link org.mozilla.javascript.ast.AstNode#operatorToString(int)}
- * passing in node's type, which is {@link org.mozilla.javascript.Token#DOT} or
- * {@link org.mozilla.javascript.Token#DOTDOT} by documentation. This causes {@link IllegalArgumentException}, as
+ * {@code toSource()} implementation calls {@link com.anatawa12.sai.ast.AstNode#operatorToString(int)}
+ * passing in node's type, which is {@link com.anatawa12.sai.Token#DOT} or
+ * {@link com.anatawa12.sai.Token#DOTDOT} by documentation. This causes {@link IllegalArgumentException}, as
  * {@code DOT} and {@code DOTDOT} are not treated as operators in {@code AstNode}.
  */
 public class BugXmlMemberGetToSource {

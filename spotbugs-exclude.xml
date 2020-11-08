@@ -9,18 +9,18 @@
     <Source name="~.*\/examples\/.*"/>
   </Match>
   <Match>
-    <Class name="~org\.mozilla\.javascript\.benchmarks\.generated.*"/>
+    <Class name="~com\.anatawa12\.sai\.benchmarks\.generated.*"/>
   </Match>
 
   <!-- Things below are legit exemptions -->
   <Match>
     <!-- Existing "Token" constants have values to 255 -->
-    <Class name="org.mozilla.javascript.Interpreter" />
+    <Class name="com.anatawa12.sai.Interpreter" />
     <Bug pattern="INT_BAD_COMPARISON_WITH_SIGNED_BYTE" />
   </Match>
   <Match>
     <!-- Let this class do its job -->
-    <Class name="org.mozilla.javascript.DToA" />
+    <Class name="com.anatawa12.sai.DToA" />
     <Bug pattern="FE_FLOATING_POINT_EQUALITY" />
   </Match>
   <Match>
@@ -29,32 +29,32 @@
   </Match>
   <Match>
     <!-- SymbolKey and NativeSymbol objects may be compared directly. -->
-    <Class name="org.mozilla.javascript.SymbolKey"/>
+    <Class name="com.anatawa12.sai.SymbolKey"/>
     <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS" />
   </Match>
   <Match>
     <!-- SymbolKey and NativeSymbol objects may be compared directly. -->
-    <Class name="org.mozilla.javascript.NativeSymbol"/>
+    <Class name="com.anatawa12.sai.NativeSymbol"/>
     <Bug pattern="EQ_CHECK_FOR_OPERAND_NOT_COMPATIBLE_WITH_THIS" />
   </Match>
   <Match>
     <!-- Legacy code depends on being able to reassign values in Main -->
-    <Class name="org.mozilla.javascript.tools.shell.Main"/>
+    <Class name="com.anatawa12.sai.tools.shell.Main"/>
     <Bug pattern="MS_SHOULD_BE_FINAL"/>
   </Match>
   <Match>
     <!-- Legacy code depends on being able to reassign values in Main -->
-    <Class name="org.mozilla.javascript.tools.shell.Main"/>
+    <Class name="com.anatawa12.sai.tools.shell.Main"/>
     <Bug pattern="MS_PKGPROTECT"/>
   </Match>
   <Match>
     <!-- GUI code just loves to swallow exceptions -->
-    <Class name="org.mozilla.javascript.tools.debugger.SwingGui"/>
+    <Class name="com.anatawa12.sai.tools.debugger.SwingGui"/>
     <Bug pattern="DE_MIGHT_IGNORE"/>
   </Match>
   <Match>
     <!-- In general, the tools need to exit -->
-    <Class name="~org\.mozilla\.javascript\.tools.*"/>
+    <Class name="~com\.anatawa12\.sai\.tools.*"/>
     <Bug pattern="DM_EXIT"/>
   </Match>
   <Match>
@@ -75,37 +75,37 @@
   </Match>
   <Match>
     <!-- Fixing this would break "DEBUG" -->
-    <Class name="org.mozilla.javascript.optimizer.Block"/>
+    <Class name="com.anatawa12.sai.optimizer.Block"/>
     <Bug pattern="UUF_UNUSED_FIELD"/>
   </Match>
   <Match>
     <!-- Fixing this would break "DEBUG" -->
-    <Class name="org.mozilla.javascript.regexp.NativeRegExp"/>
+    <Class name="com.anatawa12.sai.regexp.NativeRegExp"/>
     <Bug pattern="DLS_DEAD_LOCAL_STORE"/>
   </Match>
   <Match>
     <!-- This is kind of a weird thing that's necessary for the security manager -->
-    <Class name="org.mozilla.javascript.tools.shell.JavaPolicySecurity"/>
+    <Class name="com.anatawa12.sai.tools.shell.JavaPolicySecurity"/>
     <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/>
   </Match>
   <Match>
     <!-- And this is a weird thing related to maybe multithreading the GUI -->
-    <Class name="org.mozilla.javascript.tools.debugger.Dim"/>
+    <Class name="com.anatawa12.sai.tools.debugger.Dim"/>
     <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE"/>
   </Match>
   <Match>
     <!-- Referenced in generated code -->
-    <Class name="org.mozilla.javascript.optimizer.OptRuntime$GeneratorState"/>
+    <Class name="com.anatawa12.sai.optimizer.OptRuntime$GeneratorState"/>
     <Bug pattern="UUF_UNUSED_PUBLIC_OR_PROTECTED_FIELD"/>
   </Match>
   <Match>
     <!-- Referenced in generated code -->
-    <Class name="org.mozilla.javascript.optimizer.OptRuntime$GeneratorState"/>
+    <Class name="com.anatawa12.sai.optimizer.OptRuntime$GeneratorState"/>
     <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
   </Match>
   <!-- Complex legacy stuff -->
   <!--<Match>
-    <Class name="org.mozilla.javascript.regexp.RegExpImpl"/>
+    <Class name="com.anatawa12.sai.regexp.RegExpImpl"/>
     <Bug pattern="RC_REF_COMPARISON_BAD_PRACTICE_BOOLEAN"/>
   </Match>-->
 

@@ -4,17 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Interpreter;
-import org.mozilla.javascript.NativeContinuation;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Callable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Interpreter;
+import com.anatawa12.sai.NativeContinuation;
+import com.anatawa12.sai.ScriptableObject;
 
 import junit.framework.TestCase;
 

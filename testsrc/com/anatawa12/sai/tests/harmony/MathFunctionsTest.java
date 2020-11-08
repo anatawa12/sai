@@ -1,7 +1,7 @@
-package org.mozilla.javascript.tests.harmony;
+package com.anatawa12.sai.tests.harmony;
 
-import org.mozilla.javascript.drivers.RhinoTest;
-import org.mozilla.javascript.drivers.ScriptTestsBase;
+import com.anatawa12.sai.drivers.RhinoTest;
+import com.anatawa12.sai.drivers.ScriptTestsBase;
 
 @RhinoTest(
     value = "testsrc/jstests/harmony/math-functions.js"

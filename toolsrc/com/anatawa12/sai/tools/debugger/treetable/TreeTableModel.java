@@ -31,7 +31,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.mozilla.javascript.tools.debugger.treetable;
+package com.anatawa12.sai.tools.debugger.treetable;
 
 import javax.swing.tree.TreeModel;
 

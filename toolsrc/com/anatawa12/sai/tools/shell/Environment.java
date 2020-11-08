@@ -12,13 +12,13 @@
         by Patrick C. Beard <beard@netscape.com>
  */
 
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 
 import java.util.Map;
 
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  * Environment, intended to be instantiated at global scope, provides

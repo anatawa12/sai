@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.es6;
+package com.anatawa12.sai.tests.es6;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -10,10 +10,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tests.Utils;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EcmaError;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.tests.Utils;
 
 /**
  * @author Ronald Brill

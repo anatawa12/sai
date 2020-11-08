@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.regexp;
+package com.anatawa12.sai.regexp;
 
-import org.mozilla.javascript.BaseFunction;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.TopLevel;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.BaseFunction;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.TopLevel;
+import com.anatawa12.sai.Undefined;
 
 /**
  * This class implements the RegExp constructor native object.

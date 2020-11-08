@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -15,7 +15,7 @@ import java.io.Reader;
  * It is based on the C source files jsscan.c and jsscan.h
  * in the jsref package.
  *
- * @see org.mozilla.javascript.Parser
+ * @see com.anatawa12.sai.Parser
  *
  * @author Mike McCabe
  * @author Brendan Eich

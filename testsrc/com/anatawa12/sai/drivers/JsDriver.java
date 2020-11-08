@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.drivers;
+package com.anatawa12.sai.drivers;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -15,7 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.mozilla.javascript.tools.shell.ShellContextFactory;
+import com.anatawa12.sai.tools.shell.ShellContextFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -562,7 +562,7 @@ public class JsDriver {
     void run(Arguments arguments) throws Throwable {
         if (arguments.help()) {
             System.out.println("See mozilla/js/tests/README-jsDriver.html; note that some options are not supported.");
-            System.out.println("Consult the Java source code at testsrc/org/mozilla/javascript/JsDriver.java for details.");
+            System.out.println("Consult the Java source code at testsrc/com/anatawa12/sai/JsDriver.java for details.");
             System.exit(0);
         }
 

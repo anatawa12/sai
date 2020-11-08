@@ -28,7 +28,7 @@
 // Ported to Java from V8's conversions-inl.h and double.h files.
 // The original revision was r12273 from the bleeding_edge branch.
 
-package org.mozilla.javascript.v8dtoa;
+package com.anatawa12.sai.v8dtoa;
 
 public final class DoubleConversion {
     private static final long kSignMask = 0x8000000000000000L;

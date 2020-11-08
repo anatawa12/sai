@@ -1,12 +1,12 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.TopLevel;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.TopLevel;
 
 import junit.framework.TestCase;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Scriptable;
 
 
 /**
@@ -70,7 +70,7 @@ public class DynamicScopeTest extends TestCase {
         // This is what we do on initialization ...
         final Context cx = contextFactory.enterContext();
         try {
-            // Used to fail with org.mozilla.javascript.EvaluatorException: Cannot modify a property of a sealed object: iterator.
+            // Used to fail with com.anatawa12.sai.EvaluatorException: Cannot modify a property of a sealed object: iterator.
             final ScriptableObject scope = cx.initStandardObjects(new TopLevel(), true); 
             
             Object result = cx.evaluateString(scope, "42", "source", 1, null);
@@ -84,7 +84,7 @@ public class DynamicScopeTest extends TestCase {
         // Almost the same code block as above
         final Context cx2 = new FreshContext(contextFactory);
         try {
-            // Used to fail with org.mozilla.javascript.EvaluatorException: Cannot modify a property of a sealed object: iterator.
+            // Used to fail with com.anatawa12.sai.EvaluatorException: Cannot modify a property of a sealed object: iterator.
             final ScriptableObject scope = cx.initStandardObjects(new TopLevel(), true);
             
             Object result = cx.evaluateString(scope, "23", "source", 1, null);
@@ -104,7 +104,7 @@ public class DynamicScopeTest extends TestCase {
         final Context cx = contextFactory.enterContext();
         try {
 
-            // Used to fail with org.mozilla.javascript.EvaluatorException: Cannot modify a property of a sealed object: iterator.
+            // Used to fail with com.anatawa12.sai.EvaluatorException: Cannot modify a property of a sealed object: iterator.
             final ScriptableObject someScope = cx.initStandardObjects(); 
             
             Scriptable someObj = (Scriptable) cx.evaluateString(someScope, "var obj = {}; obj;", "source1", 1, null);

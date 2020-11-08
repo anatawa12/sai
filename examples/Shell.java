@@ -10,13 +10,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.JavaScriptException;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.WrappedException;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.JavaScriptException;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.WrappedException;
 
 /**
  * The shell program.

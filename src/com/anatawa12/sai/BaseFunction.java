@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * The base class for Function objects. That is one of two purposes. It is also
@@ -63,7 +63,7 @@ public class BaseFunction extends IdScriptableObject implements Function
 
     /**
      * Gets the value returned by calling the typeof operator on this object.
-     * @see org.mozilla.javascript.ScriptableObject#getTypeOf()
+     * @see com.anatawa12.sai.ScriptableObject#getTypeOf()
      * @return "function" or "undefined" if {@link #avoidObjectDetection()} returns <code>true</code>
      */
     @Override

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -13,15 +13,15 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import org.mozilla.javascript.ConsString;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContinuationPending;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.WrappedException;
-import org.mozilla.javascript.serialize.ScriptableInputStream;
-import org.mozilla.javascript.serialize.ScriptableOutputStream;
+import com.anatawa12.sai.ConsString;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContinuationPending;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.WrappedException;
+import com.anatawa12.sai.serialize.ScriptableInputStream;
+import com.anatawa12.sai.serialize.ScriptableOutputStream;
 
 import junit.framework.TestCase;
 

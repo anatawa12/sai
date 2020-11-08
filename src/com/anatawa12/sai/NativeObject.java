@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.util.AbstractCollection;
 import java.util.AbstractSet;
@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
-import org.mozilla.javascript.ScriptRuntime.StringIdOrIndex;
+import com.anatawa12.sai.ScriptRuntime.StringIdOrIndex;
 
 /**
  * This class implements the Object native object.

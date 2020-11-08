@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
-import org.mozilla.classfile.ByteCode;
-import org.mozilla.classfile.ClassFileWriter;
+import com.anatawa12.sai.classfile.ByteCode;
+import com.anatawa12.sai.classfile.ClassFileWriter;
 
 public final class JavaAdapter implements IdFunctionCall
 {
@@ -360,13 +360,13 @@ public final class JavaAdapter implements IdFunctionCall
         ClassFileWriter cfw = new ClassFileWriter(adapterName,
                                                   superClass.getName(),
                                                   "<adapter>");
-        cfw.addField("factory", "Lorg/mozilla/javascript/ContextFactory;",
+        cfw.addField("factory", "Lcom/anatawa12/sai/ContextFactory;",
                      (short) (ClassFileWriter.ACC_PUBLIC |
                               ClassFileWriter.ACC_FINAL));
-        cfw.addField("delegee", "Lorg/mozilla/javascript/Scriptable;",
+        cfw.addField("delegee", "Lcom/anatawa12/sai/Scriptable;",
                      (short) (ClassFileWriter.ACC_PUBLIC |
                               ClassFileWriter.ACC_FINAL));
-        cfw.addField("self", "Lorg/mozilla/javascript/Scriptable;",
+        cfw.addField("self", "Lcom/anatawa12/sai/Scriptable;",
                      (short) (ClassFileWriter.ACC_PUBLIC |
                               ClassFileWriter.ACC_FINAL));
         int interfacesCount = interfaces == null ? 0 : interfaces.length;
@@ -632,8 +632,8 @@ public final class JavaAdapter implements IdFunctionCall
         // conflicting signatures with serial constructor defined below.
         if (parameters.length == 0) {
             cfw.startMethod("<init>",
-                        "(Lorg/mozilla/javascript/Scriptable;"
-                        +"Lorg/mozilla/javascript/ContextFactory;)V",
+                        "(Lcom/anatawa12/sai/Scriptable;"
+                        +"Lcom/anatawa12/sai/ContextFactory;)V",
                         ClassFileWriter.ACC_PUBLIC);
 
             // Invoke base class constructor
@@ -641,8 +641,8 @@ public final class JavaAdapter implements IdFunctionCall
             cfw.addInvoke(ByteCode.INVOKESPECIAL, superName, "<init>", "()V");
         } else {
             StringBuilder sig = new StringBuilder(
-                    "(Lorg/mozilla/javascript/Scriptable;"
-                    +"Lorg/mozilla/javascript/ContextFactory;");
+                    "(Lcom/anatawa12/sai/Scriptable;"
+                    +"Lcom/anatawa12/sai/ContextFactory;");
             int marker = sig.length(); // lets us reuse buffer for super signature
             for (Class<?> c : parameters) {
                 appendTypeString(sig, c);
@@ -665,26 +665,26 @@ public final class JavaAdapter implements IdFunctionCall
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_1);  // first arg: Scriptable delegee
         cfw.add(ByteCode.PUTFIELD, adapterName, "delegee",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         // Save parameter in instance variable "factory"
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_2);  // second arg: ContextFactory instance
         cfw.add(ByteCode.PUTFIELD, adapterName, "factory",
-                "Lorg/mozilla/javascript/ContextFactory;");
+                "Lcom/anatawa12/sai/ContextFactory;");
 
         cfw.add(ByteCode.ALOAD_0);  // this for the following PUTFIELD for self
         // create a wrapper object to be used as "this" in method calls
         cfw.add(ByteCode.ALOAD_1);  // the Scriptable delegee
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/JavaAdapter",
+                      "com/anatawa12/sai/JavaAdapter",
                       "createAdapterWrapper",
-                      "(Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Scriptable;"
                       +"Ljava/lang/Object;"
-                      +")Lorg/mozilla/javascript/Scriptable;");
+                      +")Lcom/anatawa12/sai/Scriptable;");
         cfw.add(ByteCode.PUTFIELD, adapterName, "self",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         cfw.add(ByteCode.RETURN);
         cfw.stopMethod(locals);
@@ -695,9 +695,9 @@ public final class JavaAdapter implements IdFunctionCall
                                            String superName)
     {
         cfw.startMethod("<init>",
-                        "(Lorg/mozilla/javascript/ContextFactory;"
-                        +"Lorg/mozilla/javascript/Scriptable;"
-                        +"Lorg/mozilla/javascript/Scriptable;"
+                        "(Lcom/anatawa12/sai/ContextFactory;"
+                        +"Lcom/anatawa12/sai/Scriptable;"
+                        +"Lcom/anatawa12/sai/Scriptable;"
                         +")V",
                         ClassFileWriter.ACC_PUBLIC);
 
@@ -709,18 +709,18 @@ public final class JavaAdapter implements IdFunctionCall
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_1);  // first arg: ContextFactory instance
         cfw.add(ByteCode.PUTFIELD, adapterName, "factory",
-                "Lorg/mozilla/javascript/ContextFactory;");
+                "Lcom/anatawa12/sai/ContextFactory;");
 
         // Save parameter in instance variable "delegee"
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_2);  // second arg: Scriptable delegee
         cfw.add(ByteCode.PUTFIELD, adapterName, "delegee",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
         // save self
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_3);  // third arg: Scriptable self
         cfw.add(ByteCode.PUTFIELD, adapterName, "self",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         cfw.add(ByteCode.RETURN);
         cfw.stopMethod((short)4); // 4: this + factory + delegee + self
@@ -741,7 +741,7 @@ public final class JavaAdapter implements IdFunctionCall
         cfw.add(ByteCode.ALOAD_0);
         cfw.add(ByteCode.ACONST_NULL);
         cfw.add(ByteCode.PUTFIELD, adapterName, "factory",
-                "Lorg/mozilla/javascript/ContextFactory;");
+                "Lcom/anatawa12/sai/ContextFactory;");
 
         // Load script class
         cfw.add(ByteCode.NEW, scriptClassName);
@@ -750,30 +750,30 @@ public final class JavaAdapter implements IdFunctionCall
 
         // Run script and save resulting scope
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/JavaAdapter",
+                      "com/anatawa12/sai/JavaAdapter",
                       "runScript",
-                      "(Lorg/mozilla/javascript/Script;"
-                      +")Lorg/mozilla/javascript/Scriptable;");
+                      "(Lcom/anatawa12/sai/Script;"
+                      +")Lcom/anatawa12/sai/Scriptable;");
         cfw.add(ByteCode.ASTORE_1);
 
         // Save the Scriptable in instance variable "delegee"
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.add(ByteCode.ALOAD_1);  // the Scriptable
         cfw.add(ByteCode.PUTFIELD, adapterName, "delegee",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         cfw.add(ByteCode.ALOAD_0);  // this for the following PUTFIELD for self
         // create a wrapper object to be used as "this" in method calls
         cfw.add(ByteCode.ALOAD_1);  // the Scriptable
         cfw.add(ByteCode.ALOAD_0);  // this
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/JavaAdapter",
+                      "com/anatawa12/sai/JavaAdapter",
                       "createAdapterWrapper",
-                      "(Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Scriptable;"
                       +"Ljava/lang/Object;"
-                      +")Lorg/mozilla/javascript/Scriptable;");
+                      +")Lcom/anatawa12/sai/Scriptable;");
         cfw.add(ByteCode.PUTFIELD, adapterName, "self",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         cfw.add(ByteCode.RETURN);
         cfw.stopMethod((short)2); // this + delegee
@@ -877,7 +877,7 @@ public final class JavaAdapter implements IdFunctionCall
 
         } else if (retType == Boolean.TYPE) {
             cfw.addInvoke(ByteCode.INVOKESTATIC,
-                          "org/mozilla/javascript/Context",
+                          "com/anatawa12/sai/Context",
                           "toBoolean", "(Ljava/lang/Object;)Z");
             cfw.add(ByteCode.IRETURN);
 
@@ -886,7 +886,7 @@ public final class JavaAdapter implements IdFunctionCall
             // return the first character.
             // first convert the value to a string if possible.
             cfw.addInvoke(ByteCode.INVOKESTATIC,
-                          "org/mozilla/javascript/Context",
+                          "com/anatawa12/sai/Context",
                           "toString",
                           "(Ljava/lang/Object;)Ljava/lang/String;");
             cfw.add(ByteCode.ICONST_0);
@@ -896,7 +896,7 @@ public final class JavaAdapter implements IdFunctionCall
 
         } else if (retType.isPrimitive()) {
             cfw.addInvoke(ByteCode.INVOKESTATIC,
-                          "org/mozilla/javascript/Context",
+                          "com/anatawa12/sai/Context",
                           "toNumber", "(Ljava/lang/Object;)D");
             String typeName = retType.getName();
             switch (typeName.charAt(0)) {
@@ -931,7 +931,7 @@ public final class JavaAdapter implements IdFunctionCall
                               "(Ljava/lang/String;)Ljava/lang/Class;");
 
                 cfw.addInvoke(ByteCode.INVOKESTATIC,
-                              "org/mozilla/javascript/JavaAdapter",
+                              "com/anatawa12/sai/JavaAdapter",
                               "convertResult",
                               "(Ljava/lang/Object;"
                               +"Ljava/lang/Class;"
@@ -958,24 +958,24 @@ public final class JavaAdapter implements IdFunctionCall
         // push factory
         cfw.add(ByteCode.ALOAD_0);
         cfw.add(ByteCode.GETFIELD, genName, "factory",
-                "Lorg/mozilla/javascript/ContextFactory;");
+                "Lcom/anatawa12/sai/ContextFactory;");
 
         // push self
         cfw.add(ByteCode.ALOAD_0);
         cfw.add(ByteCode.GETFIELD, genName, "self",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
 
         // push function
         cfw.add(ByteCode.ALOAD_0);
         cfw.add(ByteCode.GETFIELD, genName, "delegee",
-                "Lorg/mozilla/javascript/Scriptable;");
+                "Lcom/anatawa12/sai/Scriptable;");
         cfw.addPush(methodName);
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/JavaAdapter",
+                      "com/anatawa12/sai/JavaAdapter",
                       "getFunction",
-                      "(Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Scriptable;"
                       +"Ljava/lang/String;"
-                      +")Lorg/mozilla/javascript/Function;");
+                      +")Lcom/anatawa12/sai/Function;");
 
         // push arguments
         generatePushWrappedArgs(cfw, parms, parms.length);
@@ -999,11 +999,11 @@ public final class JavaAdapter implements IdFunctionCall
         // go through utility method, which creates a Context to run the
         // method in.
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/JavaAdapter",
+                      "com/anatawa12/sai/JavaAdapter",
                       "callMethod",
-                      "(Lorg/mozilla/javascript/ContextFactory;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
-                      +"Lorg/mozilla/javascript/Function;"
+                      "(Lcom/anatawa12/sai/ContextFactory;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
+                      +"Lcom/anatawa12/sai/Function;"
                       +"[Ljava/lang/Object;"
                       +"J"
                       +")Ljava/lang/Object;");

@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.scriptengine;
+package com.anatawa12.sai.tests.scriptengine;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,8 +17,8 @@ import javax.script.SimpleScriptContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.engine.RhinoScriptEngine;
-import org.mozilla.javascript.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.RhinoScriptEngine;
+import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
 
 import static org.junit.Assert.*;
 

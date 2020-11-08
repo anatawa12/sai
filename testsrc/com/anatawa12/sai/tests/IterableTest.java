@@ -1,19 +1,19 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import junit.framework.TestCase;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.EcmaError;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Symbol;
-import org.mozilla.javascript.SymbolKey;
-import org.mozilla.javascript.SymbolScriptable;
-import org.mozilla.javascript.TopLevel;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.EcmaError;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.Symbol;
+import com.anatawa12.sai.SymbolKey;
+import com.anatawa12.sai.SymbolScriptable;
+import com.anatawa12.sai.TopLevel;
+import com.anatawa12.sai.Undefined;
 
 /**
  * Tests for host objects implementing the iterable protocol.

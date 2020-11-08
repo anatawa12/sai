@@ -2,18 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.json;
+package com.anatawa12.sai.tests.json;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.NativeObject;
-import org.mozilla.javascript.json.JsonParser;
-import org.mozilla.javascript.json.JsonParser.ParseException;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.NativeArray;
+import com.anatawa12.sai.NativeObject;
+import com.anatawa12.sai.json.JsonParser;
+import com.anatawa12.sai.json.JsonParser.ParseException;
 
 public class JsonParserTest {
     private JsonParser parser;

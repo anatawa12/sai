@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.classfile;
+package com.anatawa12.sai.classfile;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import org.mozilla.javascript.ObjArray;
-import org.mozilla.javascript.UintMap;
+import com.anatawa12.sai.ObjArray;
+import com.anatawa12.sai.UintMap;
 
 /**
  * ClassFileWriter
@@ -4420,7 +4420,7 @@ public class ClassFileWriter {
             is = ClassFileWriter.class.getResourceAsStream("ClassFileWriter.class");
             if (is == null) {
                 is = ClassLoader.getSystemResourceAsStream(
-                    "org/mozilla/classfile/ClassFileWriter.class");
+                    "com/anatawa12/sai/classfile/ClassFileWriter.class");
             }
             byte[] header = new byte[8];
             // read loop is required since JDK7 will only provide 2 bytes

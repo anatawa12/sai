@@ -29,7 +29,7 @@
     <replace file="downloaded/AbstractCellEditor.java">
        <replacetoken>import java.awt.Component;</replacetoken>
        <replacevalue>
-package org.mozilla.javascript.tools.debugger.downloaded;
+package com.anatawa12.sai.tools.debugger.downloaded;
        </replacevalue>
     </replace>
     <replace file="downloaded/AbstractCellEditor.java">
@@ -47,7 +47,7 @@ package org.mozilla.javascript.tools.debugger.downloaded;
     <replace file="downloaded/JTreeTable.java">
        <replacetoken>import javax.swing.*;</replacetoken>
        <replacevalue>
-         package org.mozilla.javascript.tools.debugger.downloaded;
+         package com.anatawa12.sai.tools.debugger.downloaded;
          import javax.swing.*;
        </replacevalue>
     </replace>
@@ -66,14 +66,14 @@ package org.mozilla.javascript.tools.debugger.downloaded;
     <replace file="downloaded/TreeTableModel.java">
        <replacetoken>import javax.swing.tree.TreeModel;</replacetoken>
        <replacevalue>
-         package org.mozilla.javascript.tools.debugger.downloaded;
+         package com.anatawa12.sai.tools.debugger.downloaded;
          import javax.swing.tree.TreeModel;
        </replacevalue>
     </replace>
     <replace file="downloaded/TreeTableModelAdapter.java">
        <replacetoken>import javax.swing.JTree;</replacetoken>
        <replacevalue>
-         package org.mozilla.javascript.tools.debugger.downloaded;
+         package com.anatawa12.sai.tools.debugger.downloaded;
          import javax.swing.JTree;
        </replacevalue>
     </replace>

@@ -1,12 +1,12 @@
-package org.mozilla.javascript.tests.commentspr465;
+package com.anatawa12.sai.tests.commentspr465;
 
 import org.junit.Assert;
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.testing.TestErrorReporter;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.Parser;
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.testing.TestErrorReporter;
 
 
 /**

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.es6;
+package com.anatawa12.sai.tests.es6;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -19,9 +19,9 @@ import java.util.Iterator;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Hashtable;
-import org.mozilla.javascript.Hashtable.Entry;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.Hashtable;
+import com.anatawa12.sai.Hashtable.Entry;
+import com.anatawa12.sai.Undefined;
 
 /**
  * These are some tests for the Hashtable implementation that's used by the collection

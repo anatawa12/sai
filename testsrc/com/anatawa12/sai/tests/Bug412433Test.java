@@ -5,10 +5,10 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ScriptableObject;
 
 import junit.framework.TestCase;
 

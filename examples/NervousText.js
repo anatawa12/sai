@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 // The Java "NervousText" example ported to JavaScript.
-// Compile using java org.mozilla.javascript.tools.jsc.Main -extends java.applet.Applet -implements java.lang.Runnable NervousText.js
+// Compile using java com.anatawa12.sai.tools.jsc.Main -extends java.applet.Applet -implements java.lang.Runnable NervousText.js
 /*
 Adapted from Java code by
     Daniel Wyszynski

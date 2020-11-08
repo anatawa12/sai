@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
@@ -13,11 +13,11 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.v8dtoa.DoubleConversion;
-import org.mozilla.javascript.v8dtoa.FastDtoa;
-import org.mozilla.javascript.xml.XMLLib;
-import org.mozilla.javascript.xml.XMLObject;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.v8dtoa.DoubleConversion;
+import com.anatawa12.sai.v8dtoa.FastDtoa;
+import com.anatawa12.sai.xml.XMLLib;
+import com.anatawa12.sai.xml.XMLObject;
 
 /**
  * This is the class that implements the runtime.
@@ -127,13 +127,13 @@ public class ScriptRuntime {
 
     public final static Class<?>
         ContextClass
-            = Kit.classOrNull("org.mozilla.javascript.Context"),
+            = Kit.classOrNull("com.anatawa12.sai.Context"),
         ContextFactoryClass
-            = Kit.classOrNull("org.mozilla.javascript.ContextFactory"),
+            = Kit.classOrNull("com.anatawa12.sai.ContextFactory"),
         FunctionClass
-            = Kit.classOrNull("org.mozilla.javascript.Function"),
+            = Kit.classOrNull("com.anatawa12.sai.Function"),
         ScriptableObjectClass
-            = Kit.classOrNull("org.mozilla.javascript.ScriptableObject");
+            = Kit.classOrNull("com.anatawa12.sai.ScriptableObject");
     public static final Class<Scriptable> ScriptableClass =
         Scriptable.class;
 
@@ -204,9 +204,9 @@ public class ScriptRuntime {
 
         // define lazy-loaded properties using their class name
         new LazilyLoadedCtor(scope, "RegExp",
-                "org.mozilla.javascript.regexp.NativeRegExp", sealed, true);
+                "com.anatawa12.sai.regexp.NativeRegExp", sealed, true);
         new LazilyLoadedCtor(scope, "Continuation",
-                "org.mozilla.javascript.NativeContinuation", sealed, true);
+                "com.anatawa12.sai.NativeContinuation", sealed, true);
 
         if (withXml) {
             String xmlImpl = cx.getE4xImplementationFactory().getImplementationClassName();
@@ -221,37 +221,37 @@ public class ScriptRuntime {
             (cx.getLanguageVersion() >= Context.VERSION_ES6))
         {
             new LazilyLoadedCtor(scope, "ArrayBuffer",
-                                 "org.mozilla.javascript.typedarrays.NativeArrayBuffer",
+                                 "com.anatawa12.sai.typedarrays.NativeArrayBuffer",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Int8Array",
-                                 "org.mozilla.javascript.typedarrays.NativeInt8Array",
+                                 "com.anatawa12.sai.typedarrays.NativeInt8Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Uint8Array",
-                                 "org.mozilla.javascript.typedarrays.NativeUint8Array",
+                                 "com.anatawa12.sai.typedarrays.NativeUint8Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Uint8ClampedArray",
-                                 "org.mozilla.javascript.typedarrays.NativeUint8ClampedArray",
+                                 "com.anatawa12.sai.typedarrays.NativeUint8ClampedArray",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Int16Array",
-                                 "org.mozilla.javascript.typedarrays.NativeInt16Array",
+                                 "com.anatawa12.sai.typedarrays.NativeInt16Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Uint16Array",
-                                 "org.mozilla.javascript.typedarrays.NativeUint16Array",
+                                 "com.anatawa12.sai.typedarrays.NativeUint16Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Int32Array",
-                                 "org.mozilla.javascript.typedarrays.NativeInt32Array",
+                                 "com.anatawa12.sai.typedarrays.NativeInt32Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Uint32Array",
-                                 "org.mozilla.javascript.typedarrays.NativeUint32Array",
+                                 "com.anatawa12.sai.typedarrays.NativeUint32Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Float32Array",
-                                 "org.mozilla.javascript.typedarrays.NativeFloat32Array",
+                                 "com.anatawa12.sai.typedarrays.NativeFloat32Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "Float64Array",
-                                 "org.mozilla.javascript.typedarrays.NativeFloat64Array",
+                                 "com.anatawa12.sai.typedarrays.NativeFloat64Array",
                                  sealed, true);
             new LazilyLoadedCtor(scope, "DataView",
-                                 "org.mozilla.javascript.typedarrays.NativeDataView",
+                                 "com.anatawa12.sai.typedarrays.NativeDataView",
                                  sealed, true);
         }
 
@@ -279,17 +279,17 @@ public class ScriptRuntime {
         ScriptableObject s = initSafeStandardObjects(cx, scope, sealed);
 
         new LazilyLoadedCtor(s, "Packages",
-                "org.mozilla.javascript.NativeJavaTopPackage", sealed, true);
+                "com.anatawa12.sai.NativeJavaTopPackage", sealed, true);
         new LazilyLoadedCtor(s, "getClass",
-                "org.mozilla.javascript.NativeJavaTopPackage", sealed, true);
+                "com.anatawa12.sai.NativeJavaTopPackage", sealed, true);
         new LazilyLoadedCtor(s, "JavaAdapter",
-                "org.mozilla.javascript.JavaAdapter", sealed, true);
+                "com.anatawa12.sai.JavaAdapter", sealed, true);
         new LazilyLoadedCtor(s, "JavaImporter",
-                "org.mozilla.javascript.ImporterTopLevel", sealed, true);
+                "com.anatawa12.sai.ImporterTopLevel", sealed, true);
 
         for (String packageName : getTopPackageNames()) {
             new LazilyLoadedCtor(s, packageName,
-                    "org.mozilla.javascript.NativeJavaTopPackage", sealed, true);
+                    "com.anatawa12.sai.NativeJavaTopPackage", sealed, true);
         }
 
         return s;
@@ -3516,7 +3516,7 @@ public class ScriptRuntime {
     // ------------------
 
     public static ScriptableObject getGlobal(Context cx) {
-        final String GLOBAL_CLASS = "org.mozilla.javascript.tools.shell.Global";
+        final String GLOBAL_CLASS = "com.anatawa12.sai.tools.shell.Global";
         Class<?> globalClass = Kit.classOrNull(GLOBAL_CLASS);
         if (globalClass != null) {
             try {
@@ -4225,7 +4225,7 @@ public class ScriptRuntime {
         @Override
         public String getMessage(String messageId, Object[] arguments) {
             final String defaultResource
-                = "org.mozilla.javascript.resources.Messages";
+                = "com.anatawa12.sai.resources.Messages";
 
             Context cx = Context.getCurrentContext();
             Locale locale = cx != null ? cx.getLocale() : Locale.getDefault();

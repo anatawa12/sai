@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
- package org.mozilla.javascript;
+ package com.anatawa12.sai;
 
 import java.util.EnumMap;
 
@@ -27,7 +27,7 @@ import java.util.EnumMap;
  * methods should be used to create and initialize objects of built-in classes
  * instead of their generic counterparts.</p>
  *
- * <p>Calling {@link org.mozilla.javascript.Context#initStandardObjects()}
+ * <p>Calling {@link com.anatawa12.sai.Context#initStandardObjects()}
  * with an instance of this class as argument will automatically cache
  * built-in classes after initialization. For other setups involving
  * top-level scopes that inherit global properties from their proptotypes

@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.engine;
+package com.anatawa12.sai.engine;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
-import org.mozilla.javascript.Context;
+import com.anatawa12.sai.Context;
 
 /**
  * <p>

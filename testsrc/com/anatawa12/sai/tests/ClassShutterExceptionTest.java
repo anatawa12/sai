@@ -5,13 +5,13 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.ClassShutter;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.ClassShutter;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Scriptable;
 
 import junit.framework.TestCase;
 

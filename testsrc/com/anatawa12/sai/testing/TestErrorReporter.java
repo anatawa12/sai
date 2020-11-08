@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.testing;
+package com.anatawa12.sai.testing;
 
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
+import com.anatawa12.sai.ErrorReporter;
+import com.anatawa12.sai.EvaluatorException;
 
 import junit.framework.Assert;
 

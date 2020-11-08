@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.WrapFactory;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.WrapFactory;
 
 /**
  * An example WrapFactory that can be used to avoid wrapping of Java types

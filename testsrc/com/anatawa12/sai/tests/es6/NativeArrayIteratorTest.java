@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.es6;
+package com.anatawa12.sai.tests.es6;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,11 +15,11 @@ import java.io.ObjectOutputStream;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.NativeArrayIterator;
-import org.mozilla.javascript.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.NativeArrayIterator;
+import com.anatawa12.sai.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.tools.shell.Global;
 
 public class NativeArrayIteratorTest
 {

@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.Scriptable;
 
 import junit.framework.TestCase;
 
@@ -19,7 +19,7 @@ import junit.framework.TestCase;
 public class XMLSecureParserTest extends TestCase {
     
     private static final String XML_PROPERTY = "javax.xml.parsers.DocumentBuilderFactory";
-    private static final String DBF_CLASSNAME = "org.mozilla.javascript.tests.CustomTestDBF";
+    private static final String DBF_CLASSNAME = "com.anatawa12.sai.tests.CustomTestDBF";
     
     public static boolean CALLED_BY_XML_PARSER = false;
     
@@ -47,7 +47,7 @@ public class XMLSecureParserTest extends TestCase {
             //(in case another PCE is thrown for some reason)
             assertTrue(e.getCause() instanceof ParserConfigurationException);
             ParserConfigurationException pce = (ParserConfigurationException)e.getCause();
-            assertEquals(org.mozilla.javascript.tests.CustomTestDBF.INTENTIONAL_CONFIG_EXCEPTION, pce.getMessage());
+            assertEquals(com.anatawa12.sai.tests.CustomTestDBF.INTENTIONAL_CONFIG_EXCEPTION, pce.getMessage());
         } finally{
             // if we found an xml config in the system properties, replace it
             if(original != null) {
@@ -84,7 +84,7 @@ public class XMLSecureParserTest extends TestCase {
             //(in case another PCE is thrown for some reason)
             assertTrue(e.getCause() instanceof ParserConfigurationException);
             ParserConfigurationException pce = (ParserConfigurationException)e.getCause();
-            assertEquals(org.mozilla.javascript.tests.CustomTestDBF.INTENTIONAL_CONFIG_EXCEPTION, pce.getMessage());
+            assertEquals(com.anatawa12.sai.tests.CustomTestDBF.INTENTIONAL_CONFIG_EXCEPTION, pce.getMessage());
         } finally{
             // if we found an xml config in the system properties, replace it
             if(original != null) {

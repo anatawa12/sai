@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.commonjs.module;
+package com.anatawa12.sai.commonjs.module;
 
 import java.net.URI;
 
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.TopLevel;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.TopLevel;
 
 /**
  * A top-level module scope. This class provides methods to retrieve the

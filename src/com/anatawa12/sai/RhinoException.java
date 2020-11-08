@@ -5,7 +5,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.CharArrayWriter;
 import java.io.FilenameFilter;
@@ -327,7 +327,7 @@ public abstract class RhinoException extends RuntimeException
                     count++;
                 }
 
-            } else if ("org.mozilla.javascript.Interpreter".equals(e.getClassName())
+            } else if ("com.anatawa12.sai.Interpreter".equals(e.getClassName())
                     && "interpretLoop".equals(e.getMethodName())
                     && interpreterStack != null
                     && interpreterStack.length > interpreterStackIndex) {

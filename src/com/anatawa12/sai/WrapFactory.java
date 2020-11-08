@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +20,7 @@ import java.util.Map;
  * will call the methods of this class whenever it needs to wrap a value
  * resulting from a call to a Java method or an access to a Java field.
  *
- * @see org.mozilla.javascript.Context#setWrapFactory(WrapFactory)
+ * @see com.anatawa12.sai.Context#setWrapFactory(WrapFactory)
  * @since 1.5 Release 4
  */
 public class WrapFactory
@@ -33,7 +33,7 @@ public class WrapFactory
      * <LI>java.lang.Boolean</LI>
      * <LI>java.lang.String</LI>
      * <LI>java.lang.Number</LI>
-     * <LI>org.mozilla.javascript.Scriptable objects</LI>
+     * <LI>com.anatawa12.sai.Scriptable objects</LI>
      * <LI>The value returned by Context.getUndefinedValue()</LI>
      * <LI>null</LI>
      * </UL>

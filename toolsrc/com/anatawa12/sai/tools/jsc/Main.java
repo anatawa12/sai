@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.jsc;
+package com.anatawa12.sai.tools.jsc;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,10 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.optimizer.ClassCompiler;
-import org.mozilla.javascript.tools.SourceReader;
-import org.mozilla.javascript.tools.ToolErrorReporter;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.optimizer.ClassCompiler;
+import com.anatawa12.sai.tools.SourceReader;
+import com.anatawa12.sai.tools.ToolErrorReporter;
 
 /**
  * @author Norris Boyd

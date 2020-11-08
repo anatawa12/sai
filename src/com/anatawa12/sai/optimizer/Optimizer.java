@@ -4,12 +4,12 @@
 
 
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.ObjArray;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.ScriptNode;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.ObjArray;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.ScriptNode;
 
 class Optimizer
 {

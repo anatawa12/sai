@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,10 +17,10 @@ import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
 
 /**
  *

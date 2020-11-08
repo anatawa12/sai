@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
@@ -19,8 +19,8 @@ public abstract class VMBridge
     private static VMBridge makeInstance()
     {
         String[] classNames = {
-            "org.mozilla.javascript.VMBridge_custom",
-            "org.mozilla.javascript.jdk18.VMBridge_jdk18",
+            "com.anatawa12.sai.VMBridge_custom",
+            "com.anatawa12.sai.jdk18.VMBridge_jdk18",
         };
         for (int i = 0; i != classNames.length; ++i) {
             String className = classNames[i];

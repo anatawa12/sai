@@ -1,10 +1,10 @@
-package org.mozilla.javascript.tests.es5;
+package com.anatawa12.sai.tests.es5;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
 
 /**
  * Test for TypedArrays.

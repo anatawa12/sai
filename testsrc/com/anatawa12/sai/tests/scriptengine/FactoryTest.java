@@ -1,11 +1,11 @@
-package org.mozilla.javascript.tests.scriptengine;
+package com.anatawa12.sai.tests.scriptengine;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import org.junit.Test;
-import org.mozilla.javascript.engine.RhinoScriptEngine;
-import org.mozilla.javascript.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.RhinoScriptEngine;
+import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
 
 import static org.junit.Assert.*;
 

@@ -5,7 +5,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 USING IDSWITCH GENERATOR TOOL
 
 Usage:
-java org.mozilla.javascript.tools.idswitch.Main <SINGLE-JAVA-SOURCE>
+java com.anatawa12.sai.tools.idswitch.Main <SINGLE-JAVA-SOURCE>
 
 The main purpose of this utility is to generate Java code to map strings to some ids that can be used, for example, in a switch statement.
 
@@ -76,7 +76,7 @@ For example, if file x.java contains:
 
 then invocation
 
-java org.mozilla.javascript.tools.idswitch.Main x.java
+java com.anatawa12.sai.tools.idswitch.Main x.java
 
 would replace that by a code fragment similar to:
 

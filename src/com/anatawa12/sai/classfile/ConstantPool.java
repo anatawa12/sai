@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.classfile;
+package com.anatawa12.sai.classfile;
 
-import org.mozilla.javascript.ObjToIntMap;
-import org.mozilla.javascript.UintMap;
+import com.anatawa12.sai.ObjToIntMap;
+import com.anatawa12.sai.UintMap;
 
 final class ConstantPool
 {

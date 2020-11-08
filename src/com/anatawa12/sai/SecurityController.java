@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * This class describes the support needed to implement security.
@@ -28,7 +28,7 @@ package org.mozilla.javascript;
  * These three pieces of functionality are encapsulated in the
  * SecurityController class.
  *
- * @see org.mozilla.javascript.Context#setSecurityController(SecurityController)
+ * @see com.anatawa12.sai.Context#setSecurityController(SecurityController)
  * @see java.lang.ClassLoader
  * @since 1.5 Release 4
  */

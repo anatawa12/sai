@@ -4,10 +4,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Token;
 
 /**
  * AST node for a single- or double-quoted string literal.

@@ -6,13 +6,13 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * This is interface that all functions in JavaScript must implement.
  * The interface provides for calling functions and constructors.
  *
- * @see org.mozilla.javascript.Scriptable
+ * @see com.anatawa12.sai.Scriptable
  * @author Norris Boyd
  */
 

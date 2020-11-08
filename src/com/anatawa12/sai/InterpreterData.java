@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.mozilla.javascript.debug.DebuggableScript;
+import com.anatawa12.sai.debug.DebuggableScript;
 
 final class InterpreterData implements Serializable, DebuggableScript
 {

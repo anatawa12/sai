@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript.debug;
+package com.anatawa12.sai.debug;
 
 /**
  * This interface exposes debugging information from executable

@@ -5,15 +5,15 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.NativeJavaObject;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.drivers.TestUtils;
-import org.mozilla.javascript.tools.shell.Global;
-import org.mozilla.javascript.tools.shell.ShellContextFactory;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.NativeJavaObject;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.drivers.TestUtils;
+import com.anatawa12.sai.tools.shell.Global;
+import com.anatawa12.sai.tools.shell.ShellContextFactory;
 
 import junit.framework.TestCase;
 
@@ -23,7 +23,7 @@ import junit.framework.TestCase;
 public class JavaAcessibilityTest extends TestCase {
 
   protected final Global global = new Global();
-  String importClass = "importClass(Packages.org.mozilla.javascript.tests.PrivateAccessClass)\n";
+  String importClass = "importClass(Packages.com.anatawa12.sai.tests.PrivateAccessClass)\n";
 
   public JavaAcessibilityTest() {
     global.init(contextFactory);

@@ -23,7 +23,7 @@
   *
   ***************************************************************/
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.math.BigInteger;
 

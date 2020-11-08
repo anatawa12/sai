@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.scriptengine;
+package com.anatawa12.sai.tests.scriptengine;
 
 import java.io.StringWriter;
 import javax.script.ScriptContext;
@@ -9,7 +9,7 @@ import javax.script.SimpleScriptContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
 
 import static org.junit.Assert.*;
 

@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.Context;
+import com.anatawa12.sai.Context;
 
-import org.mozilla.javascript.drivers.LanguageVersion;
-import org.mozilla.javascript.drivers.RhinoTest;
-import org.mozilla.javascript.drivers.ScriptTestsBase;
+import com.anatawa12.sai.drivers.LanguageVersion;
+import com.anatawa12.sai.drivers.RhinoTest;
+import com.anatawa12.sai.drivers.ScriptTestsBase;
 
 /**
  * Test for overloaded array concat with non-dense arg.

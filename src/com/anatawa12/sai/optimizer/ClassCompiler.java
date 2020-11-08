@@ -4,17 +4,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.IRFactory;
-import org.mozilla.javascript.JavaAdapter;
-import org.mozilla.javascript.ObjToIntMap;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.ScriptNode;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.IRFactory;
+import com.anatawa12.sai.JavaAdapter;
+import com.anatawa12.sai.ObjToIntMap;
+import com.anatawa12.sai.Parser;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
 
 /**
  * Generates class files from script sources.

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.drivers;
+package com.anatawa12.sai.drivers;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -15,17 +15,17 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.ToolErrorReporter;
-import org.mozilla.javascript.tools.shell.Global;
-import org.mozilla.javascript.tools.shell.Main;
-import org.mozilla.javascript.tools.shell.ShellContextFactory;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ErrorReporter;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.tools.ToolErrorReporter;
+import com.anatawa12.sai.tools.shell.Global;
+import com.anatawa12.sai.tools.shell.Main;
+import com.anatawa12.sai.tools.shell.ShellContextFactory;
 
 /**
  * @version $Id: ShellTest.java,v 1.14 2011/03/29 15:17:49 hannes%helma.at Exp $

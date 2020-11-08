@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools;
+package com.anatawa12.sai.tools;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,8 +12,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.commonjs.module.provider.ParsedContentType;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.commonjs.module.provider.ParsedContentType;
 
 /**
  * @author Attila Szegedi

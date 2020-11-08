@@ -1,13 +1,13 @@
-package org.mozilla.javascript.tests.commentspr465;
+package com.anatawa12.sai.tests.commentspr465;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.AstNode;
-import org.mozilla.javascript.ast.Comment;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.IfStatement;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.AstNode;
+import com.anatawa12.sai.ast.Comment;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.IfStatement;
 
 /**
  * @author ravik

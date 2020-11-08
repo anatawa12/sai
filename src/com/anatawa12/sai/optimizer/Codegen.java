@@ -4,39 +4,39 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
-import static org.mozilla.classfile.ClassFileWriter.ACC_FINAL;
-import static org.mozilla.classfile.ClassFileWriter.ACC_PRIVATE;
-import static org.mozilla.classfile.ClassFileWriter.ACC_PROTECTED;
-import static org.mozilla.classfile.ClassFileWriter.ACC_PUBLIC;
-import static org.mozilla.classfile.ClassFileWriter.ACC_STATIC;
-import static org.mozilla.classfile.ClassFileWriter.ACC_VOLATILE;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_FINAL;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PROTECTED;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PUBLIC;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_STATIC;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_VOLATILE;
 
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mozilla.classfile.ByteCode;
-import org.mozilla.classfile.ClassFileWriter;
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Evaluator;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.GeneratedClassLoader;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.NativeFunction;
-import org.mozilla.javascript.ObjArray;
-import org.mozilla.javascript.ObjToIntMap;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.SecurityController;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.Name;
-import org.mozilla.javascript.ast.ScriptNode;
+import com.anatawa12.sai.classfile.ByteCode;
+import com.anatawa12.sai.classfile.ClassFileWriter;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Evaluator;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.GeneratedClassLoader;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.NativeFunction;
+import com.anatawa12.sai.ObjArray;
+import com.anatawa12.sai.ObjToIntMap;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.SecurityController;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.Name;
+import com.anatawa12.sai.ast.ScriptNode;
 
 /**
  * This class generates code for a given IR tree.
@@ -91,7 +91,7 @@ public class Codegen implements Evaluator
           }
         }
 
-        String mainClassName = "org.mozilla.javascript.gen." + baseName + "_" + serial;
+        String mainClassName = "com.anatawa12.sai.gen." + baseName + "_" + serial;
 
         byte[] mainClassBytes = compileToClassFile(compilerEnv, mainClassName,
                                                    tree, encodedSource,
@@ -287,7 +287,7 @@ public class Codegen implements Evaluator
         }
 
         if (hasScript) {
-            cfw.addInterface("org/mozilla/javascript/Script");
+            cfw.addInterface("com/anatawa12/sai/Script");
             generateScriptCtor(cfw);
             generateMain(cfw);
             generateExecute(cfw);
@@ -351,11 +351,11 @@ public class Codegen implements Evaluator
         cfw.addALoad(1); // cx
         cfw.addALoad(2); // scope
         cfw.addInvoke(ByteCode.INVOKEVIRTUAL,
-                      "org/mozilla/javascript/BaseFunction",
+                      "com/anatawa12/sai/BaseFunction",
                       "createObject",
-                      "(Lorg/mozilla/javascript/Context;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
-                      +")Lorg/mozilla/javascript/Scriptable;");
+                      "(Lcom/anatawa12/sai/Context;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
+                      +")Lcom/anatawa12/sai/Scriptable;");
         cfw.addAStore(firstLocal);
 
         cfw.addALoad(0);
@@ -373,10 +373,10 @@ public class Codegen implements Evaluator
                       getBodyMethodSignature(ofn.fnode));
         int exitLabel = cfw.acquireLabel();
         cfw.add(ByteCode.DUP); // make a copy of direct call result
-        cfw.add(ByteCode.INSTANCEOF, "org/mozilla/javascript/Scriptable");
+        cfw.add(ByteCode.INSTANCEOF, "com/anatawa12/sai/Scriptable");
         cfw.add(ByteCode.IFEQ, exitLabel);
         // cast direct call result
-        cfw.add(ByteCode.CHECKCAST, "org/mozilla/javascript/Scriptable");
+        cfw.add(ByteCode.CHECKCAST, "com/anatawa12/sai/Scriptable");
         cfw.add(ByteCode.ARETURN);
         cfw.markLabel(exitLabel);
 
@@ -418,8 +418,8 @@ public class Codegen implements Evaluator
             return;
 
         cfw.startMethod("resumeGenerator",
-                        "(Lorg/mozilla/javascript/Context;" +
-                        "Lorg/mozilla/javascript/Scriptable;" +
+                        "(Lcom/anatawa12/sai/Context;" +
+                        "Lcom/anatawa12/sai/Scriptable;" +
                         "ILjava/lang/Object;" +
                         "Ljava/lang/Object;)Ljava/lang/Object;",
                         (short)(ACC_PUBLIC | ACC_FINAL));
@@ -445,8 +445,8 @@ public class Codegen implements Evaluator
             if (isGenerator(n)) {
                 String type = "(" +
                               mainClassSignature +
-                              "Lorg/mozilla/javascript/Context;" +
-                              "Lorg/mozilla/javascript/Scriptable;" +
+                              "Lcom/anatawa12/sai/Context;" +
+                              "Lcom/anatawa12/sai/Scriptable;" +
                               "Ljava/lang/Object;" +
                               "Ljava/lang/Object;I)Ljava/lang/Object;";
                 cfw.addInvoke(ByteCode.INVOKESTATIC,
@@ -471,9 +471,9 @@ public class Codegen implements Evaluator
     private void generateCallMethod(ClassFileWriter cfw, boolean isStrictMode)
     {
         cfw.startMethod("call",
-                        "(Lorg/mozilla/javascript/Context;" +
-                        "Lorg/mozilla/javascript/Scriptable;" +
-                        "Lorg/mozilla/javascript/Scriptable;" +
+                        "(Lcom/anatawa12/sai/Context;" +
+                        "Lcom/anatawa12/sai/Scriptable;" +
+                        "Lcom/anatawa12/sai/Scriptable;" +
                         "[Ljava/lang/Object;)Ljava/lang/Object;",
                         (short)(ACC_PUBLIC | ACC_FINAL));
 
@@ -485,9 +485,9 @@ public class Codegen implements Evaluator
         int nonTopCallLabel = cfw.acquireLabel();
         cfw.addALoad(1); //cx
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/ScriptRuntime",
+                      "com/anatawa12/sai/ScriptRuntime",
                       "hasTopCall",
-                      "(Lorg/mozilla/javascript/Context;"
+                      "(Lcom/anatawa12/sai/Context;"
                       +")Z");
         cfw.add(ByteCode.IFNE, nonTopCallLabel);
         cfw.addALoad(0);
@@ -497,12 +497,12 @@ public class Codegen implements Evaluator
         cfw.addALoad(4);
         cfw.addPush(isStrictMode);
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/ScriptRuntime",
+                      "com/anatawa12/sai/ScriptRuntime",
                       "doTopCall",
-                      "(Lorg/mozilla/javascript/Callable;"
-                      +"Lorg/mozilla/javascript/Context;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Callable;"
+                      +"Lcom/anatawa12/sai/Context;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
                       +"[Ljava/lang/Object;"
                       +"Z"
                       +")Ljava/lang/Object;");
@@ -596,7 +596,7 @@ public class Codegen implements Evaluator
         cfw.addInvoke(ByteCode.INVOKESTATIC,
                       mainMethodClass,
                       "main",
-                      "(Lorg/mozilla/javascript/Script;[Ljava/lang/String;)V");
+                      "(Lcom/anatawa12/sai/Script;[Ljava/lang/String;)V");
         cfw.add(ByteCode.RETURN);
         // 1 = String[] args
         cfw.stopMethod((short)1);
@@ -605,8 +605,8 @@ public class Codegen implements Evaluator
     private static void generateExecute(ClassFileWriter cfw)
     {
         cfw.startMethod("exec",
-                        "(Lorg/mozilla/javascript/Context;"
-                        +"Lorg/mozilla/javascript/Scriptable;"
+                        "(Lcom/anatawa12/sai/Context;"
+                        +"Lcom/anatawa12/sai/Scriptable;"
                         +")Ljava/lang/Object;",
                         (short)(ACC_PUBLIC | ACC_FINAL));
 
@@ -621,9 +621,9 @@ public class Codegen implements Evaluator
         cfw.addInvoke(ByteCode.INVOKEVIRTUAL,
                       cfw.getClassName(),
                       "call",
-                      "(Lorg/mozilla/javascript/Context;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Context;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
                       +"[Ljava/lang/Object;"
                       +")Ljava/lang/Object;");
 
@@ -718,10 +718,10 @@ public class Codegen implements Evaluator
         cfw.addALoad(CONTEXT_ARG);
         cfw.addALoad(SCOPE_ARG);
         cfw.addInvoke(ByteCode.INVOKEVIRTUAL,
-                      "org/mozilla/javascript/NativeFunction",
+                      "com/anatawa12/sai/NativeFunction",
                       "initScriptFunction",
-                      "(Lorg/mozilla/javascript/Context;"
-                      +"Lorg/mozilla/javascript/Scriptable;"
+                      "(Lcom/anatawa12/sai/Context;"
+                      +"Lcom/anatawa12/sai/Scriptable;"
                       +")V");
 
         // precompile all regexp literals
@@ -996,10 +996,10 @@ public class Codegen implements Evaluator
         // get regexp proxy and store it in local slot 1
         cfw.addALoad(0); // context
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/ScriptRuntime",
+                      "com/anatawa12/sai/ScriptRuntime",
                       "checkRegExpProxy",
-                      "(Lorg/mozilla/javascript/Context;"
-                      +")Lorg/mozilla/javascript/RegExpProxy;");
+                      "(Lcom/anatawa12/sai/Context;"
+                      +")Lcom/anatawa12/sai/RegExpProxy;");
         cfw.addAStore(1); // proxy
 
         // We could apply double-checked locking here but concurrency
@@ -1023,9 +1023,9 @@ public class Codegen implements Evaluator
                     cfw.addPush(reFlags);
                 }
                 cfw.addInvoke(ByteCode.INVOKEINTERFACE,
-                              "org/mozilla/javascript/RegExpProxy",
+                              "com/anatawa12/sai/RegExpProxy",
                               "compileRegExp",
-                              "(Lorg/mozilla/javascript/Context;"
+                              "(Lcom/anatawa12/sai/Context;"
                               +"Ljava/lang/String;Ljava/lang/String;"
                               +")Ljava/lang/Object;");
                 cfw.add(ByteCode.PUTSTATIC, mainClassName,
@@ -1077,7 +1077,7 @@ public class Codegen implements Evaluator
             if (1 / num > 0) {
                 // +0.0
                 cfw.add(ByteCode.GETSTATIC,
-                        "org/mozilla/javascript/ScriptRuntime",
+                        "com/anatawa12/sai/ScriptRuntime",
                         "zeroObj", "Ljava/lang/Double;");
             } else {
                 cfw.addPush(num);
@@ -1086,18 +1086,18 @@ public class Codegen implements Evaluator
 
         } else if (num == 1.0) {
             cfw.add(ByteCode.GETSTATIC,
-                    "org/mozilla/javascript/optimizer/OptRuntime",
+                    "com/anatawa12/sai/optimizer/OptRuntime",
                     "oneObj", "Ljava/lang/Double;");
             return;
 
         } else if (num == -1.0) {
             cfw.add(ByteCode.GETSTATIC,
-                    "org/mozilla/javascript/optimizer/OptRuntime",
+                    "com/anatawa12/sai/optimizer/OptRuntime",
                     "minusOneObj", "Ljava/lang/Double;");
 
         } else if (Double.isNaN(num)) {
             cfw.add(ByteCode.GETSTATIC,
-                    "org/mozilla/javascript/ScriptRuntime",
+                    "com/anatawa12/sai/ScriptRuntime",
                     "NaNobj", "Ljava/lang/Double;");
 
         } else if (itsConstantListSize >= 2000) {
@@ -1138,7 +1138,7 @@ public class Codegen implements Evaluator
     private static void addDoubleWrap(ClassFileWriter cfw)
     {
         cfw.addInvoke(ByteCode.INVOKESTATIC,
-                      "org/mozilla/javascript/optimizer/OptRuntime",
+                      "com/anatawa12/sai/optimizer/OptRuntime",
                       "wrapDouble", "(D)Ljava/lang/Double;");
     }
 
@@ -1152,7 +1152,7 @@ public class Codegen implements Evaluator
     }
     static void pushUndefined(ClassFileWriter cfw)
     {
-        cfw.add(ByteCode.GETSTATIC, "org/mozilla/javascript/Undefined",
+        cfw.add(ByteCode.GETSTATIC, "com/anatawa12/sai/Undefined",
                 "instance", "Ljava/lang/Object;");
     }
 
@@ -1195,9 +1195,9 @@ public class Codegen implements Evaluator
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         sb.append(mainClassSignature);
-        sb.append("Lorg/mozilla/javascript/Context;"
-                  +"Lorg/mozilla/javascript/Scriptable;"
-                  +"Lorg/mozilla/javascript/Scriptable;");
+        sb.append("Lcom/anatawa12/sai/Context;"
+                  +"Lcom/anatawa12/sai/Scriptable;"
+                  +"Lcom/anatawa12/sai/Scriptable;");
         if (n.getType() == Token.FUNCTION) {
             OptFunctionNode ofn = OptFunctionNode.get(n);
             if (ofn.isTargetOfDirectCall()) {
@@ -1232,25 +1232,25 @@ public class Codegen implements Evaluator
      }
 
      static final String DEFAULT_MAIN_METHOD_CLASS
-        = "org.mozilla.javascript.optimizer.OptRuntime";
+        = "com.anatawa12.sai.optimizer.OptRuntime";
 
     private static final String SUPER_CLASS_NAME
-        = "org.mozilla.javascript.NativeFunction";
+        = "com.anatawa12.sai.NativeFunction";
 
     static final String ID_FIELD_NAME = "_id";
 
     static final String REGEXP_INIT_METHOD_NAME = "_reInit";
     static final String REGEXP_INIT_METHOD_SIGNATURE
-        =  "(Lorg/mozilla/javascript/Context;)V";
+        =  "(Lcom/anatawa12/sai/Context;)V";
 
     static final String FUNCTION_INIT_SIGNATURE
-        =  "(Lorg/mozilla/javascript/Context;"
-           +"Lorg/mozilla/javascript/Scriptable;"
+        =  "(Lcom/anatawa12/sai/Context;"
+           +"Lcom/anatawa12/sai/Scriptable;"
            +")V";
 
    static final String FUNCTION_CONSTRUCTOR_SIGNATURE
-        = "(Lorg/mozilla/javascript/Scriptable;"
-          +"Lorg/mozilla/javascript/Context;I)V";
+        = "(Lcom/anatawa12/sai/Scriptable;"
+          +"Lcom/anatawa12/sai/Context;I)V";
 
     private static final Object globalLock = new Object();
     private static int globalSerialClassCounter;

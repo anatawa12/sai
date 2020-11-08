@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.annotations;
+package com.anatawa12.sai.annotations;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 /**
  * An annotation that marks a Java method as JavaScript setter. This can
  * be used as an alternative to the <code>jsSet_</code> prefix desribed in
- * {@link org.mozilla.javascript.ScriptableObject#defineClass(org.mozilla.javascript.Scriptable, java.lang.Class)}.
+ * {@link com.anatawa12.sai.ScriptableObject#defineClass(com.anatawa12.sai.Scriptable, java.lang.Class)}.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

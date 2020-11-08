@@ -4,14 +4,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * This class implements the activation object.
  *
  * See ECMA 10.1.6
  *
- * @see org.mozilla.javascript.Arguments
+ * @see com.anatawa12.sai.Arguments
  * @author Norris Boyd
  */
 public final class NativeCall extends IdScriptableObject

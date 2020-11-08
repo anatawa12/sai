@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.jdk18;
+package com.anatawa12.sai.jdk18;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -13,11 +13,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.InterfaceAdapter;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.VMBridge;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.InterfaceAdapter;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.VMBridge;
 
 public class VMBridge_jdk18 extends VMBridge
 {

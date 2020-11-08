@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * Exception thrown by
- * {@link org.mozilla.javascript.Context#executeScriptWithContinuations(Script, Scriptable)}
- * and {@link org.mozilla.javascript.Context#callFunctionWithContinuations(Callable, Scriptable, Object[])}
+ * {@link com.anatawa12.sai.Context#executeScriptWithContinuations(Script, Scriptable)}
+ * and {@link com.anatawa12.sai.Context#callFunctionWithContinuations(Callable, Scriptable, Object[])}
  * when execution encounters a continuation captured by
- * {@link org.mozilla.javascript.Context#captureContinuation()}.
+ * {@link com.anatawa12.sai.Context#captureContinuation()}.
  * Exception will contain the captured state needed to restart the continuation
- * with {@link org.mozilla.javascript.Context#resumeContinuation(Object, Scriptable, Object)}.
+ * with {@link com.anatawa12.sai.Context#resumeContinuation(Object, Scriptable, Object)}.
  * @author Norris Boyd
  */
 public class ContinuationPending extends RuntimeException {
@@ -24,8 +24,8 @@ public class ContinuationPending extends RuntimeException {
     /**
      * Construct a ContinuationPending exception. Internal call only;
      * users of the API should get continuations created on their behalf by
-     * calling {@link org.mozilla.javascript.Context#executeScriptWithContinuations(Script, Scriptable)}
-     * and {@link org.mozilla.javascript.Context#callFunctionWithContinuations(Callable, Scriptable, Object[])}
+     * calling {@link com.anatawa12.sai.Context#executeScriptWithContinuations(Script, Scriptable)}
+     * and {@link com.anatawa12.sai.Context#callFunctionWithContinuations(Callable, Scriptable, Object[])}
      * Creating subclasses allowed.
      * @param continuationState Internal Continuation object
      */
@@ -36,7 +36,7 @@ public class ContinuationPending extends RuntimeException {
     /**
      * Get continuation object. The only
      * use for this object is to be passed to
-     * {@link org.mozilla.javascript.Context#resumeContinuation(Object, Scriptable, Object)}.
+     * {@link com.anatawa12.sai.Context#resumeContinuation(Object, Scriptable, Object)}.
      * @return continuation object
      */
     public Object getContinuation() {

@@ -4,13 +4,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
 
 /**
  * Node for the root of a parse tree.  It contains the statements and functions
@@ -18,9 +18,9 @@ import org.mozilla.javascript.Token;
  * as a whole.  Node type is {@link Token#SCRIPT}.
  *
  * <p>Note that the tree itself does not store errors. To collect the parse errors
- * and warnings, pass an {@link org.mozilla.javascript.ErrorReporter} to the
- * {@link org.mozilla.javascript.Parser} via the
- * {@link org.mozilla.javascript.CompilerEnvirons}.
+ * and warnings, pass an {@link com.anatawa12.sai.ErrorReporter} to the
+ * {@link com.anatawa12.sai.Parser} via the
+ * {@link com.anatawa12.sai.CompilerEnvirons}.
  */
 public class AstRoot extends ScriptNode {
 

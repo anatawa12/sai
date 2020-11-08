@@ -2,15 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 
 import org.junit.Test;
-import org.mozilla.javascript.drivers.JsTestsBase;
-import org.mozilla.javascript.drivers.TestUtils;
+import com.anatawa12.sai.drivers.JsTestsBase;
+import com.anatawa12.sai.drivers.TestUtils;
 
 public class JsTestsTest extends JsTestsBase {
     static final String baseDirectory = "testsrc" + File.separator + "jstests";

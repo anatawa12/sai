@@ -4,18 +4,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.xmlimpl;
+package com.anatawa12.sai.xmlimpl;
 
 import java.util.ArrayList;
 
-import org.mozilla.javascript.Callable;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.xml.XMLObject;
+import com.anatawa12.sai.Callable;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.xml.XMLObject;
 
 class XMLList extends XMLObjectImpl implements Function {
     static final long serialVersionUID = -4543618751670781135L;

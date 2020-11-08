@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.xmlimpl;
+package com.anatawa12.sai.xmlimpl;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -17,13 +17,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptRuntime;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ScriptRuntime;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-//    Disambiguate from org.mozilla.javascript.Node
+//    Disambiguate from com.anatawa12.sai.Node
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.ProcessingInstruction;

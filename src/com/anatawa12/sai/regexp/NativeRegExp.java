@@ -4,22 +4,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.regexp;
+package com.anatawa12.sai.regexp;
 
 import java.io.Serializable;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.IdFunctionObject;
-import org.mozilla.javascript.IdScriptableObject;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Symbol;
-import org.mozilla.javascript.SymbolKey;
-import org.mozilla.javascript.TopLevel;
-import org.mozilla.javascript.Undefined;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.IdFunctionObject;
+import com.anatawa12.sai.IdScriptableObject;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.Symbol;
+import com.anatawa12.sai.SymbolKey;
+import com.anatawa12.sai.TopLevel;
+import com.anatawa12.sai.Undefined;
 
 /**
  * This class implements the RegExp native object.
@@ -153,7 +153,7 @@ public class NativeRegExp extends IdScriptableObject implements Function
 
     /**
      * Gets the value to be returned by the typeof operator called on this object.
-     * @see org.mozilla.javascript.ScriptableObject#getTypeOf()
+     * @see com.anatawa12.sai.ScriptableObject#getTypeOf()
      * @return "object"
      */
     @Override

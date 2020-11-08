@@ -1,10 +1,10 @@
-package org.mozilla.javascript.tests.backwardcompat;
+package com.anatawa12.sai.tests.backwardcompat;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.tools.shell.Global;
 
 public class BackwardParseInt {
 

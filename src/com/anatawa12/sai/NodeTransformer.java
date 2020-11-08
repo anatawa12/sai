@@ -4,15 +4,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.Jump;
-import org.mozilla.javascript.ast.Scope;
-import org.mozilla.javascript.ast.ScriptNode;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.Jump;
+import com.anatawa12.sai.ast.Scope;
+import com.anatawa12.sai.ast.ScriptNode;
 
 /**
  * This class transforms a tree to a lower-level representation for codegen.

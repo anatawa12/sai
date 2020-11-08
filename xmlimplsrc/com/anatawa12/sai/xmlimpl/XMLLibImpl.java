@@ -4,20 +4,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.xmlimpl;
+package com.anatawa12.sai.xmlimpl;
 
 import java.io.Serializable;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Ref;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.Wrapper;
-import org.mozilla.javascript.xml.XMLLib;
-import org.mozilla.javascript.xml.XMLObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Ref;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.Wrapper;
+import com.anatawa12.sai.xml.XMLLib;
+import com.anatawa12.sai.xml.XMLObject;
 import org.xml.sax.SAXException;
 
 public final class XMLLibImpl extends XMLLib implements Serializable {

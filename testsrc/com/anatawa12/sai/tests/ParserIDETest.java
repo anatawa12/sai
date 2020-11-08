@@ -1,12 +1,12 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.ast.AstRoot;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.ast.AstRoot;
 
 /**
  * Tests for specific parser features targeted at IDE environments, namely the ability

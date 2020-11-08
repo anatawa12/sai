@@ -5,7 +5,7 @@
 /**
  *
  */
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,8 +15,8 @@ import java.util.Collection;
 import java.util.Map;
 
 import org.junit.Test;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.Scriptable;
 
 public class OverloadTest {
 
@@ -33,18 +33,18 @@ public class OverloadTest {
 
     @Test
     public void testJSObjectToMap() {
-        assertEvaluates("map", "String(org.mozilla.javascript.tests.OverloadTest.x({}));");
-        assertEvaluates("map", "String(org.mozilla.javascript.tests.OverloadTest.x({ run: function() {} }));");
+        assertEvaluates("map", "String(com.anatawa12.sai.tests.OverloadTest.x({}));");
+        assertEvaluates("map", "String(com.anatawa12.sai.tests.OverloadTest.x({ run: function() {} }));");
     }
 
     @Test
     public void testJSArrayToCollection() {
-        assertEvaluates("collection", "String(org.mozilla.javascript.tests.OverloadTest.x([]));");
+        assertEvaluates("collection", "String(com.anatawa12.sai.tests.OverloadTest.x([]));");
     }
 
     @Test
     public void testJSFunctionToInterface() {
-        assertThrows(EvaluatorException.class, "String(org.mozilla.javascript.tests.OverloadTest.x(function() {}));");
+        assertThrows(EvaluatorException.class, "String(com.anatawa12.sai.tests.OverloadTest.x(function() {}));");
     }
 
     private void assertEvaluates(final Object expected, final String source) {

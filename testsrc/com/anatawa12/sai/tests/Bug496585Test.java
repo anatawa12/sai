@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.Function;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.Function;
 
 public class Bug496585Test {
     public String method(String one, Function function) {
@@ -24,11 +24,11 @@ public class Bug496585Test {
             cx.getWrapFactory().setJavaPrimitiveWrap(false);
             Assert.assertEquals("string[]", cx.evaluateString(
                     cx.initStandardObjects(),
-                    "new org.mozilla.javascript.tests.Bug496585Test().method('one', 'two', 'three')",
+                    "new com.anatawa12.sai.tests.Bug496585Test().method('one', 'two', 'three')",
                     "<test>", 1, null));
             Assert.assertEquals("string+function", cx.evaluateString(
                 cx.initStandardObjects(),
-                "new org.mozilla.javascript.tests.Bug496585Test().method('one', function() {})",
+                "new com.anatawa12.sai.tests.Bug496585Test().method('one', function() {})",
                 "<test>", 1, null));
             return null;
         });

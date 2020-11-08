@@ -1,14 +1,14 @@
-package org.mozilla.javascript.benchmarks;
+package com.anatawa12.sai.benchmarks;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Random;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.tools.shell.Global;
 
 import org.openjdk.jmh.annotations.*;
 

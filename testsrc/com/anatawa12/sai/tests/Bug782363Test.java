@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -19,17 +19,17 @@ import java.util.Set;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.CompilerEnvirons;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.EvaluatorException;
-import org.mozilla.javascript.IRFactory;
-import org.mozilla.javascript.Parser;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.ast.AstRoot;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.ScriptNode;
-import org.mozilla.javascript.optimizer.Codegen;
-import org.mozilla.javascript.optimizer.OptFunctionNode;
+import com.anatawa12.sai.CompilerEnvirons;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.EvaluatorException;
+import com.anatawa12.sai.IRFactory;
+import com.anatawa12.sai.Parser;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.optimizer.Codegen;
+import com.anatawa12.sai.optimizer.OptFunctionNode;
 
 /**
  * @author André Bargull

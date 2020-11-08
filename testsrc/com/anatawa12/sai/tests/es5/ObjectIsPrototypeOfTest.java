@@ -5,14 +5,14 @@
 /*
  * Tests for the Object.getOwnPropertyDescriptor(obj, prop) method
  */
-package org.mozilla.javascript.tests.es5;
+package com.anatawa12.sai.tests.es5;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ScriptableObject;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ScriptableObject;
 
 public class ObjectIsPrototypeOfTest {
 

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.classfile;
+package com.anatawa12.sai.classfile;
 
 /**
  * A super block is defined as a contiguous chunk of code with a single entry

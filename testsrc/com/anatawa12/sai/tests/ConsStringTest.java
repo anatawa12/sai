@@ -1,6 +1,6 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
-import org.mozilla.javascript.ConsString;
+import com.anatawa12.sai.ConsString;
 
 import junit.framework.TestCase;
 

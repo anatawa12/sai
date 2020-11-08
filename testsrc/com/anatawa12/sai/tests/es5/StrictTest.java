@@ -1,10 +1,10 @@
-package org.mozilla.javascript.tests.es5;
+package com.anatawa12.sai.tests.es5;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.tests.Utils;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.tests.Utils;
 
 /**
  * @see <a href="https://github.com/mozilla/rhino/issues/651">https://github.com/mozilla/rhino/issues/651</a>

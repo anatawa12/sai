@@ -2,13 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.commonjs.module.provider;
+package com.anatawa12.sai.commonjs.module.provider;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Scriptable;
 
 /**
  * Implemented by objects that can provide the source text for the script. The

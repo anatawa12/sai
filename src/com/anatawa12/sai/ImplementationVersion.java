@@ -1,4 +1,4 @@
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 import java.io.IOException;
 import java.io.InputStream;

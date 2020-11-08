@@ -4,12 +4,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
-import org.mozilla.javascript.Scriptable;
+import com.anatawa12.sai.Scriptable;
 
 /**
  * Provides a specialized input stream for consoles to handle line

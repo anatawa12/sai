@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tests.commonjs.module.provider;
+package com.anatawa12.sai.tests.commonjs.module.provider;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -12,10 +12,10 @@ import java.nio.file.attribute.FileTime;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mozilla.javascript.commonjs.module.provider.ModuleSource;
-import org.mozilla.javascript.commonjs.module.provider.ModuleSourceProvider;
-import org.mozilla.javascript.commonjs.module.provider.UrlConnectionExpiryCalculator;
-import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
+import com.anatawa12.sai.commonjs.module.provider.ModuleSource;
+import com.anatawa12.sai.commonjs.module.provider.ModuleSourceProvider;
+import com.anatawa12.sai.commonjs.module.provider.UrlConnectionExpiryCalculator;
+import com.anatawa12.sai.commonjs.module.provider.UrlModuleSourceProvider;
 
 public class UrlModuleSourceProviderTest {
 

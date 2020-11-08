@@ -6,7 +6,7 @@
 
 // API class
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
 /**
  * All compiled scripts implement this interface.
@@ -34,7 +34,7 @@ public interface Script {
      * @param cx the Context associated with the current thread
      * @param scope the scope to execute relative to
      * @return the result of executing the script
-     * @see org.mozilla.javascript.Context#initStandardObjects()
+     * @see com.anatawa12.sai.Context#initStandardObjects()
      */
     public Object exec(Context cx, Scriptable scope);
 

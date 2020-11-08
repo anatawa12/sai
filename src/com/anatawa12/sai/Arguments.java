@@ -4,16 +4,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript;
+package com.anatawa12.sai;
 
-import org.mozilla.javascript.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
+import com.anatawa12.sai.NativeArrayIterator.ARRAY_ITERATOR_TYPE;
 
 /**
  * This class implements the "arguments" object.
  *
  * See ECMA 10.1.8
  *
- * @see org.mozilla.javascript.NativeCall
+ * @see com.anatawa12.sai.NativeCall
  * @author Norris Boyd
  */
 final class Arguments extends IdScriptableObject

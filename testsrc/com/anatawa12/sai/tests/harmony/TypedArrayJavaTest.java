@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests.harmony;
+package com.anatawa12.sai.tests.harmony;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -13,19 +13,19 @@ import java.util.List;
 import java.util.ListIterator;
 
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.typedarrays.NativeArrayBuffer;
-import org.mozilla.javascript.typedarrays.NativeFloat32Array;
-import org.mozilla.javascript.typedarrays.NativeFloat64Array;
-import org.mozilla.javascript.typedarrays.NativeInt16Array;
-import org.mozilla.javascript.typedarrays.NativeInt32Array;
-import org.mozilla.javascript.typedarrays.NativeInt8Array;
-import org.mozilla.javascript.typedarrays.NativeUint16Array;
-import org.mozilla.javascript.typedarrays.NativeUint32Array;
-import org.mozilla.javascript.typedarrays.NativeUint8Array;
-import org.mozilla.javascript.typedarrays.NativeUint8ClampedArray;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.typedarrays.NativeArrayBuffer;
+import com.anatawa12.sai.typedarrays.NativeFloat32Array;
+import com.anatawa12.sai.typedarrays.NativeFloat64Array;
+import com.anatawa12.sai.typedarrays.NativeInt16Array;
+import com.anatawa12.sai.typedarrays.NativeInt32Array;
+import com.anatawa12.sai.typedarrays.NativeInt8Array;
+import com.anatawa12.sai.typedarrays.NativeUint16Array;
+import com.anatawa12.sai.typedarrays.NativeUint32Array;
+import com.anatawa12.sai.typedarrays.NativeUint8Array;
+import com.anatawa12.sai.typedarrays.NativeUint8ClampedArray;
 
 /**
  * Ensure that the "List" contract is valid for a typed array.

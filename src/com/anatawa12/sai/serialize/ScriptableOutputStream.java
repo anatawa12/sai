@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.serialize;
+package com.anatawa12.sai.serialize;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.UniqueTag;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.UniqueTag;
 
 /**
  * Class ScriptableOutputStream is an ObjectOutputStream used

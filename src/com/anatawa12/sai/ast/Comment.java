@@ -4,9 +4,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.ast;
+package com.anatawa12.sai.ast;
 
-import org.mozilla.javascript.Token;
+import com.anatawa12.sai.Token;
 
 /**
  * Node representing comments.
@@ -70,7 +70,7 @@ public class Comment extends AstNode {
     /**
      * Sets the comment style
      * @param type the comment style, a
-     * {@link org.mozilla.javascript.Token.CommentType}
+     * {@link com.anatawa12.sai.Token.CommentType}
      */
     public void setCommentType(Token.CommentType type) {
         this.commentType = type;

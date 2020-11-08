@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,11 +10,11 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.ObjArray;
-import org.mozilla.javascript.ObjToIntMap;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.Jump;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.ObjArray;
+import com.anatawa12.sai.ObjToIntMap;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.Jump;
 
 class Block
 {

@@ -4,7 +4,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.tools.shell;
+package com.anatawa12.sai.tools.shell;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -32,28 +32,28 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.ContextAction;
-import org.mozilla.javascript.ContextFactory;
-import org.mozilla.javascript.ErrorReporter;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.ImporterTopLevel;
-import org.mozilla.javascript.NativeArray;
-import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptRuntime;
-import org.mozilla.javascript.Scriptable;
-import org.mozilla.javascript.ScriptableObject;
-import org.mozilla.javascript.Synchronizer;
-import org.mozilla.javascript.Undefined;
-import org.mozilla.javascript.Wrapper;
-import org.mozilla.javascript.commonjs.module.Require;
-import org.mozilla.javascript.commonjs.module.RequireBuilder;
-import org.mozilla.javascript.commonjs.module.provider.SoftCachingModuleScriptProvider;
-import org.mozilla.javascript.commonjs.module.provider.UrlModuleSourceProvider;
-import org.mozilla.javascript.serialize.ScriptableInputStream;
-import org.mozilla.javascript.serialize.ScriptableOutputStream;
-import org.mozilla.javascript.tools.ToolErrorReporter;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.ContextAction;
+import com.anatawa12.sai.ContextFactory;
+import com.anatawa12.sai.ErrorReporter;
+import com.anatawa12.sai.Function;
+import com.anatawa12.sai.ImporterTopLevel;
+import com.anatawa12.sai.NativeArray;
+import com.anatawa12.sai.RhinoException;
+import com.anatawa12.sai.Script;
+import com.anatawa12.sai.ScriptRuntime;
+import com.anatawa12.sai.Scriptable;
+import com.anatawa12.sai.ScriptableObject;
+import com.anatawa12.sai.Synchronizer;
+import com.anatawa12.sai.Undefined;
+import com.anatawa12.sai.Wrapper;
+import com.anatawa12.sai.commonjs.module.Require;
+import com.anatawa12.sai.commonjs.module.RequireBuilder;
+import com.anatawa12.sai.commonjs.module.provider.SoftCachingModuleScriptProvider;
+import com.anatawa12.sai.commonjs.module.provider.UrlModuleSourceProvider;
+import com.anatawa12.sai.serialize.ScriptableInputStream;
+import com.anatawa12.sai.serialize.ScriptableOutputStream;
+import com.anatawa12.sai.tools.ToolErrorReporter;
 
 /**
  * This class provides for sharing functions across multiple threads.
@@ -317,7 +317,7 @@ public class Global extends ImporterTopLevel
      *            the named class
      * @exception InvocationTargetException if an exception is thrown
      *            during execution of methods of the named class
-     * @see org.mozilla.javascript.ScriptableObject#defineClass(Scriptable,Class)
+     * @see com.anatawa12.sai.ScriptableObject#defineClass(Scriptable,Class)
      */
     @SuppressWarnings({"unchecked"})
     public static void defineClass(Context cx, Scriptable thisObj,

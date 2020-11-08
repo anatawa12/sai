@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-package org.mozilla.javascript.commonjs.module.provider;
+package com.anatawa12.sai.commonjs.module.provider;
 
 import java.net.URLConnection;
 
-import org.mozilla.javascript.Context;
+import com.anatawa12.sai.Context;
 
 /**
  * Interface for URL connection based security domain providers. Used by

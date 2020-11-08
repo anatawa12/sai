@@ -1,4 +1,4 @@
-package org.mozilla.javascript.tests;
+package com.anatawa12.sai.tests;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -6,8 +6,8 @@ import java.io.StringWriter;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.tools.shell.Global;
+import com.anatawa12.sai.Context;
+import com.anatawa12.sai.tools.shell.Global;
 
 public class HashCollisionTest {
   private static final String mediumInput = "testsrc/jstests/collisions.json";

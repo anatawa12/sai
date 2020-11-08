@@ -3,13 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 
-package org.mozilla.javascript.optimizer;
+package com.anatawa12.sai.optimizer;
 
-import org.mozilla.javascript.Kit;
-import org.mozilla.javascript.Node;
-import org.mozilla.javascript.Token;
-import org.mozilla.javascript.ast.FunctionNode;
-import org.mozilla.javascript.ast.ScriptNode;
+import com.anatawa12.sai.Kit;
+import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Token;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
 
 public final class OptFunctionNode
 {
