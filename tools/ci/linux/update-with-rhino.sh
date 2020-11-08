@@ -16,7 +16,7 @@ main() {
   git reset --hard rhino/master
   git remote rm rhino
   git push origin rhino-master
-  if [ "$(git rev-parse origin/rhino-master)" = "$(git rev-parse rhino-master)" ]; then
+  if [ "$(git rev-parse master)" = "$(git rev-parse rhino-master)" ]; then
     echo "already up to date!"
     return 0;
   fi
