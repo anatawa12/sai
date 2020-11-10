@@ -14,18 +14,18 @@ import java.io.Serializable;
 /**
  * Base class for native object implementation that uses IdFunctionObject to
  * export its methods to script via &lt;class-name&gt;.prototype object.
- * 
+ *
  * Any descendant should implement at least the following methods:
  * findInstanceIdInfo getInstanceIdName execIdCall methodArity
- * 
+ *
  * To define non-function properties, the descendant should override
  * getInstanceIdValue setInstanceIdValue to get/set property value and provide
  * its default attributes.
- * 
- * 
+ *
+ *
  * To customize initialization of constructor and prototype objects, descendant
  * may override scopeInit or fillConstructorProperties methods.
- * 
+ *
  */
 public abstract class IdScriptableObject extends ScriptableObject implements IdFunctionCall {
     private static final long serialVersionUID = -3744239272168621609L;
@@ -450,7 +450,7 @@ public abstract class IdScriptableObject extends ScriptableObject implements IdF
         int info = findInstanceIdInfo(name);
         if (info != 0) {
             if (start == this && isSealed()) {
-                throw Context.reportRuntimeError1("msg.modify.sealed",
+                throw RuntimeErrors.reportRuntimeError1("msg.modify.sealed",
                                                   name);
             }
             int attr = (info >>> 16);
@@ -469,7 +469,7 @@ public abstract class IdScriptableObject extends ScriptableObject implements IdF
             int id = prototypeValues.findId(name);
             if (id != 0) {
                 if (start == this && isSealed()) {
-                    throw Context.reportRuntimeError1("msg.modify.sealed",
+                    throw RuntimeErrors.reportRuntimeError1("msg.modify.sealed",
                                                       name);
                 }
                 prototypeValues.set(id, start, value);
@@ -485,7 +485,7 @@ public abstract class IdScriptableObject extends ScriptableObject implements IdF
         int info = findInstanceIdInfo(key);
         if (info != 0) {
             if (start == this && isSealed()) {
-                throw Context.reportRuntimeError0("msg.modify.sealed");
+                throw RuntimeErrors.reportRuntimeError0("msg.modify.sealed");
             }
             int attr = (info >>> 16);
             if ((attr & READONLY) == 0) {
@@ -503,7 +503,7 @@ public abstract class IdScriptableObject extends ScriptableObject implements IdF
             int id = prototypeValues.findId(key);
             if (id != 0) {
                 if (start == this && isSealed()) {
-                    throw Context.reportRuntimeError0("msg.modify.sealed");
+                    throw RuntimeErrors.reportRuntimeError0("msg.modify.sealed");
                 }
                 prototypeValues.set(id, start, value);
                 return;

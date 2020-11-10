@@ -837,7 +837,7 @@ public abstract class ScriptableObject implements Scriptable,
         if (!force) {
             int attributes = gslot.getAttributes();
             if ((attributes & READONLY) != 0) {
-                throw Context.reportRuntimeError1("msg.modify.readonly", name);
+                throw RuntimeErrors.reportRuntimeError1("msg.modify.readonly", name);
             }
         }
         if (isSetter) {
@@ -1357,7 +1357,7 @@ public abstract class ScriptableObject implements Scriptable,
             }
         }
         if (protoCtor == null) {
-            throw Context.reportRuntimeError1(
+            throw RuntimeErrors.reportRuntimeError1(
                       "msg.zero.arg.ctor", clazz.getName());
         }
 
@@ -1421,14 +1421,14 @@ public abstract class ScriptableObject implements Scriptable,
                     ctorMember = ctors[0];
             }
             if (ctorMember == null) {
-                throw Context.reportRuntimeError1(
+                throw RuntimeErrors.reportRuntimeError1(
                           "msg.ctor.multiple.parms", clazz.getName());
             }
         }
 
         FunctionObject ctor = new FunctionObject(className, ctorMember, scope);
         if (ctor.isVarArgsMethod()) {
-            throw Context.reportRuntimeError1
+            throw RuntimeErrors.reportRuntimeError1
                 ("msg.varargs.ctor", ctorMember.getName());
         }
         ctor.initAsConstructor(scope, proto);
@@ -1490,7 +1490,7 @@ public abstract class ScriptableObject implements Scriptable,
             HashSet<String> names = isStatic ? staticNames : instanceNames;
             String propName = getPropertyName(name, prefix, annotation);
             if (names.contains(propName)) {
-                throw Context.reportRuntimeError2("duplicate.defineClass.name",
+                throw RuntimeErrors.reportRuntimeError2("duplicate.defineClass.name",
                         name, propName);
             }
             names.add(propName);
@@ -1498,7 +1498,7 @@ public abstract class ScriptableObject implements Scriptable,
 
             if (annotation instanceof JSGetter || prefix == getterPrefix) {
                 if (!(proto instanceof ScriptableObject)) {
-                    throw Context.reportRuntimeError2(
+                    throw RuntimeErrors.reportRuntimeError2(
                         "msg.extend.scriptable",
                         proto.getClass().toString(), name);
                 }
@@ -1520,7 +1520,7 @@ public abstract class ScriptableObject implements Scriptable,
 
             FunctionObject f = new FunctionObject(name, method, proto);
             if (f.isVarArgsConstructor()) {
-                throw Context.reportRuntimeError1
+                throw RuntimeErrors.reportRuntimeError1
                     ("msg.varargs.fun", ctorMember.getName());
             }
             defineProperty(isStatic ? ctor : proto, name, f, DONTENUM);
@@ -1814,14 +1814,14 @@ public abstract class ScriptableObject implements Scriptable,
                 errorId = "msg.bad.getter.parms";
             }
             if (errorId != null) {
-                throw Context.reportRuntimeError1(errorId, getter.toString());
+                throw RuntimeErrors.reportRuntimeError1(errorId, getter.toString());
             }
         }
 
         MemberBox setterBox = null;
         if (setter != null) {
             if (setter.getReturnType() != Void.TYPE)
-                throw Context.reportRuntimeError1("msg.setter.return",
+                throw RuntimeErrors.reportRuntimeError1("msg.setter.return",
                                                   setter.toString());
 
             setterBox = new MemberBox(setter);
@@ -1857,7 +1857,7 @@ public abstract class ScriptableObject implements Scriptable,
                 errorId = "msg.setter.parms";
             }
             if (errorId != null) {
-                throw Context.reportRuntimeError1(errorId, setter.toString());
+                throw RuntimeErrors.reportRuntimeError1(errorId, setter.toString());
             }
         }
 
@@ -2153,7 +2153,7 @@ public abstract class ScriptableObject implements Scriptable,
             String name = names[i];
             Method m = FunctionObject.findSingleMethod(methods, name);
             if (m == null) {
-                throw Context.reportRuntimeError2(
+                throw RuntimeErrors.reportRuntimeError2(
                     "msg.method.not.found", name, clazz.getName());
             }
             FunctionObject f = new FunctionObject(name, m, this);
@@ -2302,7 +2302,7 @@ public abstract class ScriptableObject implements Scriptable,
             return;
 
         String str = (key != null) ? key.toString() : Integer.toString(index);
-        throw Context.reportRuntimeError1("msg.modify.sealed", str);
+        throw RuntimeErrors.reportRuntimeError1("msg.modify.sealed", str);
     }
 
     /**
@@ -2880,7 +2880,7 @@ public abstract class ScriptableObject implements Scriptable,
             slot = slotMap.get(name, index, SlotAccess.MODIFY_CONST);
             int attr = slot.getAttributes();
             if ((attr & READONLY) == 0)
-                throw Context.reportRuntimeError1("msg.var.redecl", name);
+                throw RuntimeErrors.reportRuntimeError1("msg.var.redecl", name);
             if ((attr & UNINITIALIZED_CONST) != 0) {
                 slot.value = value;
                 // clear the bit on const initialization
@@ -2897,7 +2897,7 @@ public abstract class ScriptableObject implements Scriptable,
         Slot slot = slotMap.get(name, index, accessType);
         if (slot == null) {
             String str = (name != null ? name : Integer.toString(index));
-            throw Context.reportRuntimeError1("msg.prop.not.found", str);
+            throw RuntimeErrors.reportRuntimeError1("msg.prop.not.found", str);
         }
         return slot;
     }
@@ -2906,7 +2906,7 @@ public abstract class ScriptableObject implements Scriptable,
     {
         Slot slot = slotMap.get(key, 0, accessType);
         if (slot == null) {
-            throw Context.reportRuntimeError1("msg.prop.not.found", key);
+            throw RuntimeErrors.reportRuntimeError1("msg.prop.not.found", key);
         }
         return slot;
     }

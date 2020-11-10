@@ -901,7 +901,7 @@ public class ScriptRuntime {
 
     public static String numberToString(double d, int base) {
         if ((base < 2) || (base > 36)) {
-            throw Context.reportRuntimeError1(
+            throw RuntimeErrors.reportRuntimeError1(
                 "msg.bad.radix", Integer.toString(base));
         }
 
@@ -1336,10 +1336,10 @@ public class ScriptRuntime {
             return (Function)ctorVal;
         }
         if (ctorVal == Scriptable.NOT_FOUND) {
-            throw Context.reportRuntimeError1(
+            throw RuntimeErrors.reportRuntimeError1(
                 "msg.ctor.not.found", constructorName);
         }
-        throw Context.reportRuntimeError1("msg.not.ctor", constructorName);
+        throw RuntimeErrors.reportRuntimeError1("msg.not.ctor", constructorName);
     }
 
     /**
@@ -2703,7 +2703,7 @@ public class ScriptRuntime {
             }
         } else if (callType == Node.SPECIALCALL_WITH) {
             if (NativeWith.isWithFunction(fun)) {
-                throw Context.reportRuntimeError1("msg.only.from.new",
+                throw RuntimeErrors.reportRuntimeError1("msg.only.from.new",
                                                   "With");
             }
         } else {
@@ -2830,7 +2830,7 @@ public class ScriptRuntime {
             if (cx.hasFeature(Context.FEATURE_STRICT_MODE) ||
                 cx.hasFeature(Context.FEATURE_STRICT_EVAL))
             {
-                throw Context.reportRuntimeError0("msg.eval.nonstring.strict");
+                throw RuntimeErrors.reportRuntimeError0("msg.eval.nonstring.strict");
             }
             String message = ScriptRuntime.getMessage0("msg.eval.nonstring");
             Context.reportWarning(message);
@@ -3310,6 +3310,12 @@ public class ScriptRuntime {
         return obj == null || obj == Undefined.instance ||
                 (obj instanceof Number) || (obj instanceof String) ||
                 (obj instanceof Boolean);
+    }
+
+    public static boolean isPrimitiveType(Class<?> obj) {
+        return obj == Undefined.class ||
+                Number.class.isAssignableFrom(obj) || String.class.isAssignableFrom(obj) ||
+                Boolean.class.isAssignableFrom(obj);
     }
 
     static boolean eqNumber(double x, Object y)
@@ -4417,7 +4423,7 @@ public class ScriptRuntime {
     {
         RegExpProxy result = getRegExpProxy(cx);
         if (result == null) {
-            throw Context.reportRuntimeError0("msg.no.regexp");
+            throw RuntimeErrors.reportRuntimeError0("msg.no.regexp");
         }
         return result;
     }
@@ -4559,7 +4565,7 @@ public class ScriptRuntime {
 
     private static RuntimeException errorWithClassName(String msg, Object val)
     {
-        return Context.reportRuntimeError1(msg, val.getClass().getName());
+        return RuntimeErrors.reportRuntimeError1(msg, val.getClass().getName());
     }
 
     /**

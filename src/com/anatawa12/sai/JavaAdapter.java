@@ -177,7 +177,7 @@ public final class JavaAdapter implements IdFunctionCall
         if (superClass == null) {
             superClass = ScriptRuntime.ObjectClass;
         }
-        
+
         Class<?>[] interfaces = new Class[interfaceCount];
         System.arraycopy(intfs, 0, interfaces, 0, interfaceCount);
         // next argument is implementation, must be scriptable
@@ -185,7 +185,7 @@ public final class JavaAdapter implements IdFunctionCall
 
         Class<?> adapterClass = getAdapterClass(scope, superClass, interfaces, obj);
         Object adapter;
-        
+
         int argsCount = N - classCount - 1;
         try {
             if (argsCount > 0) {
@@ -203,7 +203,7 @@ public final class JavaAdapter implements IdFunctionCall
                 int index = ctors.findCachedFunction(cx, ctorArgs);
                 if (index < 0) {
                     String sig = NativeJavaMethod.scriptSignature(args);
-                    throw Context.reportRuntimeError2(
+                    throw RuntimeErrors.reportRuntimeError2(
                             "msg.no.java.ctor", adapterClass.getName(), sig);
                 }
 
@@ -984,7 +984,7 @@ public final class JavaAdapter implements IdFunctionCall
         if (parms.length > 64) {
             // If it will be an issue, then passing a static boolean array
             // can be an option, but for now using simple bitmask
-            throw Context.reportRuntimeError0(
+            throw Context.reportRuntimeError(
                 "JavaAdapter can not subclass methods with more then"
                 +" 64 arguments.");
         }
