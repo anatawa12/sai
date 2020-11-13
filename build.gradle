@@ -21,6 +21,16 @@ compileTestJava {
     options.compilerArgs = [ ]
 }
 
+task repladceMHH(type: ReplaceMHHCall) {
+    classpath = sourceSets.main.output.classesDirs.toList()
+    mhhClass = "com.anatawa12.sai.linker.MHH"
+}
+
+repladceMHH.dependsOn
+
+repladceMHH.dependsOn(compileJava)
+classes.dependsOn(repladceMHH)
+
 repositories {
     mavenCentral()
 }
@@ -67,7 +77,7 @@ dependencies {
 test {
     useJUnit()
     exclude "**/benchmarks/**"
-    
+
     jvmArgs += '-Xss1280k'
 
     jacoco.excludes = ['**/testsrc_tests_ecma_3_RegExp_perlstress*']
@@ -78,7 +88,7 @@ test {
     systemProperty 'user.language', 'en'
     systemProperty 'user.country', 'US'
     systemProperty 'user.timezone', 'America/Los_Angeles'
-    systemProperty 'file.encoding', 'UTF-8'
+    systemProperty 'dir.encoding', 'UTF-8'
     maxHeapSize = "1g"
     testLogging.showStandardStreams = true
     // Many tests do not clean up contexts properly. This makes the tests much
@@ -413,7 +423,7 @@ distributions {
             from(file(".")) {
                 include '*.txt', '*.md', 'build.gradle', 'build.properties', 'gradle.properties',
                         'gradle/**', 'gradlew'
-                into 'rhino' + project.version 
+                into 'rhino' + project.version
             }
             into "/"
         }
