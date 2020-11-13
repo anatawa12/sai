@@ -125,6 +125,7 @@ public class InterfaceAdapterFactory {
             Method result = null;
             for (Method method : clazz.getDeclaredMethods()) {
                 if (isVisible(method.getModifiers())
+                        && !isObjectMethod(method)
                         && !Modifier.isStatic(method.getModifiers())
                         && Modifier.isAbstract(method.getModifiers())) {
                     if (result != null) return null;
@@ -144,6 +145,24 @@ public class InterfaceAdapterFactory {
                 if (method != null) result = method;
             }
             return result;
+        }
+
+        private static boolean isObjectMethod(Method method) {
+            //for class, we cannot ignore object's abstract method.
+            if (!method.getDeclaringClass().isInterface())
+                return false;
+            if (method.getName().equals("equals")
+                    && method.getParameterCount() == 1
+                    && method.getParameterTypes()[0] == Object.class)
+                return true;
+            if (method.getName().equals("hashCode")
+                    && method.getParameterCount() == 0)
+                return true;
+            if (method.getName().equals("toString")
+                    && method.getParameterCount() == 0)
+                return true;
+
+            return false;
         }
 
         private static boolean hasNoArgConstructor(Class<?> implSAM) {
@@ -192,6 +211,7 @@ public class InterfaceAdapterFactory {
         private void generateFields() {
             writer.addField("callable", CallableDescriptor, ClassFileWriter.ACC_PRIVATE);
             writer.addField("factory", ContextFactoryDescriptor, ClassFileWriter.ACC_PRIVATE);
+            writer.addField("topScope", ScriptableDescriptor, ClassFileWriter.ACC_PRIVATE);
         }
 
         private static final Class<?>[] generatedClassConstructorArguments = new Class[]{
@@ -213,6 +233,12 @@ public class InterfaceAdapterFactory {
             writer.addInvoke(ByteCode.INVOKESTATIC, ContextName, "getCurrentContext", "()" + ContextDescriptor);
             writer.addInvoke(ByteCode.INVOKEVIRTUAL, ContextName, "getFactory", "()" + ContextFactoryDescriptor);
             writer.add(ByteCode.PUTFIELD, writer.getClassName(), "factory", ContextFactoryDescriptor);
+
+            writer.add(ByteCode.ALOAD_0);
+            writer.addInvoke(ByteCode.INVOKESTATIC, ContextName, "getCurrentContext", "()" + ContextDescriptor);
+            writer.addInvoke(ByteCode.INVOKESTATIC, ScriptRuntimeName, "getTopCallScope", "(" + ContextDescriptor + ")" + ScriptableDescriptor);
+            writer.add(ByteCode.PUTFIELD, writer.getClassName(), "topScope", ScriptableDescriptor);
+
             writer.add(ByteCode.RETURN);
             writer.stopMethod((short) 3);
         }
@@ -253,7 +279,7 @@ public class InterfaceAdapterFactory {
                             "L" + "java/lang/Class" + ";" +
                             "[L" + "java/lang/Object" + ";" +
                             ")" +
-                            "L" + "java/lang/String" + ";"
+                            "L" + "java/lang/Object" + ";"
             );
 
             castStackValueTo(implMethod.getReturnType());
@@ -471,6 +497,7 @@ public class InterfaceAdapterFactory {
                                      Class<?> javaResultType,
                                      Object[] args)
     {
+        if (topScope == null) topScope = ScriptRuntime.getTopCallScope(cx);
         WrapFactory wf = cx.getWrapFactory();
         if (args == null) {
             args = ScriptRuntime.emptyArgs;
@@ -488,7 +515,7 @@ public class InterfaceAdapterFactory {
         return result;
     }
 
-    private static final String BASE_PACKAGE = "";
+    private static final String BASE_PACKAGE = "adapters.";
     private static final String SAM_IMPL_NAME = "$SaiSamAdapter";
 
     private static final String CallableDescriptor = ClassFileWriter.classNameToSignature(Callable.class.getName());
@@ -497,4 +524,6 @@ public class InterfaceAdapterFactory {
     private static final String InterfaceAdapterFactoryName = InterfaceAdapterFactory.class.getName();
     private static final String ContextName = Context.class.getName();
     private static final String ContextDescriptor = ClassFileWriter.classNameToSignature(ContextName);
+
+    private static final String ScriptRuntimeName = ScriptRuntime.class.getName();
 }
