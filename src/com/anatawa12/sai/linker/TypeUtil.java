@@ -83,6 +83,11 @@ public class TypeUtil {
         }
     }
 
+    public static boolean isSubtype(Class<?> subType, Class<?> superType) {
+        return superType.isAssignableFrom(subType) || superType.isPrimitive() && subType.isPrimitive()
+                && isProperPrimitiveSubtype(subType, superType);
+    }
+
     private static boolean isProperPrimitiveSubtype(Class<?> subType, Class<?> superType) {
         if (superType == Boolean.TYPE || subType == Boolean.TYPE) {
             return false;
