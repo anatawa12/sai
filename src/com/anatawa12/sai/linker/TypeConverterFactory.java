@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.anatawa12.sai.Undefined;
-import com.anatawa12.sai.linker.ConversionComparison;
 
 public class TypeConverterFactory {
     private final GuardingTypeConverterFactory[] factories;
