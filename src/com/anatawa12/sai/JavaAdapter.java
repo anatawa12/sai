@@ -23,6 +23,8 @@ import java.util.Map;
 
 import com.anatawa12.sai.classfile.ByteCode;
 import com.anatawa12.sai.classfile.ClassFileWriter;
+import com.anatawa12.sai.linker.ClassList;
+import com.anatawa12.sai.linker.MethodOrConstructor;
 
 public final class JavaAdapter implements IdFunctionCall
 {
@@ -199,16 +201,10 @@ public final class JavaAdapter implements IdFunctionCall
                 // TODO: cache class wrapper?
                 NativeJavaClass classWrapper = new NativeJavaClass(scope,
                         adapterClass, true);
-                NativeJavaMethod ctors = classWrapper.members.ctors;
-                int index = ctors.findCachedFunction(cx, ctorArgs);
-                if (index < 0) {
-                    String sig = NativeJavaMethod.scriptSignature(args);
-                    throw RuntimeErrors.reportRuntimeError2(
-                            "msg.no.java.ctor", adapterClass.getName(), sig);
-                }
+                MethodOrConstructor methodOrConstructor = classWrapper.members.dynamicConstructor.getInvocation(ClassList.fromArgs(ctorArgs));
 
                 // Found the constructor, so try invoking it.
-                adapter = NativeJavaClass.constructInternal(ctorArgs, ctors.methods[index]);
+                adapter = NativeJavaClass.constructInternal(ctorArgs, methodOrConstructor);
             } else {
                 Class<?>[] ctorParms = {
                         ScriptRuntime.ScriptableClass,

@@ -40,4 +40,16 @@ public class DynamicMethod {
                 ? fixedArgLen <= parameterCount
                 : fixedArgLen == parameterCount;
     }
+
+    public LinkedList<MethodOrConstructor> getMethods() {
+        return methods;
+    }
+
+    public boolean isEmpty() {
+        return methods.isEmpty();
+    }
+
+    public int size() {
+        return methods.size();
+    }
 }

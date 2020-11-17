@@ -6,6 +6,9 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.linker.DynamicMethod;
+import com.anatawa12.sai.linker.MethodOrConstructor;
+
 import static java.lang.reflect.Modifier.isProtected;
 import static java.lang.reflect.Modifier.isPublic;
 
@@ -18,8 +21,10 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -91,8 +96,8 @@ class JavaMembers
                 BeanProperty bp = (BeanProperty) member;
                 if (bp.getter == null)
                     return Scriptable.NOT_FOUND;
-                rval = bp.getter.invoke(javaObject, Context.emptyArgs);
-                type = bp.getter.method().getReturnType();
+                rval = MemberBox.invoke(bp.getter.asMethod(), javaObject, Context.emptyArgs);
+                type = bp.getter.returnType();
             } else {
                 Field field = (Field) member;
                 rval = field.get(isStatic ? null : javaObject);
@@ -132,10 +137,10 @@ class JavaMembers
             // main setter. Otherwise, let the NativeJavaMethod decide which
             // setter to use:
             if (bp.setters == null || value == null) {
-                Class<?> setType = bp.setter.argTypes[0];
+                Class<?> setType = bp.setter.parameterType(0);
                 Object[] args = { Context.jsToJava(value, setType) };
                 try {
-                    bp.setter.invoke(javaObject, args);
+                    MemberBox.invoke(bp.setter.asMethod(), javaObject, args);
                 } catch (Exception ex) {
                   throw Context.throwAsScriptRuntimeEx(ex);
                 }
@@ -218,18 +223,18 @@ class JavaMembers
         return sb.toString();
     }
 
-    private MemberBox findExplicitFunction(String name, boolean isStatic)
+    private MethodOrConstructor findExplicitFunction(String name, boolean isStatic)
     {
         int sigStart = name.indexOf('(');
         if (sigStart < 0) { return null; }
 
         Map<String,Object> ht = isStatic ? staticMembers : members;
-        MemberBox[] methodsOrCtors = null;
+        LinkedList<MethodOrConstructor> methodsOrCtors = null;
         boolean isCtor = (isStatic && sigStart == 0);
 
         if (isCtor) {
             // Explicit request for an overloaded constructor
-            methodsOrCtors = ctors.methods;
+            methodsOrCtors = dynamicConstructor.getMethods();
         } else {
             // Explicit request for an overloaded method
             String trueName = name.substring(0,sigStart);
@@ -240,13 +245,13 @@ class JavaMembers
             }
             if (obj instanceof NativeJavaMethod) {
                 NativeJavaMethod njm = (NativeJavaMethod)obj;
-                methodsOrCtors = njm.methods;
+                methodsOrCtors = njm.dynamicMethod.getMethods();
             }
         }
 
         if (methodsOrCtors != null) {
-            for (MemberBox methodsOrCtor : methodsOrCtors) {
-                Class<?>[] type = methodsOrCtor.argTypes;
+            for (MethodOrConstructor methodsOrCtor : methodsOrCtors) {
+                Class<?>[] type = methodsOrCtor.parameterArray();
                 String sig = liveConnectSignature(type);
                 if (sigStart + sig.length() == name.length()
                         && name.regionMatches(sigStart, sig, 0, sig.length()))
@@ -264,26 +269,26 @@ class JavaMembers
     {
         Map<String,Object> ht = isStatic ? staticMembers : members;
         Object member = null;
-        MemberBox methodOrCtor = findExplicitFunction(name, isStatic);
+        MethodOrConstructor methodOrCtor = findExplicitFunction(name, isStatic);
 
         if (methodOrCtor != null) {
             Scriptable prototype =
                 ScriptableObject.getFunctionPrototype(scope);
 
-            if (methodOrCtor.isCtor()) {
+            if (methodOrCtor.isConstructor()) {
                 NativeJavaConstructor fun =
                     new NativeJavaConstructor(methodOrCtor);
                 fun.setPrototype(prototype);
                 member = fun;
                 ht.put(name, fun);
             } else {
-                String trueName = methodOrCtor.getName();
+                String trueName = methodOrCtor.name();
                 member = ht.get(trueName);
 
                 if (member instanceof NativeJavaMethod &&
-                    ((NativeJavaMethod)member).methods.length > 1 ) {
+                    ((NativeJavaMethod)member).dynamicMethod.size() > 1 ) {
                     NativeJavaMethod fun =
-                        new NativeJavaMethod(methodOrCtor, name);
+                        new NativeJavaMethod(methodOrCtor);
                     fun.setPrototype(prototype);
                     ht.put(name, fun);
                     member = fun;
@@ -460,22 +465,20 @@ class JavaMembers
             boolean isStatic = (tableCursor == 0);
             Map<String,Object> ht = isStatic ? staticMembers : members;
             for (Map.Entry<String, Object> entry: ht.entrySet()) {
-                MemberBox[] methodBoxes;
+                LinkedList<MethodOrConstructor> methodList = new LinkedList<>();
                 Object value = entry.getValue();
                 if (value instanceof Method) {
-                    methodBoxes = new MemberBox[1];
-                    methodBoxes[0] = new MemberBox((Method)value);
+                    methodList.add(new MethodOrConstructor((Method)value));
                 } else {
                     ObjArray overloadedMethods = (ObjArray)value;
                     int N = overloadedMethods.size();
                     if (N < 2) Kit.codeBug();
-                    methodBoxes = new MemberBox[N];
                     for (int i = 0; i != N; ++i) {
                         Method method = (Method)overloadedMethods.get(i);
-                        methodBoxes[i] = new MemberBox(method);
+                        methodList.add(new MethodOrConstructor(method));
                     }
                 }
-                NativeJavaMethod fun = new NativeJavaMethod(methodBoxes);
+                NativeJavaMethod fun = new NativeJavaMethod(methodList);
                 if (scope != null) {
                     ScriptRuntime.setFunctionProtoAndParent(fun, scope);
                 }
@@ -497,7 +500,7 @@ class JavaMembers
                 } else if (member instanceof NativeJavaMethod) {
                     NativeJavaMethod method = (NativeJavaMethod) member;
                     FieldAndMethods fam
-                        = new FieldAndMethods(scope, method.methods, field);
+                        = new FieldAndMethods(scope, method.dynamicMethod, field);
                     Map<String,FieldAndMethods> fmht = isStatic ? staticFieldAndMethods
                                               : fieldAndMethods;
                     if (fmht == null) {
@@ -589,7 +592,7 @@ class JavaMembers
 
                     // Find the getter method, or if there is none, the is-
                     // method.
-                    MemberBox getter = null;
+                    MethodOrConstructor getter = null;
                     getter = findGetter(isStatic, ht, "get", nameComponent);
                     // If there was no valid getter, check for an is- method.
                     if (getter == null) {
@@ -597,7 +600,7 @@ class JavaMembers
                     }
 
                     // setter
-                    MemberBox setter = null;
+                    MethodOrConstructor setter = null;
                     NativeJavaMethod setters = null;
                     String setterName = "set".concat(nameComponent);
 
@@ -609,15 +612,15 @@ class JavaMembers
                             if (getter != null) {
                                 // We have a getter. Now, do we have a matching
                                 // setter?
-                                Class<?> type = getter.method().getReturnType();
-                                setter = extractSetMethod(type, njmSet.methods,
+                                Class<?> type = getter.returnType();
+                                setter = extractSetMethod(type, njmSet.dynamicMethod,
                                                             isStatic);
                             } else {
                                 // No getter, find any set method
-                                setter = extractSetMethod(njmSet.methods,
+                                setter = extractSetMethod(njmSet.dynamicMethod,
                                                             isStatic);
                             }
-                            if (njmSet.methods.length > 1) {
+                            if (njmSet.dynamicMethod.size() > 1) {
                                 setters = njmSet;
                             }
                         }
@@ -635,11 +638,10 @@ class JavaMembers
 
         // Reflect constructors
         Constructor<?>[] constructors = getAccessibleConstructors(includePrivate);
-        MemberBox[] ctorMembers = new MemberBox[constructors.length];
-        for (int i = 0; i != constructors.length; ++i) {
-            ctorMembers[i] = new MemberBox(constructors[i]);
-        }
-        ctors = new NativeJavaMethod(ctorMembers, cl.getSimpleName());
+        LinkedList<MethodOrConstructor> ctorMembers = Arrays.stream(constructors)
+                .map(MethodOrConstructor::new)
+                .collect(Collectors.toCollection(LinkedList::new));
+        dynamicConstructor = new DynamicMethod(ctorMembers, cl.getSimpleName());
     }
 
     private Constructor<?>[] getAccessibleConstructors(boolean includePrivate)
@@ -694,8 +696,8 @@ class JavaMembers
         return cl.getFields();
     }
 
-    private static MemberBox findGetter(boolean isStatic, Map<String,Object> ht, String prefix,
-                                 String propertyName)
+    private static MethodOrConstructor findGetter(boolean isStatic, Map<String,Object> ht, String prefix,
+                                                  String propertyName)
     {
         String getterName = prefix.concat(propertyName);
         if (ht.containsKey(getterName)) {
@@ -703,22 +705,22 @@ class JavaMembers
             Object member = ht.get(getterName);
             if (member instanceof NativeJavaMethod) {
                 NativeJavaMethod njmGet = (NativeJavaMethod) member;
-                return extractGetMethod(njmGet.methods, isStatic);
+                return extractGetMethod(njmGet.dynamicMethod, isStatic);
             }
         }
         return null;
     }
 
-    private static MemberBox extractGetMethod(MemberBox[] methods,
-                                              boolean isStatic)
+    private static MethodOrConstructor extractGetMethod(DynamicMethod methods,
+                                                        boolean isStatic)
     {
         // Inspect the list of all MemberBox for the only one having no
         // parameters
-        for (MemberBox method : methods) {
+        for (MethodOrConstructor method : methods.getMethods()) {
             // Does getter method have an empty parameter list with a return
             // value (eg. a getSomething() or isSomething())?
-            if (method.argTypes.length == 0 && (!isStatic || method.isStatic())) {
-                Class<?> type = method.method().getReturnType();
+            if (method.parameterCount() == 0 && (!isStatic || method.isStatic())) {
+                Class<?> type = method.returnType();
                 if (type != Void.TYPE) {
                     return method;
                 }
@@ -728,8 +730,8 @@ class JavaMembers
         return null;
     }
 
-    private static MemberBox extractSetMethod(Class<?> type, MemberBox[] methods,
-                                              boolean isStatic)
+    private static MethodOrConstructor extractSetMethod(Class<?> type, DynamicMethod methods,
+                                                        boolean isStatic)
     {
         //
         // Note: it may be preferable to allow NativeJavaMethod.findFunction()
@@ -740,9 +742,9 @@ class JavaMembers
         // Make two passes: one to find a method with direct type assignment,
         // and one to find a widening conversion.
         for (int pass = 1; pass <= 2; ++pass) {
-            for (MemberBox method : methods) {
+            for (MethodOrConstructor method : methods.getMethods()) {
                 if (!isStatic || method.isStatic()) {
-                    Class<?>[] params = method.argTypes;
+                    Class<?>[] params = method.parameterArray();
                     if (params.length == 1) {
                         if (pass == 1) {
                             if (params[0] == type) {
@@ -761,14 +763,14 @@ class JavaMembers
         return null;
     }
 
-    private static MemberBox extractSetMethod(MemberBox[] methods,
-                                              boolean isStatic)
+    private static MethodOrConstructor extractSetMethod(DynamicMethod methods,
+                                                        boolean isStatic)
     {
 
-        for (MemberBox method : methods) {
+        for (MethodOrConstructor method : methods.getMethods()) {
             if (!isStatic || method.isStatic()) {
-                if (method.method().getReturnType() == Void.TYPE) {
-                    if (method.argTypes.length == 1) {
+                if (method.returnType() == Void.TYPE) {
+                    if (method.parameterCount() == 1) {
                         return method;
                     }
                 }
@@ -786,7 +788,7 @@ class JavaMembers
         int len = ht.size();
         Map<String,FieldAndMethods> result = new HashMap<String,FieldAndMethods>(len);
         for (FieldAndMethods fam: ht.values()) {
-            FieldAndMethods famNew = new FieldAndMethods(scope, fam.methods,
+            FieldAndMethods famNew = new FieldAndMethods(scope, fam.dynamicMethod,
                                                          fam.field);
             famNew.javaObject = javaObject;
             result.put(fam.field.getName(), famNew);
@@ -861,20 +863,22 @@ class JavaMembers
     private Map<String,FieldAndMethods> fieldAndMethods;
     private Map<String,Object> staticMembers;
     private Map<String,FieldAndMethods> staticFieldAndMethods;
-    NativeJavaMethod ctors; // we use NativeJavaMethod for ctor overload resolution
+    // replacement of ctors;
+    // TODO: rename
+    DynamicMethod dynamicConstructor;
 }
 
 class BeanProperty
 {
-    BeanProperty(MemberBox getter, MemberBox setter, NativeJavaMethod setters)
+    BeanProperty(MethodOrConstructor getter, MethodOrConstructor setter, NativeJavaMethod setters)
     {
         this.getter = getter;
         this.setter = setter;
         this.setters = setters;
     }
 
-    MemberBox getter;
-    MemberBox setter;
+    MethodOrConstructor getter;
+    MethodOrConstructor setter;
     NativeJavaMethod setters;
 }
 
@@ -882,7 +886,7 @@ class FieldAndMethods extends NativeJavaMethod
 {
     private static final long serialVersionUID = -9222428244284796755L;
 
-    FieldAndMethods(Scriptable scope, MemberBox[] methods, Field field)
+    FieldAndMethods(Scriptable scope, DynamicMethod methods, Field field)
     {
         super(methods);
         this.field = field;

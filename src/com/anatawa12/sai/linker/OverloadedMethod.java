@@ -1,5 +1,7 @@
 package com.anatawa12.sai.linker;
 
+import com.anatawa12.sai.Context;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -58,23 +60,14 @@ public class OverloadedMethod {
         return cacheEntry.get(this, classes);
     }
 
-    private RuntimeException throwNoSuchMethodException(String message) {
-        throw this.<RuntimeException>throwNoSuchMethodException0(new NoSuchMethodException(message));
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T extends Throwable> T throwNoSuchMethodException0(Throwable throwable) throws T {
-        throw (T) throwable;
-    }
-
     private RuntimeException throwNoSuchMethod(Class<?>[] argTypes) {
         if (this.varArgMethods.isEmpty()) {
-            return throwNoSuchMethodException("None of"
+            return Context.reportRuntimeError("None of"
                     + " the fixed arity signatures " + getSignatureList(this.fixArgMethods)
                     + " of the method " + this.name
                     + " match the argument types " + argTypesString(argTypes));
         } else {
-            return throwNoSuchMethodException("None of"
+            return Context.reportRuntimeError("None of"
                     + " the fixed arity signatures " + getSignatureList(this.fixArgMethods)
                     + " or the variable arity signatures " + getSignatureList(this.varArgMethods)
                     + " of the method " + this.name
@@ -84,7 +77,7 @@ public class OverloadedMethod {
 
     private RuntimeException throwAmbiguousMethod(Class<?>[] argTypes, List<MethodOrConstructor> methods) {
         String arityKind = methods.get(0).isVarArgs() ? "variable" : "fixed";
-        return throwNoSuchMethodException("Can't unambiguously select"
+        return Context.reportRuntimeError("Can't unambiguously select"
                 + " between " + arityKind + " arity"
                 + " signatures " + getSignatureList(methods)
                 + " of the method " + this.name
@@ -119,7 +112,7 @@ public class OverloadedMethod {
 
     private static void appendTypes(StringBuilder b, Class<?>[] classes, boolean varArg) {
         if (!varArg) {
-            if (classes.length > 1) {
+            if (classes.length >= 1) {
                 b.append(classes[0].getCanonicalName());
 
                 for(int i = 1; i < classes.length; ++i) {

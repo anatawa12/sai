@@ -6,6 +6,8 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.linker.MethodOrConstructor;
+
 /**
  * This class reflects a single Java constructor into the JavaScript
  * environment.  It satisfies a request for an overloaded constructor,
@@ -24,9 +26,9 @@ public class NativeJavaConstructor extends BaseFunction
 {
     private static final long serialVersionUID = -8149253217482668463L;
 
-    MemberBox ctor;
+    MethodOrConstructor ctor;
 
-    public NativeJavaConstructor(MemberBox ctor)
+    public NativeJavaConstructor(MethodOrConstructor ctor)
     {
         this.ctor = ctor;
     }
@@ -41,14 +43,14 @@ public class NativeJavaConstructor extends BaseFunction
     @Override
     public String getFunctionName()
     {
-        String sig = JavaMembers.liveConnectSignature(ctor.argTypes);
+        String sig = JavaMembers.liveConnectSignature(ctor.parameterArray());
         return "<init>".concat(sig);
     }
 
     @Override
     public String toString()
     {
-        return "[JavaConstructor " + ctor.getName() + "]";
+        return "[JavaConstructor " + ctor.name() + "]";
     }
 }
 
