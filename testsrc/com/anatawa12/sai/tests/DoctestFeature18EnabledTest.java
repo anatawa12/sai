@@ -33,15 +33,7 @@ public class DoctestFeature18EnabledTest extends DoctestsTest {
 
     @Test
     public void runDoctest() {
-        ContextFactory contextFactory = new ContextFactory() {
-            @Override
-            protected boolean hasFeature(Context cx, int featureIndex) {
-                if (featureIndex == Context.FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE) {
-                    return true;
-                }
-                return super.hasFeature(cx, featureIndex);
-            }
-        };
+        ContextFactory contextFactory = new ContextFactory();
         Context context = contextFactory.enterContext();
         try {
             context.setOptimizationLevel(optimizationLevel);

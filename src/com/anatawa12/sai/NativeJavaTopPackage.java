@@ -63,7 +63,7 @@ public class NativeJavaTopPackage
             }
         }
         if (loader == null) {
-            Context.reportRuntimeError0("msg.not.classloader");
+            RuntimeErrors.reportRuntimeError0("msg.not.classloader");
             return null;
         }
         NativeJavaPackage pkg = new NativeJavaPackage(true, "", loader);
@@ -148,7 +148,7 @@ public class NativeJavaTopPackage
                 offset = index+1;
             }
         }
-        throw Context.reportRuntimeError0("msg.not.java.obj");
+        throw RuntimeErrors.reportRuntimeError0("msg.not.java.obj");
     }
 
     private static final Object FTAG = "JavaTopPackage";

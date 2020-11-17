@@ -327,13 +327,14 @@ public class Context
      */
     public static final int FEATURE_THREAD_SAFE_OBJECTS = 17;
 
-    /**
-     * If set, then all integer numbers will be returned without decimal place. For instance
-     * assume there is a function like this:
-     * <code>function foo() {return 5;}</code>
-     * 5 will be returned if feature is set, 5.0 otherwise.
-     */
-    public static final int FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE = 18;
+    // this feature is always enabled
+    // /**
+    //  * If set, then all integer numbers will be returned without decimal place. For instance
+    //  * assume there is a function like this:
+    //  * <code>function foo() {return 5;}</code>
+    //  * 5 will be returned if feature is set, 5.0 otherwise.
+    //  */
+    // public static final int FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE = 18;
 
     /**
      * TypedArray buffer uses little/big endian depending on the platform.
@@ -973,43 +974,6 @@ public class Context
                                          lineSource, lineOffset);
         }
         throw new EvaluatorException(message, sourceName, lineno, lineSource, lineOffset);
-    }
-
-    static EvaluatorException reportRuntimeError0(String messageId)
-    {
-        String msg = ScriptRuntime.getMessage0(messageId);
-        return reportRuntimeError(msg);
-    }
-
-    static EvaluatorException reportRuntimeError1(String messageId,
-                                                  Object arg1)
-    {
-        String msg = ScriptRuntime.getMessage1(messageId, arg1);
-        return reportRuntimeError(msg);
-    }
-
-    static EvaluatorException reportRuntimeError2(String messageId,
-                                                  Object arg1, Object arg2)
-    {
-        String msg = ScriptRuntime.getMessage2(messageId, arg1, arg2);
-        return reportRuntimeError(msg);
-    }
-
-    static EvaluatorException reportRuntimeError3(String messageId,
-                                                  Object arg1, Object arg2,
-                                                  Object arg3)
-    {
-        String msg = ScriptRuntime.getMessage3(messageId, arg1, arg2, arg3);
-        return reportRuntimeError(msg);
-    }
-
-    static EvaluatorException reportRuntimeError4(String messageId,
-                                                  Object arg1, Object arg2,
-                                                  Object arg3, Object arg4)
-    {
-        String msg
-            = ScriptRuntime.getMessage4(messageId, arg1, arg2, arg3, arg4);
-        return reportRuntimeError(msg);
     }
 
     /**

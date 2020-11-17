@@ -293,9 +293,6 @@ public class ContextFactory
           case Context.FEATURE_THREAD_SAFE_OBJECTS:
               return false;
 
-          case Context.FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE:
-              return false;
-
           case Context.FEATURE_LITTLE_ENDIAN:
               return false;
 

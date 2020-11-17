@@ -672,6 +672,49 @@ public class ClassFileWriter {
     }
 
     /**
+     * Generate the load constant bytecode for the given integer.
+     *
+     * @param k the constant
+     */
+    public void addLoadConstant(Class<?> k) {
+        if (k.isPrimitive()) {
+            switch (k.toString()) {
+                case "boolean":
+                    add(ByteCode.GETSTATIC, "java.lang.Boolean", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "byte":
+                    add(ByteCode.GETSTATIC, "java.lang.Byte", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "char":
+                    add(ByteCode.GETSTATIC, "java.lang.Character", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "double":
+                    add(ByteCode.GETSTATIC, "java.lang.Double", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "float":
+                    add(ByteCode.GETSTATIC, "java.lang.Float", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "int":
+                    add(ByteCode.GETSTATIC, "java.lang.Integer", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "long":
+                    add(ByteCode.GETSTATIC, "java.lang.Long", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "short":
+                    add(ByteCode.GETSTATIC, "java.lang.Short", "TYPE", "Ljava/lang/Class;");
+                    break;
+                case "void":
+                    add(ByteCode.GETSTATIC, "java.lang.Void", "TYPE", "Ljava/lang/Class;");
+                    break;
+                default:
+                    throw new IllegalArgumentException("unsupported primitive: " + k);
+            }
+        } else {
+            add(ByteCode.LDC, itsConstantPool.addClass(k.getName()));
+        }
+    }
+
+    /**
      * Add the given two-operand bytecode to the current method.
      *
      * @param theOpCode the opcode of the bytecode

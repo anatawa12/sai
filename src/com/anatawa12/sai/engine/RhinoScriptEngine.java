@@ -348,14 +348,6 @@ public class RhinoScriptEngine
       extends ContextFactory {
 
     @Override
-    protected boolean hasFeature(Context cx, int featureIndex) {
-      if (featureIndex == Context.FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE) {
-        return true;
-      }
-      return super.hasFeature(cx, featureIndex);
-    }
-
-    @Override
     protected void onContextCreated(Context cx) {
       cx.setLanguageVersion(Context.VERSION_ES6);
       cx.setOptimizationLevel(DEFAULT_OPT);

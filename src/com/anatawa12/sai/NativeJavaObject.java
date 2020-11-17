@@ -6,14 +6,14 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.linker.LinkerServices;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Date;
 import java.util.Map;
 
 /**
@@ -230,7 +230,7 @@ public class NativeJavaObject
             } else if (hint == ScriptRuntime.NumberClass) {
                 converterName = "doubleValue";
             } else {
-                throw Context.reportRuntimeError0("msg.default.value");
+                throw RuntimeErrors.reportRuntimeError0("msg.default.value");
             }
             Object converterObject = get(converterName, this);
             if (converterObject instanceof Function) {
@@ -519,193 +519,20 @@ public class NativeJavaObject
         return coerceTypeImpl(type, value);
     }
 
-    /**
-     * Type-munging for field setting and method invocation.
-     * Conforms to LC3 specification
-     */
-    static Object coerceTypeImpl(Class<?> type, Object value)
-    {
-        if (value != null && value.getClass() == type) {
-            return value;
+    static Object coerceTypeImpl(Class<?> type, Object value) {
+        try {
+            if (value instanceof Wrapper) value = ((Wrapper) value).unwrap();
+            Class<?> valueType = value == null ? Object.class : value.getClass();
+            return LinkerServices.INSTANCE.getTypeConverter(valueType, type)
+                    .invoke(value);
+        } catch (Throwable throwable) {
+            throw throwException(RuntimeException.class, throwable);
         }
+    }
 
-        switch (getJSTypeCode(value)) {
-
-        case JSTYPE_NULL:
-            // raise error if type.isPrimitive()
-            if (type.isPrimitive()) {
-                reportConversionError(value, type);
-            }
-            return null;
-
-        case JSTYPE_UNDEFINED:
-            if (type == ScriptRuntime.StringClass ||
-                type == ScriptRuntime.ObjectClass) {
-                return "undefined";
-            }
-            reportConversionError("undefined", type);
-            break;
-
-        case JSTYPE_BOOLEAN:
-            // Under LC3, only JS Booleans can be coerced into a Boolean value
-            if (type == Boolean.TYPE ||
-                type == ScriptRuntime.BooleanClass ||
-                type == ScriptRuntime.ObjectClass) {
-                return value;
-            }
-            else if (type == ScriptRuntime.StringClass) {
-                return value.toString();
-            }
-            else {
-                reportConversionError(value, type);
-            }
-            break;
-
-        case JSTYPE_NUMBER:
-            if (type == ScriptRuntime.StringClass) {
-                return ScriptRuntime.toString(value);
-            }
-            else if (type == ScriptRuntime.ObjectClass) {
-                Context context = Context.getCurrentContext();
-                if ((context != null) &&
-                    context.hasFeature(Context.FEATURE_INTEGER_WITHOUT_DECIMAL_PLACE)) {
-                    //to process numbers like 2.0 as 2 without decimal place
-                    long roundedValue = Math.round(toDouble(value));
-                    if(roundedValue == toDouble(value)) {
-                        return coerceToNumber(Long.TYPE, value);
-                    }
-                }
-                return coerceToNumber(Double.TYPE, value);
-            }
-            else if ((type.isPrimitive() && type != Boolean.TYPE) ||
-                     ScriptRuntime.NumberClass.isAssignableFrom(type)) {
-                return coerceToNumber(type, value);
-            }
-            else {
-                reportConversionError(value, type);
-            }
-            break;
-
-        case JSTYPE_STRING:
-            if (type == ScriptRuntime.StringClass || type.isInstance(value)) {
-                return value.toString();
-            }
-            else if (type == Character.TYPE
-                     || type == ScriptRuntime.CharacterClass)
-            {
-                // Special case for converting a single char string to a
-                // character
-                // Placed here because it applies *only* to JS strings,
-                // not other JS objects converted to strings
-                if (((CharSequence)value).length() == 1) {
-                    return Character.valueOf(((CharSequence)value).charAt(0));
-                }
-                return coerceToNumber(type, value);
-            }
-            else if ((type.isPrimitive() && type != Boolean.TYPE)
-                     || ScriptRuntime.NumberClass.isAssignableFrom(type))
-            {
-                return coerceToNumber(type, value);
-            }
-            else {
-                reportConversionError(value, type);
-            }
-            break;
-
-        case JSTYPE_JAVA_CLASS:
-            if (value instanceof Wrapper) {
-                value = ((Wrapper)value).unwrap();
-            }
-
-            if (type == ScriptRuntime.ClassClass ||
-                type == ScriptRuntime.ObjectClass) {
-                return value;
-            }
-            else if (type == ScriptRuntime.StringClass) {
-                return value.toString();
-            }
-            else {
-                reportConversionError(value, type);
-            }
-            break;
-
-        case JSTYPE_JAVA_OBJECT:
-        case JSTYPE_JAVA_ARRAY:
-            if (value instanceof Wrapper) {
-              value = ((Wrapper)value).unwrap();
-            }
-            if (type.isPrimitive()) {
-                if (type == Boolean.TYPE) {
-                    reportConversionError(value, type);
-                }
-                return coerceToNumber(type, value);
-            }
-          if (type == ScriptRuntime.StringClass) {
-                return value.toString();
-            }
-            if (type.isInstance(value)) {
-                return value;
-            }
-            reportConversionError(value, type);
-            break;
-
-        case JSTYPE_OBJECT:
-            if (type == ScriptRuntime.StringClass) {
-                return ScriptRuntime.toString(value);
-            }
-            else if (type.isPrimitive()) {
-                if (type == Boolean.TYPE) {
-                    reportConversionError(value, type);
-                }
-                return coerceToNumber(type, value);
-            }
-            else if (type.isInstance(value)) {
-                return value;
-            }
-            else if (type == ScriptRuntime.DateClass
-                     && value instanceof NativeDate)
-            {
-                double time = ((NativeDate)value).getJSTimeValue();
-                // XXX: This will replace NaN by 0
-                return new Date((long)time);
-            }
-            else if (type.isArray() && value instanceof NativeArray) {
-                // Make a new java array, and coerce the JS array components
-                // to the target (component) type.
-                NativeArray array = (NativeArray) value;
-                long length = array.getLength();
-                Class<?> arrayType = type.getComponentType();
-                Object Result = Array.newInstance(arrayType, (int)length);
-                for (int i = 0 ; i < length ; ++i) {
-                    try  {
-                        Array.set(Result, i, coerceTypeImpl(
-                                arrayType, array.get(i, array)));
-                    }
-                    catch (EvaluatorException ee) {
-                        reportConversionError(value, type);
-                    }
-                }
-
-                return Result;
-            }
-            else if (value instanceof Wrapper) {
-                value = ((Wrapper)value).unwrap();
-                if (type.isInstance(value))
-                    return value;
-                reportConversionError(value, type);
-            }
-            else if (type.isInterface() && (value instanceof NativeObject
-                    || value instanceof NativeFunction
-                    || value instanceof ArrowFunction)) {
-                // Try to use function/object as implementation of Java interface.
-                return createInterfaceAdapter(type, (ScriptableObject) value);
-            } else {
-                reportConversionError(value, type);
-            }
-            break;
-        }
-
-        return value;
+    @SuppressWarnings({"unchecked", "SameParameterValue"})
+    private static <T extends Throwable> T throwException(Class<T> clazz, Throwable throwable) throws T {
+        throw (T) throwable;
     }
 
     protected static Object createInterfaceAdapter(Class<?>type, ScriptableObject so) {
@@ -726,106 +553,6 @@ public class NativeJavaObject
         // Store for later retrieval
         glue = so.associateValue(key, glue);
         return glue;
-    }
-
-    private static Object coerceToNumber(Class<?> type, Object value)
-    {
-        Class<?> valueClass = value.getClass();
-
-        // Character
-        if (type == Character.TYPE || type == ScriptRuntime.CharacterClass) {
-            if (valueClass == ScriptRuntime.CharacterClass) {
-                return value;
-            }
-            return Character.valueOf((char)toInteger(value,
-                                                 ScriptRuntime.CharacterClass,
-                                                 Character.MIN_VALUE,
-                                                 Character.MAX_VALUE));
-        }
-
-        // Double, Float
-        if (type == ScriptRuntime.ObjectClass ||
-            type == ScriptRuntime.DoubleClass || type == Double.TYPE) {
-            return valueClass == ScriptRuntime.DoubleClass
-                ? value
-                : Double.valueOf(toDouble(value));
-        }
-
-        if (type == ScriptRuntime.FloatClass || type == Float.TYPE) {
-            if (valueClass == ScriptRuntime.FloatClass) {
-                return value;
-            }
-            double number = toDouble(value);
-            if (Double.isInfinite(number) || Double.isNaN(number)
-                || number == 0.0) {
-                return Float.valueOf((float)number);
-            }
-
-            double absNumber = Math.abs(number);
-            if (absNumber < Float.MIN_VALUE) {
-                return Float.valueOf((number > 0.0) ? +0.0f : -0.0f);
-            }
-            else if (absNumber > Float.MAX_VALUE) {
-                return Float.valueOf((number > 0.0) ?
-                                 Float.POSITIVE_INFINITY :
-                                 Float.NEGATIVE_INFINITY);
-            }
-            else {
-                return Float.valueOf((float)number);
-            }
-        }
-
-        // Integer, Long, Short, Byte
-        if (type == ScriptRuntime.IntegerClass || type == Integer.TYPE) {
-            if (valueClass == ScriptRuntime.IntegerClass) {
-                return value;
-            }
-            return Integer.valueOf((int)toInteger(value,
-                                              ScriptRuntime.IntegerClass,
-                                              Integer.MIN_VALUE,
-                                              Integer.MAX_VALUE));
-        }
-
-        if (type == ScriptRuntime.LongClass || type == Long.TYPE) {
-            if (valueClass == ScriptRuntime.LongClass) {
-                return value;
-            }
-            /* Long values cannot be expressed exactly in doubles.
-             * We thus use the largest and smallest double value that
-             * has a value expressible as a long value. We build these
-             * numerical values from their hexidecimal representations
-             * to avoid any problems caused by attempting to parse a
-             * decimal representation.
-             */
-            final double max = Double.longBitsToDouble(0x43dfffffffffffffL);
-            final double min = Double.longBitsToDouble(0xc3e0000000000000L);
-            return Long.valueOf(toInteger(value,
-                                      ScriptRuntime.LongClass,
-                                      min,
-                                      max));
-        }
-
-        if (type == ScriptRuntime.ShortClass || type == Short.TYPE) {
-            if (valueClass == ScriptRuntime.ShortClass) {
-                return value;
-            }
-            return Short.valueOf((short)toInteger(value,
-                                              ScriptRuntime.ShortClass,
-                                              Short.MIN_VALUE,
-                                              Short.MAX_VALUE));
-        }
-
-        if (type == ScriptRuntime.ByteClass || type == Byte.TYPE) {
-            if (valueClass == ScriptRuntime.ByteClass) {
-                return value;
-            }
-            return Byte.valueOf((byte)toInteger(value,
-                                            ScriptRuntime.ByteClass,
-                                            Byte.MIN_VALUE,
-                                            Byte.MAX_VALUE));
-        }
-
-        return Double.valueOf(toDouble(value));
     }
 
 
@@ -872,35 +599,11 @@ public class NativeJavaObject
         }
     }
 
-    private static long toInteger(Object value, Class<?> type,
-                                  double min, double max)
-    {
-        double d = toDouble(value);
-
-        if (Double.isInfinite(d) || Double.isNaN(d)) {
-            // Convert to string first, for more readable message
-            reportConversionError(ScriptRuntime.toString(value), type);
-        }
-
-        if (d > 0.0) {
-            d = Math.floor(d);
-        }
-        else {
-            d = Math.ceil(d);
-        }
-
-        if (d < min || d > max) {
-            // Convert to string first, for more readable message
-            reportConversionError(ScriptRuntime.toString(value), type);
-        }
-        return (long)d;
-    }
-
-    static void reportConversionError(Object value, Class<?> type)
+    public static void reportConversionError(Object value, Class<?> type)
     {
         // It uses String.valueOf(value), not value.toString() since
         // value can be null, bug 282447.
-        throw Context.reportRuntimeError2(
+        throw RuntimeErrors.reportRuntimeError2(
             "msg.conversion.not.allowed",
             String.valueOf(value),
             JavaMembers.javaSignature(type));

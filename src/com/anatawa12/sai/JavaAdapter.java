@@ -23,6 +23,8 @@ import java.util.Map;
 
 import com.anatawa12.sai.classfile.ByteCode;
 import com.anatawa12.sai.classfile.ClassFileWriter;
+import com.anatawa12.sai.linker.ClassList;
+import com.anatawa12.sai.linker.MethodOrConstructor;
 
 public final class JavaAdapter implements IdFunctionCall
 {
@@ -177,7 +179,7 @@ public final class JavaAdapter implements IdFunctionCall
         if (superClass == null) {
             superClass = ScriptRuntime.ObjectClass;
         }
-        
+
         Class<?>[] interfaces = new Class[interfaceCount];
         System.arraycopy(intfs, 0, interfaces, 0, interfaceCount);
         // next argument is implementation, must be scriptable
@@ -185,7 +187,7 @@ public final class JavaAdapter implements IdFunctionCall
 
         Class<?> adapterClass = getAdapterClass(scope, superClass, interfaces, obj);
         Object adapter;
-        
+
         int argsCount = N - classCount - 1;
         try {
             if (argsCount > 0) {
@@ -199,16 +201,10 @@ public final class JavaAdapter implements IdFunctionCall
                 // TODO: cache class wrapper?
                 NativeJavaClass classWrapper = new NativeJavaClass(scope,
                         adapterClass, true);
-                NativeJavaMethod ctors = classWrapper.members.ctors;
-                int index = ctors.findCachedFunction(cx, ctorArgs);
-                if (index < 0) {
-                    String sig = NativeJavaMethod.scriptSignature(args);
-                    throw Context.reportRuntimeError2(
-                            "msg.no.java.ctor", adapterClass.getName(), sig);
-                }
+                MethodOrConstructor methodOrConstructor = classWrapper.members.dynamicConstructor.getInvocation(ClassList.fromArgs(ctorArgs));
 
                 // Found the constructor, so try invoking it.
-                adapter = NativeJavaClass.constructInternal(ctorArgs, ctors.methods[index]);
+                adapter = NativeJavaClass.constructInternal(ctorArgs, methodOrConstructor);
             } else {
                 Class<?>[] ctorParms = {
                         ScriptRuntime.ScriptableClass,
@@ -984,7 +980,7 @@ public final class JavaAdapter implements IdFunctionCall
         if (parms.length > 64) {
             // If it will be an issue, then passing a static boolean array
             // can be an option, but for now using simple bitmask
-            throw Context.reportRuntimeError0(
+            throw Context.reportRuntimeError(
                 "JavaAdapter can not subclass methods with more then"
                 +" 64 arguments.");
         }

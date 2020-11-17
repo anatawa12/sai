@@ -130,4 +130,14 @@
     <!-- We are planning to get rid of synchronization -->
     <Bug pattern="UG_SYNC_SET_UNSYNC_GET"/>
   </Match>
+  <Match>
+    <!-- the package has un-parsable jvm code. -->
+    <Package name="com.anatawa12.sai.linker"/>
+  </Match>
+  <Match>
+    <!-- this is empty array so not mutable -->
+    <Class name="com.anatawa12.sai.Context"/>
+    <Field name="emptyArgs" />
+    <Bug pattern="MS_MUTABLE_ARRAY"/>
+  </Match>
 </FindBugsFilter>
