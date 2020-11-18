@@ -24,6 +24,8 @@ jobs:
           java-version: '1.8'
 
       - uses: actions/checkout@v2
+        with:
+          submodules: true
       
       - uses: actions/cache@v2
         with:
