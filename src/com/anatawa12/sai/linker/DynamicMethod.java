@@ -1,14 +1,16 @@
 package com.anatawa12.sai.linker;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DynamicMethod {
+public class DynamicMethod implements Serializable {
+    private static final long serialVersionUID = 440253398627762620L;
     private final LinkedList<MethodOrConstructor> methods;
     private final String name;
-    private final Map<Integer, OverloadedMethod> cache = new ConcurrentHashMap<>();
+    private transient final Map<Integer, OverloadedMethod> cache = new ConcurrentHashMap<>();
 
     public DynamicMethod(LinkedList<MethodOrConstructor> methods, String name) {
         this.methods = methods;
