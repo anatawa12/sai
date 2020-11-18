@@ -156,6 +156,7 @@ public class ClassCompiler
         }
 
         Codegen codegen = new Codegen();
+        codegen.sourceString = source;
         codegen.setMainMethodClass(mainMethodClassName);
         byte[] scriptClassBytes
             = codegen.compileToClassFile(compilerEnv, scriptClassName,

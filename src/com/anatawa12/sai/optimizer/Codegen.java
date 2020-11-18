@@ -6,20 +6,6 @@
 
 package com.anatawa12.sai.optimizer;
 
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_FINAL;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PROTECTED;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PUBLIC;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_STATIC;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_VOLATILE;
-
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.anatawa12.sai.classfile.ByteCode;
-import com.anatawa12.sai.classfile.ClassFileWriter;
 import com.anatawa12.sai.CompilerEnvirons;
 import com.anatawa12.sai.Context;
 import com.anatawa12.sai.Evaluator;
@@ -37,6 +23,20 @@ import com.anatawa12.sai.Token;
 import com.anatawa12.sai.ast.FunctionNode;
 import com.anatawa12.sai.ast.Name;
 import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.classfile.ByteCode;
+import com.anatawa12.sai.classfile.ClassFileWriter;
+
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_FINAL;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PROTECTED;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PUBLIC;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_STATIC;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_VOLATILE;
 
 /**
  * This class generates code for a given IR tree.
@@ -760,10 +760,14 @@ public class Codegen implements Evaluator
         final int Do_getEncodedSource     = 4;
         final int Do_getParamOrVarConst   = 5;
         final int Do_isGeneratorFunction  = 6;
-        final int SWITCH_COUNT            = 7;
+        final int Do_getRealSource        = 7;
+        final int SWITCH_COUNT            = 8;
 
         for (int methodIndex = 0; methodIndex != SWITCH_COUNT; ++methodIndex) {
             if (methodIndex == Do_getEncodedSource && encodedSource == null) {
+                continue;
+            }
+            if (methodIndex == Do_getRealSource && sourceString == null) {
                 continue;
             }
 
@@ -809,6 +813,12 @@ public class Codegen implements Evaluator
                 methodLocals = 1; // Only this
                 cfw.startMethod("isGeneratorFunction", "()Z",
                                 ACC_PROTECTED);
+                break;
+              case Do_getRealSource:
+                methodLocals = 1; // Only this
+                cfw.startMethod("getRealSource", "()Ljava/lang/String;",
+                        ACC_PROTECTED);
+                cfw.addPush(sourceString);
                 break;
               default:
                 throw Kit.codeBug();
@@ -961,6 +971,18 @@ public class Codegen implements Evaluator
                                   "(II)Ljava/lang/String;");
                     cfw.add(ByteCode.ARETURN);
                     break;
+
+                    case Do_getRealSource:
+                        // Push number non-encoded source start and end
+                        // to prepare for rawSource.substring(start, end)
+                        cfw.addPush(n.getAbsolutePosition());
+                        cfw.addPush(n.getAbsolutePosition() + n.getLength());
+                        cfw.addInvoke(ByteCode.INVOKEVIRTUAL,
+                                "java/lang/String",
+                                "substring",
+                                "(II)Ljava/lang/String;");
+                        cfw.add(ByteCode.ARETURN);
+                        break;
 
                   default:
                     throw Kit.codeBug();
@@ -1268,4 +1290,6 @@ public class Codegen implements Evaluator
 
     private double[] itsConstantList;
     private int itsConstantListSize;
+
+    public String sourceString;
 }

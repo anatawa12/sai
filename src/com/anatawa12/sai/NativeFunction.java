@@ -36,6 +36,10 @@ public abstract class NativeFunction extends BaseFunction
     @Override
     final String decompile(int indent, int flags)
     {
+        if (indent == 0 && flags == 0){
+            String realSource = getRealSource();
+            if (realSource != null) return realSource;
+        }
         String encodedSource = getEncodedSource();
         if (encodedSource == null) {
             return super.decompile(indent, flags);
@@ -125,6 +129,10 @@ public abstract class NativeFunction extends BaseFunction
      * corresponding parameter. Otherwise return the name of variable.
      */
     protected abstract String getParamOrVarName(int index);
+
+    protected String getRealSource() {
+        return null;
+    }
 
     /**
      * Get parameter or variable const-ness.
