@@ -6,15 +6,15 @@
 
 package com.anatawa12.sai;
 
-import static com.anatawa12.sai.ScriptRuntime.rangeError;
-import static com.anatawa12.sai.ScriptRuntimeES6.requireObjectCoercible;
+import com.anatawa12.sai.ScriptRuntime.StringIdOrIndex;
+import com.anatawa12.sai.regexp.NativeRegExp;
 
 import java.text.Collator;
 import java.text.Normalizer;
 import java.util.Locale;
 
-import com.anatawa12.sai.ScriptRuntime.StringIdOrIndex;
-import com.anatawa12.sai.regexp.NativeRegExp;
+import static com.anatawa12.sai.ScriptRuntime.rangeError;
+import static com.anatawa12.sai.ScriptRuntimeES6.requireObjectCoercible;
 
 /**
  * This class implements the String native object.
@@ -29,7 +29,7 @@ import com.anatawa12.sai.regexp.NativeRegExp;
  * @author Norris Boyd
  * @author Ronald Brill
  */
-final class NativeString extends IdScriptableObject
+final class NativeString extends NativePrimitive
 {
     private static final long serialVersionUID = 920268368584188687L;
 
@@ -38,6 +38,7 @@ final class NativeString extends IdScriptableObject
     static void init(Scriptable scope, boolean sealed)
     {
         NativeString obj = new NativeString("");
+        obj.members = JavaMembers.lookupClass(scope, String.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
     }
 
@@ -48,6 +49,18 @@ final class NativeString extends IdScriptableObject
     @Override
     public String getClassName() {
         return "String";
+    }
+
+    private transient JavaMembers members;
+
+    @Override
+    protected JavaMembers getJavaMembers() {
+        return members;
+    }
+
+    @Override
+    public Object unwrap() {
+        return string.toString();
     }
 
     private static final int

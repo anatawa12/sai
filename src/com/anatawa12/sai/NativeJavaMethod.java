@@ -151,6 +151,10 @@ public class NativeJavaMethod extends BaseFunction
                         break;
                     }
                 }
+                if (o instanceof NativePrimitive && ((NativePrimitive) o).unwrappedType() == c) {
+                    javaObject = ((NativePrimitive)o).unwrap();
+                    break;
+                }
                 o = o.getPrototype();
             }
         }

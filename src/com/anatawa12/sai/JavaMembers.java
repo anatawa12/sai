@@ -9,9 +9,6 @@ package com.anatawa12.sai;
 import com.anatawa12.sai.linker.DynamicMethod;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
-import static java.lang.reflect.Modifier.isProtected;
-import static java.lang.reflect.Modifier.isPublic;
-
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,6 +22,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static java.lang.reflect.Modifier.isProtected;
+import static java.lang.reflect.Modifier.isPublic;
 
 /**
  *
@@ -856,6 +856,10 @@ class JavaMembers
     {
         return RuntimeErrors.reportRuntimeError2(
             "msg.java.member.not.found", cl.getName(), memberName);
+    }
+
+    public Class<?> getCl() {
+        return cl;
     }
 
     private Class<?> cl;

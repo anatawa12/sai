@@ -13,7 +13,7 @@ package com.anatawa12.sai;
  *
  * @author Norris Boyd
  */
-final class NativeNumber extends IdScriptableObject
+final class NativeNumber extends NativePrimitive
 {
     private static final long serialVersionUID = 3504516769741512101L;
 
@@ -30,6 +30,7 @@ final class NativeNumber extends IdScriptableObject
     static void init(Scriptable scope, boolean sealed)
     {
         NativeNumber obj = new NativeNumber(0.0);
+        obj.members = JavaMembers.lookupClass(scope, Double.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
     }
 
@@ -42,6 +43,18 @@ final class NativeNumber extends IdScriptableObject
     public String getClassName()
     {
         return "Number";
+    }
+
+    private transient JavaMembers members;
+
+    @Override
+    protected JavaMembers getJavaMembers() {
+        return members;
+    }
+
+    @Override
+    public Object unwrap() {
+        return doubleValue;
     }
 
     @Override
