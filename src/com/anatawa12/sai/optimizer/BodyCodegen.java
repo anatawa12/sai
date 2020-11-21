@@ -1,17 +1,5 @@
 package com.anatawa12.sai.optimizer;
 
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
-import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_STATIC;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import com.anatawa12.sai.classfile.ByteCode;
-import com.anatawa12.sai.classfile.ClassFileWriter;
 import com.anatawa12.sai.CompilerEnvirons;
 import com.anatawa12.sai.Context;
 import com.anatawa12.sai.Kit;
@@ -22,6 +10,19 @@ import com.anatawa12.sai.Token;
 import com.anatawa12.sai.ast.FunctionNode;
 import com.anatawa12.sai.ast.Jump;
 import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.classfile.ByteCode;
+import com.anatawa12.sai.classfile.ClassFileWriter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
+import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_STATIC;
 
 class BodyCodegen
 {
@@ -2625,11 +2626,6 @@ Else pass the JS object in the aReg and 0.0 in the dReg.
             handlerLabels[JAVASCRIPT_EXCEPTION] = cfw.acquireLabel();
             handlerLabels[EVALUATOR_EXCEPTION] = cfw.acquireLabel();
             handlerLabels[ECMAERROR_EXCEPTION] = cfw.acquireLabel();
-            Context cx = Context.getCurrentContext();
-            if (cx != null &&
-                cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)) {
-                handlerLabels[THROWABLE_EXCEPTION] = cfw.acquireLabel();
-            }
         }
         if (finallyTarget != null) {
             handlerLabels[FINALLY_EXCEPTION] = cfw.acquireLabel();
@@ -2699,14 +2695,6 @@ Else pass the JS object in the aReg and 0.0 in the dReg.
                 catchLabel, exceptionLocal,
                 handlerLabels[ECMAERROR_EXCEPTION]);
 
-            Context cx = Context.getCurrentContext();
-            if (cx != null &&
-                cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS))
-            {
-                generateCatchBlock(THROWABLE_EXCEPTION, savedVariableObject,
-                    catchLabel, exceptionLocal,
-                    handlerLabels[THROWABLE_EXCEPTION]);
-            }
         }
 
         // finally handler; catch all exceptions, store to a local; JSR to

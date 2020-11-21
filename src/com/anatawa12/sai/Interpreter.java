@@ -6,7 +6,10 @@
 
 package com.anatawa12.sai;
 
-import static com.anatawa12.sai.UniqueTag.DOUBLE_MARK;
+import com.anatawa12.sai.ScriptRuntime.NoSuchMethodShim;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.debug.DebugFrame;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -15,10 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import com.anatawa12.sai.ScriptRuntime.NoSuchMethodShim;
-import com.anatawa12.sai.ast.FunctionNode;
-import com.anatawa12.sai.ast.ScriptNode;
-import com.anatawa12.sai.debug.DebugFrame;
+import static com.anatawa12.sai.UniqueTag.DOUBLE_MARK;
 
 public final class Interpreter extends Icode implements Evaluator
 {
@@ -2186,21 +2186,15 @@ switch (op) {
             } else if (throwable instanceof ContinuationPending) {
                 exState = EX_NO_JS_STATE;
             } else if (throwable instanceof RuntimeException) {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_FINALLY_STATE;
+                exState = EX_FINALLY_STATE;
             } else if (throwable instanceof Error) {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_NO_JS_STATE;
+                exState = EX_NO_JS_STATE;
             } else if (throwable instanceof ContinuationJump) {
                 // It must be ContinuationJump
                 exState = EX_FINALLY_STATE;
                 cjump = (ContinuationJump)throwable;
             } else {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_FINALLY_STATE;
+                exState = EX_FINALLY_STATE;
             }
 
             if (instructionCounting) {

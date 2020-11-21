@@ -278,9 +278,6 @@ public class ContextFactory
           case Context.FEATURE_WARNING_AS_ERROR:
             return false;
 
-          case Context.FEATURE_ENHANCED_JAVA_ACCESS:
-            return false;
-
           case Context.FEATURE_V8_EXTENSIONS:
             return true;
 

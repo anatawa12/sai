@@ -8,6 +8,13 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.ast.AstRoot;
+import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.classfile.ClassFileWriter.ClassFileFormatException;
+import com.anatawa12.sai.debug.DebuggableScript;
+import com.anatawa12.sai.debug.Debugger;
+import com.anatawa12.sai.xml.XMLLib;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -22,13 +29,6 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import com.anatawa12.sai.classfile.ClassFileWriter.ClassFileFormatException;
-import com.anatawa12.sai.ast.AstRoot;
-import com.anatawa12.sai.ast.ScriptNode;
-import com.anatawa12.sai.debug.DebuggableScript;
-import com.anatawa12.sai.debug.Debugger;
-import com.anatawa12.sai.xml.XMLLib;
 
 /**
  * This class represents the runtime context of an executing script.
@@ -281,17 +281,18 @@ public class Context
      */
     public static final int FEATURE_WARNING_AS_ERROR = 12;
 
-    /**
-     * Enables enhanced access to Java.
-     * Specifically, controls whether private and protected members can be
-     * accessed, and whether scripts can catch all Java exceptions.
-     * <p>
-     * Note that this feature should only be enabled for trusted scripts.
-     * <p>
-     * By default {@link #hasFeature(int)} returns false.
-     * @since 1.7 Release 1
-     */
-    public static final int FEATURE_ENHANCED_JAVA_ACCESS = 13;
+    // this feature always be disabled
+    // /**
+    //  * Enables enhanced access to Java.
+    //  * Specifically, controls whether private and protected members can be
+    //  * accessed, and whether scripts can catch all Java exceptions.
+    //  * <p>
+    //  * Note that this feature should only be enabled for trusted scripts.
+    //  * <p>
+    //  * By default {@link #hasFeature(int)} returns false.
+    //  * @since 1.7 Release 1
+    //  */
+    // public static final int FEATURE_ENHANCED_JAVA_ACCESS = 13;
 
     /**
      * Enables access to JavaScript features from ECMAscript 6 that are present in
@@ -1850,12 +1851,7 @@ public class Context
         }
         // special handling of Error so scripts would not catch them
         if (e instanceof Error) {
-            Context cx = getContext();
-            if (cx == null ||
-                !cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS))
-            {
-                throw (Error)e;
-            }
+            throw (Error)e;
         }
         if (e instanceof RhinoException) {
             throw (RhinoException)e;
@@ -2246,7 +2242,6 @@ public class Context
      * @see #FEATURE_LOCATION_INFORMATION_IN_ERROR
      * @see #FEATURE_STRICT_MODE
      * @see #FEATURE_WARNING_AS_ERROR
-     * @see #FEATURE_ENHANCED_JAVA_ACCESS
      */
     public boolean hasFeature(int featureIndex)
     {

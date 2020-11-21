@@ -6,18 +6,18 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.v8dtoa.DoubleConversion;
+import com.anatawa12.sai.v8dtoa.FastDtoa;
+import com.anatawa12.sai.xml.XMLLib;
+import com.anatawa12.sai.xml.XMLObject;
+
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
-
-import com.anatawa12.sai.ast.FunctionNode;
-import com.anatawa12.sai.v8dtoa.DoubleConversion;
-import com.anatawa12.sai.v8dtoa.FastDtoa;
-import com.anatawa12.sai.xml.XMLLib;
-import com.anatawa12.sai.xml.XMLObject;
 
 /**
  * This is the class that implements the runtime.
@@ -3777,12 +3777,6 @@ public class ScriptRuntime {
                 re = ee;
                 type = TopLevel.NativeErrors.InternalError;
                 errorMsg = ee.getMessage();
-            } else if (cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)) {
-                // With FEATURE_ENHANCED_JAVA_ACCESS, scripts can catch
-                // all exception types
-                re = new WrappedException(t);
-                type = TopLevel.NativeErrors.JavaException;
-                errorMsg = t.toString();
             } else {
                 // Script can catch only instances of JavaScriptException,
                 // EcmaError and EvaluatorException
@@ -3869,12 +3863,6 @@ public class ScriptRuntime {
             re = ee;
             errorName = "InternalError";
             errorMsg = ee.getMessage();
-        } else if (cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)) {
-            // With FEATURE_ENHANCED_JAVA_ACCESS, scripts can catch
-            // all exception types
-            re = new WrappedException(t);
-            errorName = "JavaException";
-            errorMsg = t.toString();
         } else {
             // Script can catch only instances of JavaScriptException,
             // EcmaError and EvaluatorException

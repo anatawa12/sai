@@ -52,9 +52,7 @@ class JavaMembers
             this.members = new HashMap<String,Object>();
             this.staticMembers = new HashMap<String,Object>();
             this.cl = cl;
-            boolean includePrivate = cx.hasFeature(
-                    Context.FEATURE_ENHANCED_JAVA_ACCESS);
-            reflect(scope, includeProtected, includePrivate);
+            reflect(scope, includeProtected);
         } finally {
             Context.exit();
         }
@@ -307,42 +305,35 @@ class JavaMembers
      * nearest accessible method.
      */
     private static Method[] discoverAccessibleMethods(Class<?> clazz,
-                                                      boolean includeProtected,
-                                                      boolean includePrivate)
+                                                      boolean includeProtected)
     {
         Map<MethodSignature,Method> map = new HashMap<MethodSignature,Method>();
-        discoverAccessibleMethods(clazz, map, includeProtected, includePrivate);
+        discoverAccessibleMethods(clazz, map, includeProtected);
         return map.values().toArray(new Method[map.size()]);
     }
 
     private static void discoverAccessibleMethods(Class<?> clazz,
-            Map<MethodSignature,Method> map, boolean includeProtected,
-            boolean includePrivate)
+                                                  Map<MethodSignature, Method> map, boolean includeProtected)
     {
-        if (isPublic(clazz.getModifiers()) || includePrivate) {
+        if (isPublic(clazz.getModifiers())) {
             try {
-                if (includeProtected || includePrivate) {
+                if (includeProtected) {
                     while (clazz != null) {
                         try {
                             Method[] methods = clazz.getDeclaredMethods();
                             for (Method method : methods) {
                                 int mods = method.getModifiers();
 
-                                if (isPublic(mods)
-                                        || isProtected(mods)
-                                        || includePrivate) {
+                                if (isPublic(mods) || isProtected(mods)) {
                                     MethodSignature sig = new MethodSignature(method);
                                     if (!map.containsKey(sig)) {
-                                        if (includePrivate && !method.isAccessible())
-                                            method.setAccessible(true);
                                         map.put(sig, method);
                                     }
                                 }
                             }
                             Class<?>[] interfaces = clazz.getInterfaces();
                             for (Class<?> intface : interfaces) {
-                                discoverAccessibleMethods(intface, map, includeProtected,
-                                                          includePrivate);
+                                discoverAccessibleMethods(intface, map, includeProtected);
                             }
                             clazz = clazz.getSuperclass();
                         } catch (SecurityException e) {
@@ -381,13 +372,11 @@ class JavaMembers
 
         Class<?>[] interfaces = clazz.getInterfaces();
         for (Class<?> intface : interfaces) {
-            discoverAccessibleMethods(intface, map, includeProtected,
-                    includePrivate);
+            discoverAccessibleMethods(intface, map, includeProtected);
         }
         Class<?> superclass = clazz.getSuperclass();
         if (superclass != null) {
-            discoverAccessibleMethods(superclass, map, includeProtected,
-                    includePrivate);
+            discoverAccessibleMethods(superclass, map, includeProtected);
         }
     }
 
@@ -426,15 +415,14 @@ class JavaMembers
     }
 
     private void reflect(Scriptable scope,
-                         boolean includeProtected,
-                         boolean includePrivate)
+                         boolean includeProtected)
     {
         // We reflect methods first, because we want overloaded field/method
         // names to be allocated to the NativeJavaMethod before the field
         // gets in the way.
 
-        Method[] methods = discoverAccessibleMethods(cl, includeProtected,
-                                                     includePrivate);
+        Method[] methods = discoverAccessibleMethods(cl, includeProtected
+        );
         for (Method method : methods) {
             int mods = method.getModifiers();
             boolean isStatic = Modifier.isStatic(mods);
@@ -487,7 +475,7 @@ class JavaMembers
         }
 
         // Reflect fields.
-        Field[] fields = getAccessibleFields(includeProtected, includePrivate);
+        Field[] fields = getAccessibleFields(includeProtected, false);
         for (Field field : fields) {
             String name = field.getName();
             int mods = field.getModifiers();
@@ -582,7 +570,7 @@ class JavaMembers
                     Object v = ht.get(beanPropertyName);
                     if (v != null) {
                         // A private field shouldn't mask a public getter/setter
-                        if (!includePrivate || !(v instanceof Member) ||
+                        if (!false || !(v instanceof Member) ||
                             !Modifier.isPrivate(((Member)v).getModifiers()))
 
                         {
@@ -637,7 +625,7 @@ class JavaMembers
         }
 
         // Reflect constructors
-        Constructor<?>[] constructors = getAccessibleConstructors(includePrivate);
+        Constructor<?>[] constructors = getAccessibleConstructors(false);
         LinkedList<MethodOrConstructor> ctorMembers = Arrays.stream(constructors)
                 .map(MethodOrConstructor::new)
                 .collect(Collectors.toCollection(LinkedList::new));
