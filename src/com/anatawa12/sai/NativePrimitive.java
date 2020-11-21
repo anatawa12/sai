@@ -6,11 +6,14 @@ public abstract class NativePrimitive extends IdScriptableObject {
         Object value = super.get(name, start);
         if (value != NOT_FOUND) return value;
         if (!hasPrototypeMap()) return NOT_FOUND;
-        JavaMembers members = getJavaMembers();
-        if (members != null) {
-            value = members.get(this, name, unwrap(), false);
-            if (value != NOT_FOUND)
-                return value;
+        Context cx = Context.getCurrentContext();
+        if (cx != null && cx.hasFeature(Context.FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS)) {
+            JavaMembers members = getJavaMembers();
+            if (members != null) {
+                value = members.get(this, name, unwrap(), false);
+                if (value != NOT_FOUND)
+                    return value;
+            }
         }
         return NOT_FOUND;
     }

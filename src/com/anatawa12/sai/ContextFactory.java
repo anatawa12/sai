@@ -295,6 +295,9 @@ public class ContextFactory
 
           case Context.FEATURE_ENABLE_XML_SECURE_PARSING:
               return true;
+
+          case Context.FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS:
+            return false;
         }
         // It is a bug to call the method with unknown featureIndex
         throw new IllegalArgumentException(String.valueOf(featureIndex));

@@ -351,6 +351,14 @@ public class Context
      */
     public static final int FEATURE_ENABLE_XML_SECURE_PARSING = 20;
 
+    /**
+     * If set, native objects of primitive value (e.g. NativeNumber) will have java's boxed object's methods.
+     * By default, This is not set.
+     *
+     * @since sai-next
+     */
+    public static final int FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS = 21;
+
     public static final String languageVersionProperty = "language version";
     public static final String errorReporterProperty   = "error reporter";
 
