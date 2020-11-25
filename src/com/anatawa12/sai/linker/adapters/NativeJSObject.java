@@ -1,19 +1,18 @@
 package com.anatawa12.sai.linker.adapters;
 
 import com.anatawa12.sai.Context;
-import com.anatawa12.sai.Function;
 import com.anatawa12.sai.NativeJavaObject;
 import com.anatawa12.sai.Scriptable;
 import jdk.nashorn.api.scripting.JSObject;
 
 import java.util.Objects;
 
-public final class NativeJSObject extends NativeJavaObject implements Function {
-    public NativeJSObject(Scriptable scope, JSObject javaObject) {
+public class NativeJSObject extends NativeJavaObject {
+    NativeJSObject(Scriptable scope, JSObject javaObject) {
         super(scope, Objects.requireNonNull(javaObject, "javaObject"), null);
     }
 
-    private JSObject getBody() {
+    protected JSObject getBody() {
         return (JSObject) unwrap();
     }
 
@@ -59,17 +58,5 @@ public final class NativeJSObject extends NativeJavaObject implements Function {
 
     public boolean hasInstance(Scriptable instance) {
         return getBody().isInstance(instance);
-    }
-
-    public Object call(Context cx, Scriptable scope, Scriptable thisObj, Object[] args) {
-        return AdapterContext.wrapToR(
-                getBody().call(thisObj, AdapterContext.wrapToNAll(args, cx)),
-                scope, cx);
-    }
-
-    public Scriptable construct(Context cx, Scriptable scope, Object[] args) {
-        return AdapterContext.wrapNewObjectToR(
-                getBody().newObject(AdapterContext.wrapToNAll(args, cx)),
-                scope, cx);
     }
 }
