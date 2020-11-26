@@ -48,6 +48,11 @@ final class NativeBoolean extends NativePrimitive
     }
 
     @Override
+    public Class<?> unwrappedType() {
+        return Boolean.class;
+    }
+
+    @Override
     public Object getDefaultValue(Class<?> typeHint) {
         // This is actually non-ECMA, but will be proposed
         // as a change in round 2.

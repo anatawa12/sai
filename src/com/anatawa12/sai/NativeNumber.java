@@ -58,6 +58,11 @@ final class NativeNumber extends NativePrimitive
     }
 
     @Override
+    public Class<?> unwrappedType() {
+        return Double.class;
+    }
+
+    @Override
     protected void fillConstructorProperties(IdFunctionObject ctor)
     {
         final int attr = ScriptableObject.DONTENUM |

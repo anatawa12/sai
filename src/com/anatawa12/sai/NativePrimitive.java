@@ -39,7 +39,5 @@ public abstract class NativePrimitive extends IdScriptableObject {
      *
      * @return unwrapped value type.
      */
-    public final Class<?> unwrappedType() {
-        return getJavaMembers().getCl();
-    }
+    public abstract Class<?> unwrappedType();
 }

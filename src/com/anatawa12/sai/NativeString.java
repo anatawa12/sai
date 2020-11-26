@@ -63,6 +63,11 @@ final class NativeString extends NativePrimitive
         return string.toString();
     }
 
+    @Override
+    public Class<?> unwrappedType() {
+        return String.class;
+    }
+
     private static final int
         Id_length                    =  1,
         MAX_INSTANCE_ID              =  1;
