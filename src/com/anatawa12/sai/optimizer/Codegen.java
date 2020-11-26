@@ -76,8 +76,10 @@ public class Codegen implements Evaluator
     public Object compile(CompilerEnvirons compilerEnv,
                           ScriptNode tree,
                           String encodedSource,
+                          String realSource,
                           boolean returnFunction)
     {
+        this.sourceString = realSource;
         int serial;
         synchronized (globalLock) {
             serial = ++globalSerialClassCounter;

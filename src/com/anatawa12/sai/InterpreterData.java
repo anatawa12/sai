@@ -6,10 +6,10 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.debug.DebuggableScript;
+
 import java.io.Serializable;
 import java.util.Arrays;
-
-import com.anatawa12.sai.debug.DebuggableScript;
 
 final class InterpreterData implements Serializable, DebuggableScript
 {
@@ -20,11 +20,12 @@ final class InterpreterData implements Serializable, DebuggableScript
     static final int INITIAL_NUMBERTABLE_SIZE = 64;
 
     InterpreterData(int languageVersion, String sourceFile,
-                    String encodedSource, boolean isStrict)
+                    String encodedSource, String sourceString, boolean isStrict)
     {
         this.languageVersion = languageVersion;
         this.itsSourceFile = sourceFile;
         this.encodedSource = encodedSource;
+        this.sourceString = sourceString;
         this.isStrict = isStrict;
         init();
     }
@@ -35,6 +36,7 @@ final class InterpreterData implements Serializable, DebuggableScript
         this.languageVersion = parent.languageVersion;
         this.itsSourceFile = parent.itsSourceFile;
         this.encodedSource = parent.encodedSource;
+        this.sourceString = parent.sourceString;
         this.isStrict = parent.isStrict;
         init();
     }
@@ -74,6 +76,10 @@ final class InterpreterData implements Serializable, DebuggableScript
     String encodedSource;
     int encodedSourceStart;
     int encodedSourceEnd;
+
+    String sourceString;
+    int sourceStringStart;
+    int sourceStringEnd;
 
     int languageVersion;
 

@@ -24,6 +24,7 @@ public final class Interpreter extends Icode implements Evaluator
 {
     // data for parsing
     InterpreterData itsData;
+    String sourceString;
 
     static final int EXCEPTION_TRY_START_SLOT  = 0;
     static final int EXCEPTION_TRY_END_SLOT    = 1;
@@ -378,10 +379,12 @@ public final class Interpreter extends Icode implements Evaluator
     public Object compile(CompilerEnvirons compilerEnv,
                           ScriptNode tree,
                           String encodedSource,
+                          String realSource,
                           boolean returnFunction)
     {
+        this.sourceString = realSource;
         CodeGenerator cgen = new CodeGenerator();
-        itsData = cgen.compile(compilerEnv, tree, encodedSource, returnFunction);
+        itsData = cgen.compile(compilerEnv, tree, encodedSource, sourceString, returnFunction);
         return itsData;
     }
 
@@ -977,6 +980,15 @@ public final class Interpreter extends Icode implements Evaluator
         }
         return idata.encodedSource.substring(idata.encodedSourceStart,
                                              idata.encodedSourceEnd);
+    }
+
+    static String getSourceString(InterpreterData idata)
+    {
+        if (idata.sourceString == null) {
+            return null;
+        }
+        return idata.sourceString.substring(idata.sourceStringStart,
+                idata.sourceStringEnd);
     }
 
     private static void initFunction(Context cx, Scriptable scope,

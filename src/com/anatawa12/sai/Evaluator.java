@@ -6,9 +6,9 @@
 
 package com.anatawa12.sai;
 
-import java.util.List;
-
 import com.anatawa12.sai.ast.ScriptNode;
+
+import java.util.List;
 
 /**
  * Abstraction of evaluation, which can be implemented either by an
@@ -23,6 +23,7 @@ public interface Evaluator {
      * @param compilerEnv Compiler environment
      * @param tree parse tree
      * @param encodedSource encoding of the source code for decompilation
+     * @param realSource the real source code
      * @param returnFunction if true, compiling a function
      * @return an opaque object that can be passed to either
      *         createFunctionObject or createScriptObject, depending on the
@@ -31,6 +32,7 @@ public interface Evaluator {
     public Object compile(CompilerEnvirons compilerEnv,
                           ScriptNode tree,
                           String encodedSource,
+                          String realSource,
                           boolean returnFunction);
 
     /**

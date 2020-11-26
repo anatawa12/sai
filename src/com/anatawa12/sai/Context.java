@@ -2455,7 +2455,7 @@ public class Context
                 compiler = createCompiler();
             }
 
-            bytecode = compiler.compile(compilerEnv, tree, tree.getEncodedSource(), returnFunction);
+            bytecode = compiler.compile(compilerEnv, tree, tree.getEncodedSource(), sourceString, returnFunction);
         } catch (ClassFileFormatException e) {
             // we hit some class file limit, fall back to interpreter or report
 
@@ -2463,7 +2463,7 @@ public class Context
             tree = parse(sourceString, sourceName, lineno, compilerEnv, compilationErrorReporter, returnFunction);
 
             compiler = createInterpreter();
-            bytecode = compiler.compile(compilerEnv, tree, tree.getEncodedSource(), returnFunction);
+            bytecode = compiler.compile(compilerEnv, tree, tree.getEncodedSource(), sourceString, returnFunction);
         }
 
         if (debugger != null) {

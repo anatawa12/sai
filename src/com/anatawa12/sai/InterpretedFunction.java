@@ -136,6 +136,11 @@ final class InterpretedFunction extends NativeFunction implements Script
     }
 
     @Override
+    protected String getRealSource() {
+        return Interpreter.getSourceString(idata);
+    }
+
+    @Override
     public DebuggableScript getDebuggableView()
     {
         return idata;
