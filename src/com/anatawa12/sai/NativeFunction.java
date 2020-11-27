@@ -36,7 +36,9 @@ public abstract class NativeFunction extends BaseFunction
     @Override
     final String decompile(int indent, int flags)
     {
-        if (indent == 0 && flags == 0){
+        Context cx = Context.getCurrentContext();
+        if (indent == 0 && flags == 0
+                && cx != null && cx.hasFeature(Context.FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE)){
             String realSource = getRealSource();
             if (realSource != null) return realSource;
         }
