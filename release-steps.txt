@@ -2,33 +2,36 @@ Update version in:
 	src/manifest
 	gradle.properties
 
-Paste release notes into RELEASE_NOTES.md:
-	git shortlog LAST_TAG.. | sed 's/^ /*/'
+Write release notes into RELEASE_NOTES-sai.md
 
-Paste release info into README.md
-	Copy README into gh-pages
-	Extract build/*/javadoc.zip to gh-pages/javadoc
+# Sai doesn't have gh-pages
+#Paste release info into README.md
+#	Copy README into gh-pages
+#	Extract build/*/javadoc.zip to gh-pages/javadoc
 
-Re-run compat-table "rhinoall.sh"
-	Copy HTML to gh-pages/compat
+#Re-run compat-table "rhinoall.sh"
+#	Copy HTML to gh-pages/compat
 
-./gradlew -Dgradle.user.home=$HOME publish
+./gradlew bintrayUpload
 
-Go to oss.sonatype.org
-	Find "org.mozilla" staging repo, close, release, and drop.
+Go to bintray.com
+	Find and publish the new release
 
 ./gradlew distZip
 	Publish that to the GitHub release page
 
-git tag for new release
+Commit the new version and git tag for new release starts with 'v'
 
 Update release in GitHub
-	Paste release notes, upload "rhinoXXX.zip" and "js.jar"
+	Paste release notes, upload "saiXXX.zip" and "js.jar"
 
 Update to new snapshot version in:
 	src/manifest
 	gradle.properties
 
-Update the Homebrew formula. Submit a PR for:
-	Homebrew/homebrew
-		Library/Formula/rhino.rb
+And commit the new version.
+
+# Sai doesn't have Homebrew formula.
+#Update the Homebrew formula. Submit a PR for:
+#	Homebrew/homebrew
+#		Library/Formula/rhino.rb

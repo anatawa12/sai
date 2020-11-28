@@ -9,7 +9,6 @@ import javax.script.Compilable;
 import javax.script.CompiledScript;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
@@ -17,8 +16,8 @@ import javax.script.SimpleScriptContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.anatawa12.sai.engine.RhinoScriptEngine;
-import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.SaiScriptEngine;
+import com.anatawa12.sai.engine.SaiScriptEngineFactory;
 
 import static org.junit.Assert.*;
 
@@ -31,12 +30,12 @@ public class ScriptEngineTest {
   @BeforeClass
   public static void initManager() {
     manager = new ScriptEngineManager();
-    manager.registerEngineName("rhino", new RhinoScriptEngineFactory());
+    manager.registerEngineName("sai", new SaiScriptEngineFactory());
   }
 
   @Before
   public void init() {
-    engine = manager.getEngineByName("rhino");
+    engine = manager.getEngineByName("sai");
     cEngine = (Compilable) engine;
   }
 
@@ -48,7 +47,7 @@ public class ScriptEngineTest {
 
   @Test
   public void testHelloInterpreted() throws ScriptException {
-    engine.put(RhinoScriptEngine.OPTIMIZATION_LEVEL, -1);
+    engine.put(SaiScriptEngine.OPTIMIZATION_LEVEL, -1);
     Object result = engine.eval("'Hello, World!';");
     assertEquals(result, "Hello, World!");
   }
@@ -225,18 +224,18 @@ public class ScriptEngineTest {
   @Test
   public void testLanguageVersion() throws ScriptException {
     // Default language version is modernish
-    ScriptEngine newEngine = manager.getEngineByName("rhino");
+    ScriptEngine newEngine = manager.getEngineByName("sai");
     assertEquals(newEngine.eval("Symbol() == Symbol()"), Boolean.FALSE);
 
     // Older language versions
-    ScriptEngine oldEngine = manager.getEngineByName("rhino");
+    ScriptEngine oldEngine = manager.getEngineByName("sai");
     oldEngine.put(ScriptEngine.LANGUAGE_VERSION, 120);
     assertThrows(ScriptException.class, () -> {
       oldEngine.eval("Symbol() == Symbol()");
     });
 
     // The same with a string
-    ScriptEngine olderEngine = manager.getEngineByName("rhino");
+    ScriptEngine olderEngine = manager.getEngineByName("sai");
     olderEngine.put(ScriptEngine.LANGUAGE_VERSION, "100");
     assertThrows(ScriptException.class, () -> {
       olderEngine.eval("Symbol() == Symbol()");

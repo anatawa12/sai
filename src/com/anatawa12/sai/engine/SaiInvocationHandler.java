@@ -7,13 +7,13 @@ package com.anatawa12.sai.engine;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
-public class RhinoInvocationHandler
+public class SaiInvocationHandler
     implements InvocationHandler {
 
   private final Object thiz;
-  private final RhinoScriptEngine engine;
+  private final SaiScriptEngine engine;
 
-  RhinoInvocationHandler(RhinoScriptEngine engine, Object thiz) {
+  SaiInvocationHandler(SaiScriptEngine engine, Object thiz) {
     this.engine = engine;
     this.thiz = thiz;
   }

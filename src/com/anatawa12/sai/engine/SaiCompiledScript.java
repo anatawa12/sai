@@ -10,13 +10,13 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 import com.anatawa12.sai.Script;
 
-public class RhinoCompiledScript
+public class SaiCompiledScript
   extends CompiledScript {
 
-  private final RhinoScriptEngine engine;
+  private final SaiScriptEngine engine;
   private final Script script;
 
-  RhinoCompiledScript(RhinoScriptEngine engine, Script script) {
+  SaiCompiledScript(SaiScriptEngine engine, Script script) {
     this.engine = engine;
     this.script = script;
   }

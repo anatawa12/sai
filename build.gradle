@@ -8,6 +8,7 @@ plugins {
     id 'distribution'
     id 'checkstyle'
     id 'com.github.spotbugs' version "4.6.0"
+    id "com.jfrog.bintray" version "1.8.5"
 }
 
 tasks.withType(JavaCompile) {
@@ -137,20 +138,20 @@ idea {
 
 task runtimeJar(type: Jar) {
     dependsOn compileJava
-    archiveBaseName = 'rhino-runtime'
+    archiveBaseName = 'sai-runtime'
     from sourceSets.main.output
     excludes = ["com/anatawa12/sai/tools", "com/anatawa12/sai/engine/**", "META-INF/services/**"]
     manifest {
         attributes(
             "Manifest-Version": "1.0",
             "Implementation-Version": project.version,
-            "Implementation-Title":  "Mozilla Rhino",
-            "Implementation-Vendor": "Mozilla Foundation",
-            "Implementation-URL": "http://www.mozilla.org/rhino",
+            "Implementation-Title":  "Sai",
+//            "Implementation-Vendor": "Mozilla Foundation",
+            "Implementation-URL": "https://github.com/anatawa12/sai",
             "Built-Date": new Date().format("yyyy-MM-dd"),
             "Built-Time": new Date().format("HH:mm:ss"),
             "Bundle-ManifestVersion": "2",
-            "Bundle-SymbolicName": "org.mozilla.rhino-runtime",
+            "Bundle-SymbolicName": "com.anatawa12.sai-runtime",
             "Bundle-Version": project.version.replaceAll("-.*", ""),
             "Export-Package": "com.anatawa12.sai,com.anatawa12.sai.ast,com.anatawa12.sai.annotations"
         )
@@ -159,7 +160,7 @@ task runtimeJar(type: Jar) {
 
 task engineJar(type: Jar) {
     dependsOn compileJava
-    archiveBaseName = 'rhino-engine'
+    archiveBaseName = 'sai-engine'
     from (sourceSets.main.output) {
         include 'com/anatawa12/sai/engine/**'
         include 'META-INF/services/**'
@@ -168,9 +169,9 @@ task engineJar(type: Jar) {
         attributes(
                 "Manifest-Version": "1.0",
                 "Implementation-Version": project.version,
-                "Implementation-Title":  "Mozilla Rhino ScriptEngine",
-                "Implementation-Vendor": "Mozilla Foundation",
-                "Implementation-URL": "http://www.mozilla.org/rhino",
+                "Implementation-Title":  "Sai ScriptEngine",
+//                "Implementation-Vendor": "Mozilla Foundation",
+                "Implementation-URL": "https://github.com/anatawa12/sai",
                 "Built-Date": new Date().format("yyyy-MM-dd"),
                 "Built-Time": new Date().format("HH:mm:ss"),
         )
@@ -186,13 +187,13 @@ jar {
             "Manifest-Version": "1.0",
             "Main-Class": "com.anatawa12.sai.tools.shell.Main",
             "Implementation-Version": project.version,
-            "Implementation-Title":  "Mozilla Rhino",
-            "Implementation-Vendor": "Mozilla Foundation",
-            "Implementation-URL": "http://www.mozilla.org/rhino",
+            "Implementation-Title":  "Sai",
+//            "Implementation-Vendor": "Mozilla Foundation",
+            "Implementation-URL": "https://github.com/anatawa12/sai",
             "Built-Date": new Date().format("yyyy-MM-dd"),
             "Built-Time": new Date().format("HH:mm:ss"),
             "Bundle-ManifestVersion": "2",
-            "Bundle-SymbolicName": "org.mozilla.rhino",
+            "Bundle-SymbolicName": "com.anatawa12.sai",
             "Bundle-Version": project.version.replaceAll("-.*", ""),
             "Export-Package": "com.anatawa12.sai,com.anatawa12.sai.ast,com.anatawa12.sai.annotations"
         )
@@ -238,39 +239,60 @@ task engineSourceJar(type: Jar) {
     include 'com/anatawa12/sai/engine/**'
 }
 
+bintray {
+    user = project.hasProperty('BINTRAY_USER') ? project.property('BINTRAY_USER') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('BINTRAY_KEY') ? project.property('BINTRAY_KEY') : System.getenv('BINTRAY_API_KEY')
+    publications = ['sai', 'sairuntime', 'saiengine']
+    pkg {
+        repo = 'maven'
+        name = 'com.anataw12.sai'
+        userOrg = user
+        licenses = ['Apache-2.0']
+        vcsUrl = 'git@github.com:anatawa12/sai.git'
+        version {
+            name = project.version
+            released  = new Date()
+            vcsTag = 'v' + project.version
+        }
+    }
+}
+
+static def configurePom(root) {
+    root.appendNode('description', """
+    Sai is an fork of Rino, an open-source implementation of JavaScript in Java.
+    This is for fixRTM project.
+""")
+    root.appendNode("url", "https://github.com/anatawa12/sai")
+
+//    def p = root.appendNode("parent")
+//    p.appendNode("groupId", "org.sonatype.oss")
+//    p.appendNode("artifactId", "oss-parent")
+//    p.appendNode("version", "7")
+
+    def l = root.appendNode("licenses").appendNode("license")
+    l.appendNode("name", "Mozilla Public License, Version 2.0")
+    l.appendNode("url", "http://www.mozilla.org/MPL/2.0/index.txt")
+
+    def scm = root.appendNode("scm")
+    scm.appendNode("connection", "scm:git:git@github.com:anatawa12/sai.git")
+    scm.appendNode("developerConnection", "scm:git:git@github.com:anatawa12/sai.git")
+    scm.appendNode("url", "git@github.com:anatawa12/sai.git")
+
+//    def o = root.appendNode("organization")
+//    o.appendNode("name", "The Mozilla Foundation")
+//    o.appendNode("url", "http://www.mozilla.org")
+}
+
 publishing {
     publications {
-        rhino(MavenPublication) {
-            groupId 'org.mozilla'
-            artifactId 'rhino'
+        sai(MavenPublication) {
+            groupId 'com.anatawa12.sai'
+            artifactId 'sai'
 
             pom.withXml {
                 def root = asNode()
 
-                root.appendNode('description', """
-    Rhino is an open-source implementation of JavaScript written entirely in Java.
-    It is typically embedded into Java applications to provide scripting to end users.
-""")
-                root.appendNode("url", "https://developer.mozilla.org/en/Rhino")
-
-                def p = root.appendNode("parent")
-                p.appendNode("groupId", "org.sonatype.oss")
-                p.appendNode("artifactId", "oss-parent")
-                p.appendNode("version", "7")
-
-                def l = root.appendNode("licenses").appendNode("license")
-                l.appendNode("name", "Mozilla Public License, Version 2.0")
-                l.appendNode("url", "http://www.mozilla.org/MPL/2.0/index.txt")
-
-                def scm = root.appendNode("scm")
-                scm.appendNode("connection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("developerConnection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("url", "git@github.com:mozilla/rhino.git")
-
-                def o = root.appendNode("organization")
-                o.appendNode("name", "The Mozilla Foundation")
-                o.appendNode("url", "http://www.mozilla.org")
-
+                configurePom(root)
             }
             from components.java
             artifact sourceJar {
@@ -281,104 +303,34 @@ publishing {
             }
         }
 
-        rhinoruntime(MavenPublication) {
-            groupId 'org.mozilla'
-            artifactId 'rhino-runtime'
+        sairuntime(MavenPublication) {
+            groupId 'com.anatawa12.sai'
+            artifactId 'sai-runtime'
             artifacts = [runtimeJar, runtimeSourceJar, runtimeJavadocJar]
 
             pom.withXml {
                 def root = asNode()
-
-                root.appendNode('description', """
-    Rhino is an open-source implementation of JavaScript written entirely in Java.
-    It is typically embedded into Java applications to provide scripting to end users.
-""")
-                root.appendNode("url", "https://developer.mozilla.org/en/Rhino")
-
-                def p = root.appendNode("parent")
-                p.appendNode("groupId", "org.sonatype.oss")
-                p.appendNode("artifactId", "oss-parent")
-                p.appendNode("version", "7")
-
-                def l = root.appendNode("licenses").appendNode("license")
-                l.appendNode("name", "Mozilla Public License, Version 2.0")
-                l.appendNode("url", "http://www.mozilla.org/MPL/2.0/index.txt")
-
-                def scm = root.appendNode("scm")
-                scm.appendNode("connection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("developerConnection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("url", "git@github.com:mozilla/rhino.git")
-
-                def o = root.appendNode("organization")
-                o.appendNode("name", "The Mozilla Foundation")
-                o.appendNode("url", "http://www.mozilla.org")
-
+                configurePom(root)
             }
         }
 
-        rhinoengine(MavenPublication) {
-            groupId 'org.mozilla'
-            artifactId 'rhino-engine'
+        saiengine(MavenPublication) {
+            groupId 'com.anatawa12.sai'
+            artifactId 'sai-engine'
             artifacts = [engineJar, engineSourceJar, engineJavadocJar]
 
             pom.withXml {
                 def root = asNode()
-
-                root.appendNode('description', """
-    Rhino is an open-source implementation of JavaScript written entirely in Java.
-    It is typically embedded into Java applications to provide scripting to end users.
-""")
-                root.appendNode("url", "https://developer.mozilla.org/en/Rhino")
-
-                def p = root.appendNode("parent")
-                p.appendNode("groupId", "org.sonatype.oss")
-                p.appendNode("artifactId", "oss-parent")
-                p.appendNode("version", "7")
-
-                def l = root.appendNode("licenses").appendNode("license")
-                l.appendNode("name", "Mozilla Public License, Version 2.0")
-                l.appendNode("url", "http://www.mozilla.org/MPL/2.0/index.txt")
-
-                def scm = root.appendNode("scm")
-                scm.appendNode("connection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("developerConnection", "scm:git:git@github.com:mozilla/rhino.git")
-                scm.appendNode("url", "git@github.com:mozilla/rhino.git")
-
-                def o = root.appendNode("organization")
-                o.appendNode("name", "The Mozilla Foundation")
-                o.appendNode("url", "http://www.mozilla.org")
+                configurePom(root)
 
                 def deps = root.appendNode("dependencies")
-                def rhino = deps.appendNode("dependency")
-                rhino.appendNode("groupId", "org.mozilla")
-                rhino.appendNode("artifactId", "rhino")
-                rhino.appendNode("version", getVersion())
+                def sai = deps.appendNode("dependency")
+                sai.appendNode("groupId", "com.anatawa12.sai")
+                sai.appendNode("artifactId", "sai")
+                sai.appendNode("version", project.version)
             }
         }
     }
-
-    if (project.hasProperty("mavenPassword")) {
-        repositories {
-            maven {
-                credentials {
-                    username mavenUser
-                    password mavenPassword
-                }
-                if (project.version.endsWith('-SNAPSHOT')) {
-                    url mavenSnapshotRepo
-                } else {
-                    url mavenReleaseRepo
-                }
-            }
-        }
-    }
-}
-
-signing {
-    useGpgCmd()
-    sign publishing.publications.rhino
-    sign publishing.publications.rhinoengine
-    sign publishing.publications.rhinoruntime
 }
 
 spotbugs {
@@ -404,26 +356,26 @@ distributions {
         contents {
             from(sourceSets.main.java) {
                 exclude 'man'
-                into 'rhino' + project.version + '/src'
+                into 'sai' + project.version + '/src'
             }
             from(sourceSets.main.resources) {
                 exclude '**/*.java'
-                into 'rhino' + project.version + '/src'
+                into 'sai' + project.version + '/src'
             }
             from(javadoc.destinationDir) {
-                into 'rhino' + project.version + '/docs'
+                into 'sai' + project.version + '/docs'
             }
             from(jar.outputs.files) {
-                into 'rhino' + project.version + '/lib'
+                into 'sai' + project.version + '/lib'
             }
             from(sourceSets.main.allSource) {
                 include 'man/*.1'
-                into 'rhino' + project.version
+                into 'sai' + project.version
             }
             from(file(".")) {
                 include '*.txt', '*.md', 'build.gradle', 'build.properties', 'gradle.properties',
                         'gradle/**', 'gradlew'
-                into 'rhino' + project.version
+                into 'sai' + project.version
             }
             into "/"
         }
