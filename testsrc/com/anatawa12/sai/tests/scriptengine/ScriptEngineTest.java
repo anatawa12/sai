@@ -224,18 +224,18 @@ public class ScriptEngineTest {
   @Test
   public void testLanguageVersion() throws ScriptException {
     // Default language version is modernish
-    ScriptEngine newEngine = manager.getEngineByName("rhino");
+    ScriptEngine newEngine = manager.getEngineByName("sai");
     assertEquals(newEngine.eval("Symbol() == Symbol()"), Boolean.FALSE);
 
     // Older language versions
-    ScriptEngine oldEngine = manager.getEngineByName("rhino");
+    ScriptEngine oldEngine = manager.getEngineByName("sai");
     oldEngine.put(ScriptEngine.LANGUAGE_VERSION, 120);
     assertThrows(ScriptException.class, () -> {
       oldEngine.eval("Symbol() == Symbol()");
     });
 
     // The same with a string
-    ScriptEngine olderEngine = manager.getEngineByName("rhino");
+    ScriptEngine olderEngine = manager.getEngineByName("sai");
     olderEngine.put(ScriptEngine.LANGUAGE_VERSION, "100");
     assertThrows(ScriptException.class, () -> {
       olderEngine.eval("Symbol() == Symbol()");
