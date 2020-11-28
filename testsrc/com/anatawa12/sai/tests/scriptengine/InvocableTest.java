@@ -9,7 +9,7 @@ import javax.script.ScriptException;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.SaiScriptEngineFactory;
 
 import static org.junit.Assert.*;
 
@@ -23,12 +23,12 @@ public class InvocableTest {
   @BeforeClass
   public static void init() {
     manager = new ScriptEngineManager();
-    manager.registerEngineName("rhino", new RhinoScriptEngineFactory());
+    manager.registerEngineName("sai", new SaiScriptEngineFactory());
   }
 
   @Before
   public void setup() {
-    engine = manager.getEngineByName("rhino");
+    engine = manager.getEngineByName("sai");
     iEngine = (Invocable) engine;
   }
 

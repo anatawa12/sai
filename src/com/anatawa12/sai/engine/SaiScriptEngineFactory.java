@@ -13,8 +13,8 @@ import com.anatawa12.sai.Context;
 
 /**
  * <p>
- * This is an implementation of the standard Java "ScriptEngine" for Rhino. If the Rhino engine
- * (typically in the form of the "rhino-engine" JAR) is in the classpath, then this script
+ * This is an implementation of the standard Java "ScriptEngine" for Sai. If the Sai engine
+ * (typically in the form of the "sai-engine" JAR) is in the classpath, then this script
  * engine will be activated.
  * </p>
  * <p>
@@ -25,23 +25,23 @@ import com.anatawa12.sai.Context;
  * <p>
  * Since this engine and Nashorn support the same language and file extensions, then unless
  * you are sure you are running in an environment that has Nashorn, the best way to get this
- * engine is to call ScriptEngine.getEngineByName("rhino") to ask for Rhino directly.
+ * engine is to call ScriptEngine.getEngineByName("sai") to ask for Sai directly.
  * </p>
  */
-public class RhinoScriptEngineFactory
+public class SaiScriptEngineFactory
   implements ScriptEngineFactory {
 
-  public static final String NAME = "rhino";
+  public static final String NAME = "sai";
   private static final String LANGUAGE = "javascript";
   private static final List<String> NAMES =
-      Arrays.asList("rhino", "Rhino", "javascript", "JavaScript");
+      Arrays.asList("sai", "Sai", "javascript", "JavaScript");
   private static final List<String> EXTENSIONS =
       Collections.singletonList("js");
   private static final List<String> MIME_TYPES =
       Arrays.asList("application/javascript", "application/ecmascript",
           "text/javascript", "text/ecmascript");
   private static final String LANGUAGE_VERSION =
-      String.valueOf(RhinoScriptEngine.DEFAULT_LANGUAGE_VERSION);
+      String.valueOf(SaiScriptEngine.DEFAULT_LANGUAGE_VERSION);
 
   @Override
   public String getEngineName() {
@@ -135,6 +135,6 @@ public class RhinoScriptEngineFactory
 
   @Override
   public ScriptEngine getScriptEngine() {
-    return new RhinoScriptEngine(this);
+    return new SaiScriptEngine(this);
   }
 }

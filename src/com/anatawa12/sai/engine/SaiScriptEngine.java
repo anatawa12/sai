@@ -57,7 +57,7 @@ import com.anatawa12.sai.ScriptableObject;
  * mode.</li>
  * </ul>
  */
-public class RhinoScriptEngine
+public class SaiScriptEngine
     extends AbstractScriptEngine
     implements Compilable, Invocable {
 
@@ -75,11 +75,11 @@ public class RhinoScriptEngine
 
   private static final CtxFactory ctxFactory = new CtxFactory();
 
-  private final RhinoScriptEngineFactory factory;
+  private final SaiScriptEngineFactory factory;
   private final Builtins builtins;
   private ScriptableObject topLevelScope = null;
 
-  RhinoScriptEngine(RhinoScriptEngineFactory factory) {
+  SaiScriptEngine(SaiScriptEngineFactory factory) {
     this.factory = factory;
     this.builtins = new Builtins();
   }
@@ -150,7 +150,7 @@ public class RhinoScriptEngine
       configureContext(cx);
       Script s =
           cx.compileString(script, getFilename(), 1, null);
-      return new RhinoCompiledScript(this, s);
+      return new SaiCompiledScript(this, s);
     } catch (RhinoException re) {
       throw new ScriptException(re.getMessage(), re.sourceName(), re.lineNumber(),
           re.columnNumber());
@@ -166,7 +166,7 @@ public class RhinoScriptEngine
       configureContext(cx);
       Script s =
           cx.compileReader(script, getFilename(), 1, null);
-      return new RhinoCompiledScript(this, s);
+      return new SaiCompiledScript(this, s);
     } catch (RhinoException re) {
       throw new ScriptException(re.getMessage(), re.sourceName(), re.lineNumber(),
           re.columnNumber());
@@ -263,7 +263,7 @@ public class RhinoScriptEngine
       Context.exit();
     }
     return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-        new Class<?>[]{clasz}, new RhinoInvocationHandler(this, null));
+        new Class<?>[]{clasz}, new SaiInvocationHandler(this, null));
   }
 
   @SuppressWarnings("unchecked")
@@ -285,7 +285,7 @@ public class RhinoScriptEngine
       Context.exit();
     }
     return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-        new Class<?>[]{clasz}, new RhinoInvocationHandler(this, thiz));
+        new Class<?>[]{clasz}, new SaiInvocationHandler(this, thiz));
   }
 
   @Override

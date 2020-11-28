@@ -4,8 +4,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import org.junit.Test;
-import com.anatawa12.sai.engine.RhinoScriptEngine;
-import com.anatawa12.sai.engine.RhinoScriptEngineFactory;
+import com.anatawa12.sai.engine.SaiScriptEngine;
+import com.anatawa12.sai.engine.SaiScriptEngineFactory;
 
 import static org.junit.Assert.*;
 
@@ -19,7 +19,7 @@ public class FactoryTest {
   public void findRhinoFactory() {
     ScriptEngineManager manager = new ScriptEngineManager();
     for (ScriptEngineFactory factory : manager.getEngineFactories()) {
-      if (factory instanceof RhinoScriptEngineFactory) {
+      if (factory instanceof SaiScriptEngineFactory) {
         assertEquals("rhino", factory.getEngineName());
         assertEquals("rhino", factory.getParameter(ScriptEngine.ENGINE));
         assertEquals("rhino", factory.getParameter(ScriptEngine.NAME));
@@ -50,7 +50,7 @@ public class FactoryTest {
     // This will always uniquely return our engine.
     // In Java 8, other ways to find it may return Nashorn.
     ScriptEngine engine = new ScriptEngineManager().getEngineByName("rhino");
-    assertTrue(engine instanceof RhinoScriptEngine);
+    assertTrue(engine instanceof SaiScriptEngine);
 
   }
 }
