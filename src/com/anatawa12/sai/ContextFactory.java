@@ -298,6 +298,9 @@ public class ContextFactory
 
           case Context.FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS:
             return false;
+
+          case Context.FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE:
+            return false;
         }
         // It is a bug to call the method with unknown featureIndex
         throw new IllegalArgumentException(String.valueOf(featureIndex));
