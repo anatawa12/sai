@@ -1,6 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.anatawa12.sai.tools.shell.Main
 Implementation-Version: 1.7.14-SNAPSHOT
-Implementation-Title: Mozilla Rhino 1.7.13-SNAPSHOT
-Implementation-Vendor: Mozilla Foundation
-Implementation-URL: http://www.mozilla.org/rhino
+Implementation-Title: Sai 1.7.13-SNAPSHOT
+Implementation-URL: https://github.com/anatawa12/sai
