@@ -8,6 +8,8 @@
 
 package com.anatawa12.sai;
 
+import com.anatawa12.sai.linker.adapters.AdapterWrapFactory;
+
 import java.util.List;
 import java.util.Map;
 
@@ -120,6 +122,8 @@ public class WrapFactory
     public Scriptable wrapAsJavaObject(Context cx, Scriptable scope,
                                        Object javaObject, Class<?> staticType)
     {
+        Scriptable adapter = AdapterWrapFactory.wrap(scope, javaObject);
+        if (adapter != null) return adapter;
         if (List.class.isAssignableFrom(javaObject.getClass())) {
             return new NativeJavaList(scope, javaObject);
         } else if (Map.class.isAssignableFrom(javaObject.getClass())) {

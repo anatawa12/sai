@@ -45,11 +45,26 @@ class AdapterContext {
         return obj == null ? null : context.getWrapFactory().wrapNewObject(context, scope(context), obj);
     }
 
+    static Scriptable wrapNewObjectToR(Object obj, Scriptable scope, Context context) {
+        if (obj == null) return null;
+        return context.getWrapFactory().wrapNewObject(context, scope, obj);
+    }
+
     static Object wrapToR(Object obj, Context context) {
         // neutralize wrap factory java primitive wrap feature
         if (!(obj instanceof String || obj instanceof Number
                 || obj instanceof Boolean)) {
             return context.getWrapFactory().wrap(context, scope(context), obj, null);
+        } else {
+            return obj;
+        }
+    }
+
+    static Object wrapToR(Object obj, Scriptable scope, Context context) {
+        // neutralize wrap factory java primitive wrap feature
+        if (!(obj instanceof String || obj instanceof Number
+                || obj instanceof Boolean)) {
+            return context.getWrapFactory().wrap(context, scope, obj, null);
         } else {
             return obj;
         }
@@ -64,6 +79,15 @@ class AdapterContext {
         return result;
     }
 
+    static Object[] wrapToRAll(Object[] objs, Scriptable scope, Context context) {
+        Object[] result = new Object[objs.length];
+        for (int i = 0; i < result.length; i++) {
+            Object obj = objs[i];
+            result[i] = wrapToR(obj, scope, context);
+        }
+        return result;
+    }
+
     static Object wrapToN(Object obj, Context context) {
         obj = obj instanceof Wrapper ? ((Wrapper)obj).unwrap() : obj;
         if (obj == null) {
@@ -73,6 +97,15 @@ class AdapterContext {
         } else {
             return obj instanceof Scriptable ? new ScriptableMirror((Scriptable)obj, context) : obj;
         }
+    }
+
+    static Object[] wrapToNAll(Object[] objs, Context context) {
+        Object[] result = new Object[objs.length];
+        for (int i = 0; i < result.length; i++) {
+            Object obj = objs[i];
+            result[i] = wrapToN(obj, context);
+        }
+        return result;
     }
 
     static Scriptable scope(Context context) {

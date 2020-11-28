@@ -6,7 +6,10 @@
 
 package com.anatawa12.sai;
 
-import static com.anatawa12.sai.UniqueTag.DOUBLE_MARK;
+import com.anatawa12.sai.ScriptRuntime.NoSuchMethodShim;
+import com.anatawa12.sai.ast.FunctionNode;
+import com.anatawa12.sai.ast.ScriptNode;
+import com.anatawa12.sai.debug.DebugFrame;
 
 import java.io.PrintStream;
 import java.io.Serializable;
@@ -15,15 +18,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-import com.anatawa12.sai.ScriptRuntime.NoSuchMethodShim;
-import com.anatawa12.sai.ast.FunctionNode;
-import com.anatawa12.sai.ast.ScriptNode;
-import com.anatawa12.sai.debug.DebugFrame;
+import static com.anatawa12.sai.UniqueTag.DOUBLE_MARK;
 
 public final class Interpreter extends Icode implements Evaluator
 {
     // data for parsing
     InterpreterData itsData;
+    String sourceString;
 
     static final int EXCEPTION_TRY_START_SLOT  = 0;
     static final int EXCEPTION_TRY_END_SLOT    = 1;
@@ -378,10 +379,12 @@ public final class Interpreter extends Icode implements Evaluator
     public Object compile(CompilerEnvirons compilerEnv,
                           ScriptNode tree,
                           String encodedSource,
+                          String realSource,
                           boolean returnFunction)
     {
+        this.sourceString = realSource;
         CodeGenerator cgen = new CodeGenerator();
-        itsData = cgen.compile(compilerEnv, tree, encodedSource, returnFunction);
+        itsData = cgen.compile(compilerEnv, tree, encodedSource, sourceString, returnFunction);
         return itsData;
     }
 
@@ -977,6 +980,15 @@ public final class Interpreter extends Icode implements Evaluator
         }
         return idata.encodedSource.substring(idata.encodedSourceStart,
                                              idata.encodedSourceEnd);
+    }
+
+    static String getSourceString(InterpreterData idata)
+    {
+        if (idata.sourceString == null) {
+            return null;
+        }
+        return idata.sourceString.substring(idata.sourceStringStart,
+                idata.sourceStringEnd);
     }
 
     private static void initFunction(Context cx, Scriptable scope,
@@ -2186,21 +2198,15 @@ switch (op) {
             } else if (throwable instanceof ContinuationPending) {
                 exState = EX_NO_JS_STATE;
             } else if (throwable instanceof RuntimeException) {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_FINALLY_STATE;
+                exState = EX_FINALLY_STATE;
             } else if (throwable instanceof Error) {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_NO_JS_STATE;
+                exState = EX_NO_JS_STATE;
             } else if (throwable instanceof ContinuationJump) {
                 // It must be ContinuationJump
                 exState = EX_FINALLY_STATE;
                 cjump = (ContinuationJump)throwable;
             } else {
-                exState = cx.hasFeature(Context.FEATURE_ENHANCED_JAVA_ACCESS)
-                          ? EX_CATCH_STATE
-                          : EX_FINALLY_STATE;
+                exState = EX_FINALLY_STATE;
             }
 
             if (instructionCounting) {

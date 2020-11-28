@@ -11,7 +11,7 @@ package com.anatawa12.sai;
  * See ECMA 15.6.
  * @author Norris Boyd
  */
-final class NativeBoolean extends IdScriptableObject
+final class NativeBoolean extends NativePrimitive
 {
     private static final long serialVersionUID = -3716996899943880933L;
 
@@ -20,6 +20,7 @@ final class NativeBoolean extends IdScriptableObject
     static void init(Scriptable scope, boolean sealed)
     {
         NativeBoolean obj = new NativeBoolean(false);
+        obj.members = JavaMembers.lookupClass(scope, Boolean.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
     }
 
@@ -32,6 +33,23 @@ final class NativeBoolean extends IdScriptableObject
     public String getClassName()
     {
         return "Boolean";
+    }
+
+    private transient JavaMembers members;
+
+    @Override
+    protected JavaMembers getJavaMembers() {
+        return members;
+    }
+
+    @Override
+    public Object unwrap() {
+        return booleanValue;
+    }
+
+    @Override
+    public Class<?> unwrappedType() {
+        return Boolean.class;
     }
 
     @Override

@@ -8,7 +8,6 @@ import com.anatawa12.sai.Context;
 import com.anatawa12.sai.ContextFactory;
 import com.anatawa12.sai.Script;
 import com.anatawa12.sai.Scriptable;
-
 import junit.framework.TestCase;
 
 /**
@@ -65,7 +64,7 @@ public class GeneratedMethodNameTest extends TestCase
         public String readCurrentFunctionJavaName() {
             final Throwable t = new RuntimeException();
             // remove prefix and suffix of method name
-            return t.getStackTrace()[8].getMethodName().
+            return t.getStackTrace()[9].getMethodName().
                 replaceFirst("_[^_]*_(.*)_[^_]*", "$1");
         }
     }

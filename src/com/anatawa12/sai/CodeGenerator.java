@@ -54,6 +54,7 @@ class CodeGenerator extends Icode {
     public InterpreterData compile(CompilerEnvirons compilerEnv,
                                    ScriptNode tree,
                                    String encodedSource,
+                                   String sourceString,
                                    boolean returnFunction)
     {
         this.compilerEnv = compilerEnv;
@@ -79,6 +80,7 @@ class CodeGenerator extends Icode {
         itsData = new InterpreterData(compilerEnv.getLanguageVersion(),
                                       scriptOrFn.getSourceName(),
                                       encodedSource,
+                                      sourceString,
                                       scriptOrFn.isInStrictMode());
         itsData.topLevel = true;
 
@@ -179,6 +181,9 @@ class CodeGenerator extends Icode {
 
         itsData.encodedSourceStart = scriptOrFn.getEncodedSourceStart();
         itsData.encodedSourceEnd = scriptOrFn.getEncodedSourceEnd();
+
+        itsData.sourceStringStart = scriptOrFn.getAbsolutePosition();
+        itsData.sourceStringEnd = scriptOrFn.getAbsolutePosition() + scriptOrFn.getLength();
 
         if (literalIds.size() != 0) {
             itsData.literalIds = literalIds.toArray();

@@ -129,6 +129,12 @@ public class NativeJavaMethod extends BaseFunction
     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                        Object[] args)
     {
+        return callMethod(cx, scope, thisObj, dynamicMethod, args);
+    }
+
+    public static Object callMethod(Context cx, Scriptable scope, Scriptable thisObj,
+                                    DynamicMethod dynamicMethod, Object[] args)
+    {
         MethodOrConstructor method = dynamicMethod.getInvocation(ClassList.fromArgs(args));
 
         args = MemberBox.marshallParameters(method, args);
@@ -142,7 +148,7 @@ public class NativeJavaMethod extends BaseFunction
             while(true) {
                 if (o == null) {
                     throw RuntimeErrors.reportRuntimeError3(
-                        "msg.nonjava.method", getFunctionName(),
+                        "msg.nonjava.method", method.name(),
                         ScriptRuntime.toString(thisObj), c.getName());
                 }
                 if (o instanceof Wrapper) {
@@ -150,6 +156,10 @@ public class NativeJavaMethod extends BaseFunction
                     if (c.isInstance(javaObject)) {
                         break;
                     }
+                }
+                if (o instanceof NativePrimitive && ((NativePrimitive) o).unwrappedType() == c) {
+                    javaObject = ((NativePrimitive)o).unwrap();
+                    break;
                 }
                 o = o.getPrototype();
             }

@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 // TODO: Test
-public class ScriptableMirror extends AbstractJSObject implements JSObject, Map<String, Object>, Bindings {
-    private final Scriptable body;
+public final class ScriptableMirror extends AbstractJSObject implements JSObject, Map<String, Object>, Bindings {
+    final Scriptable body;
     private final AdapterContext context;
 
     static Scriptable scope(Context context) {
