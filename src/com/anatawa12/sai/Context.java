@@ -357,7 +357,7 @@ public class Context
      *
      * @since sai-next
      */
-    public static final int FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS = 21;
+    public static final int FEATURE_NATIVE_PRIMITIVES_HAVE_JAVA_METHODS = -1;
 
     /**
      * If set, native objects of primitive value (e.g. NativeNumber) will have java's boxed object's methods.
@@ -365,7 +365,7 @@ public class Context
      *
      * @since sai-next
      */
-    public static final int FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE = 22;
+    public static final int FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE = -2;
 
     public static final String languageVersionProperty = "language version";
     public static final String errorReporterProperty   = "error reporter";
