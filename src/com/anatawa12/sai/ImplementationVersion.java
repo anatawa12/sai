@@ -36,9 +36,9 @@ public class ImplementationVersion {
             try (InputStream is = metaUrl.openStream()) {
                 Manifest mf = new Manifest(is);
                 Attributes attrs = mf.getMainAttributes();
-                if ("Mozilla Rhino".equals(attrs.getValue("Implementation-Title"))) {
+                if ("Sai".equals(attrs.getValue("Implementation-Title"))) {
                     versionString =
-                        "Rhino " + attrs.getValue("Implementation-Version") + " " +
+                        "Sai " + attrs.getValue("Implementation-Version") + " " +
                             attrs.getValue("Built-Date").replaceAll("-", " ");
                     return;
                 }
