@@ -2,6 +2,11 @@
 
 A fork of Rhino for fixRTM.
 
+## Warning about the API Stability
+
+This project may make breaking changes every time.
+Please be careful to upgrade version of this.
+
 ## Differences between Sai and Rhino
 
 - Make similar to Nashorn, a ECMAScript runtime by OpenJDK
