@@ -247,7 +247,7 @@ bintray {
         repo = 'maven'
         name = 'com.anataw12.sai'
         userOrg = user
-        licenses = ['Apache-2.0']
+        licenses = ['MPL-2.0']
         vcsUrl = 'git@github.com:anatawa12/sai.git'
         version {
             name = project.version
