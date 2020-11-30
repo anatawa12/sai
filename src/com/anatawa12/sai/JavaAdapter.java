@@ -9,6 +9,7 @@ package com.anatawa12.sai;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +27,7 @@ import com.anatawa12.sai.classfile.ClassFileWriter;
 import com.anatawa12.sai.linker.ClassList;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
-public final class JavaAdapter implements IdFunctionCall
+public final class JavaAdapter implements IdFunctionCall, Serializable
 {
     /**
      * Provides a key with which to distinguish previously generated
