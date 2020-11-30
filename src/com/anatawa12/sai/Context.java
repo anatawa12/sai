@@ -367,6 +367,13 @@ public class Context
      */
     public static final int FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE = -2;
 
+    /**
+     * enable {@code //#sai-directive#} directive
+     *
+     * @since sai-next
+     */
+    public static final int FEATURE_SAI_DIRECTIVES = -3;
+
     public static final String languageVersionProperty = "language version";
     public static final String errorReporterProperty   = "error reporter";
 
