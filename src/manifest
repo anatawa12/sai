@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
 Main-Class: com.anatawa12.sai.tools.shell.Main
-Implementation-Version: 0.0.2
-Implementation-Title: Sai 0.0.2
+Implementation-Version: 0.0.2-SNAPSHOT
+Implementation-Title: Sai 0.0.2-SNAPSHOT
 Implementation-URL: https://github.com/anatawa12/sai
