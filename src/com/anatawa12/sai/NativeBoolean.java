@@ -20,8 +20,8 @@ final class NativeBoolean extends NativePrimitive
     static void init(Scriptable scope, boolean sealed)
     {
         NativeBoolean obj = new NativeBoolean(false);
-        obj.members = JavaMembers.lookupClass(scope, Boolean.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
+        obj.initJavaMembers();
     }
 
     NativeBoolean(boolean b)
@@ -33,13 +33,6 @@ final class NativeBoolean extends NativePrimitive
     public String getClassName()
     {
         return "Boolean";
-    }
-
-    private transient JavaMembers members;
-
-    @Override
-    protected JavaMembers getJavaMembers() {
-        return members;
     }
 
     @Override

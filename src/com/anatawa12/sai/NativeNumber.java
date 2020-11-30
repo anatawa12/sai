@@ -30,8 +30,8 @@ final class NativeNumber extends NativePrimitive
     static void init(Scriptable scope, boolean sealed)
     {
         NativeNumber obj = new NativeNumber(0.0);
-        obj.members = JavaMembers.lookupClass(scope, Double.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
+        obj.initJavaMembers();
     }
 
     NativeNumber(double number)
@@ -43,13 +43,6 @@ final class NativeNumber extends NativePrimitive
     public String getClassName()
     {
         return "Number";
-    }
-
-    private transient JavaMembers members;
-
-    @Override
-    protected JavaMembers getJavaMembers() {
-        return members;
     }
 
     @Override
