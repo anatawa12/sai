@@ -157,6 +157,8 @@ public class Parser
 
     private boolean defaultUseStrictDirective;
 
+    private List<LineNoMapping> lineNoMappings;
+
     // Exception to unwind
     private static class ParserException extends RuntimeException
     {
@@ -362,6 +364,13 @@ public class Parser
         Comment saved = currentJsDocComment;
         currentJsDocComment = null;
         return saved;
+    }
+
+    void addLineNumberMapping(int startLineNo, int inTraceLineNo, String fileName) {
+        if (lineNoMappings == null) {
+            lineNoMappings = new ArrayList<>();
+        }
+        lineNoMappings.add(new LineNoMapping(startLineNo, inTraceLineNo, fileName));
     }
 
 
@@ -4298,5 +4307,17 @@ public class Parser
 
     public boolean inUseStrictDirective() {
         return inUseStrictDirective;
+    }
+
+    public static class LineNoMapping {
+        public final int startLineNo;
+        public final int inTraceLineNo;
+        public final String fileName;
+
+        public LineNoMapping(int startLineNo, int inTraceLineNo, String fileName) {
+            this.startLineNo = startLineNo;
+            this.inTraceLineNo = inTraceLineNo;
+            this.fileName = fileName;
+        }
     }
 }

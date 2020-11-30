@@ -938,6 +938,8 @@ class TokenStream
                 // is it a // comment?
                 if (matchChar('/')) {
                     tokenBeg = cursor - 2;
+                    if (parser.compilerEnv.isSaiDirectiveEnabled())
+                        tryReadSaiDirective();
                     skipLine();
                     commentType = Token.CommentType.LINE;
                     return Token.COMMENT;
@@ -1577,6 +1579,26 @@ class TokenStream
         cursor--;
     }
 
+    private void tryReadSaiDirective() throws IOException {
+        String directiveStart = "#sai-directive#";
+        for (int i = 0; i < directiveStart.length(); i++) {
+            if (!matchChar(directiveStart.charAt(i)))
+                return;
+        }
+        int directiveStartPosition = cursor;
+        StringBuilder directive = new StringBuilder();
+        // skip to end of line
+        int c;
+        while ((c = getChar()) != EOF_CHAR && c != '\n') {
+            directive.append((char)c);
+        }
+        ungetChar(c);
+        if (saiDirectiveProcessor == null)
+            saiDirectiveProcessor = new SaiDirectiveProcessor(parser, this);
+        saiDirectiveProcessor.processDirective(directive.toString(), directiveStartPosition);
+        tokenEnd = cursor;
+    }
+
     private void skipLine() throws IOException
     {
         // skip to end of line
@@ -1857,4 +1879,6 @@ class TokenStream
 
     private String commentPrefix = "";
     private int commentCursor = -1;
+
+    private SaiDirectiveProcessor saiDirectiveProcessor;
 }
