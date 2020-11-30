@@ -38,8 +38,8 @@ final class NativeString extends NativePrimitive
     static void init(Scriptable scope, boolean sealed)
     {
         NativeString obj = new NativeString("");
-        obj.members = JavaMembers.lookupClass(scope, String.class, null, false);
         obj.exportAsJSClass(MAX_PROTOTYPE_ID, scope, sealed);
+        obj.initJavaMembers();
     }
 
     NativeString(CharSequence s) {
@@ -49,13 +49,6 @@ final class NativeString extends NativePrimitive
     @Override
     public String getClassName() {
         return "String";
-    }
-
-    private transient JavaMembers members;
-
-    @Override
-    protected JavaMembers getJavaMembers() {
-        return members;
     }
 
     @Override
