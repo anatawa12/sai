@@ -245,7 +245,7 @@ bintray {
     publications = ['sai', 'sairuntime', 'saiengine']
     pkg {
         repo = 'maven'
-        name = 'com.anataw12.sai'
+        name = 'com.anatawa12.sai'
         userOrg = user
         licenses = ['MPL-2.0']
         vcsUrl = 'https://github.com/anatawa12/sai.git'
