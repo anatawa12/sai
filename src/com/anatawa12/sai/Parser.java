@@ -574,6 +574,8 @@ public class Parser
         if (compilerEnv.isIdeMode()) {
             this.sourceChars = sourceString.toCharArray();
         }
+        if (compilerEnv.isSaiDirectiveEnabled())
+            addLineNumberMapping(lineno, lineno, sourceURI);
         this.ts = new TokenStream(this, null, sourceString, lineno);
         try {
             return parse();
@@ -601,6 +603,8 @@ public class Parser
         }
         try {
             this.sourceURI = sourceURI;
+            if (compilerEnv.isSaiDirectiveEnabled())
+                addLineNumberMapping(lineno, lineno, sourceURI);
             ts = new TokenStream(this, sourceReader, null, lineno);
             return parse();
         } finally {
@@ -4318,6 +4322,15 @@ public class Parser
             this.startLineNo = startLineNo;
             this.inTraceLineNo = inTraceLineNo;
             this.fileName = fileName;
+        }
+
+        @Override
+        public String toString() {
+            return "LineNoMapping{" +
+                    "startLineNo=" + startLineNo +
+                    ", inTraceLineNo=" + inTraceLineNo +
+                    ", fileName='" + fileName + '\'' +
+                    '}';
         }
     }
 }
