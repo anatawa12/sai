@@ -81,6 +81,7 @@ class CodeGenerator extends Icode {
                                       scriptOrFn.getSourceName(),
                                       encodedSource,
                                       sourceString,
+                                      scriptOrFn.getFileNameMapping(),
                                       scriptOrFn.isInStrictMode());
         itsData.topLevel = true;
 

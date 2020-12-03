@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.anatawa12.sai.FileNameMapping;
 import com.anatawa12.sai.Node;
 import com.anatawa12.sai.Token;
 
@@ -37,6 +38,7 @@ public class ScriptNode extends Scope {
     private Object compilerData;
     private int tempNumber = 0;
     private boolean inStrictMode;
+    private FileNameMapping fileNameMapping;
 
     {
         // during parsing, a ScriptNode or FunctionNode's top scope is itself
@@ -133,6 +135,14 @@ public class ScriptNode extends Scope {
      */
     public String getEncodedSource() {
         return encodedSource;
+    }
+
+    public void setFileNameMapping(FileNameMapping fileNameMapping) {
+        this.fileNameMapping = fileNameMapping;
+    }
+
+    public FileNameMapping getFileNameMapping() {
+        return fileNameMapping;
     }
 
     public int getBaseLineno() {

@@ -19,6 +19,7 @@ import com.anatawa12.sai.RhinoException;
 import com.anatawa12.sai.Script;
 import com.anatawa12.sai.Scriptable;
 import com.anatawa12.sai.SecurityController;
+import com.anatawa12.sai.StackTraceEditor;
 import com.anatawa12.sai.Token;
 import com.anatawa12.sai.ast.FunctionNode;
 import com.anatawa12.sai.ast.Name;
@@ -30,6 +31,7 @@ import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_FINAL;
 import static com.anatawa12.sai.classfile.ClassFileWriter.ACC_PRIVATE;
@@ -276,7 +278,12 @@ public class Codegen implements Evaluator
 
         String sourceFile = null;
         if (compilerEnv.isGenerateDebugInfo()) {
-            sourceFile = scriptOrFnNodes[0].getSourceName();
+            if (compilerEnv.isSaiDirectiveEnabled()) {
+                sourceFile = "sai-adapter-" + UUID.randomUUID();
+                StackTraceEditor.addMapping(sourceFile, scriptOrFnNodes[0].getFileNameMapping());
+            } else {
+                sourceFile = scriptOrFnNodes[0].getSourceName();
+            }
         }
 
         ClassFileWriter cfw = new ClassFileWriter(mainClassName,
@@ -511,6 +518,9 @@ public class Codegen implements Evaluator
         cfw.add(ByteCode.ARETURN);
         cfw.markLabel(nonTopCallLabel);
 
+        int tryStart = cfw.acquireLabel();
+        cfw.markLabel(tryStart);
+
         // Now generate switch to call the real methods
         cfw.addALoad(0);
         cfw.addALoad(1);
@@ -578,8 +588,26 @@ public class Codegen implements Evaluator
                           getBodyMethodSignature(n));
             cfw.add(ByteCode.ARETURN);
         }
-        cfw.stopMethod((short)5);
-        // 5: this, cx, scope, js this, args[]
+
+        if (compilerEnv.isSaiDirectiveEnabled() && compilerEnv.isGenerateDebugInfo()) {
+            int tryEnd = cfw.acquireLabel();
+            cfw.markLabel(tryEnd);
+            int handleStart = cfw.acquireLabel();
+            cfw.markHandler(handleStart);
+
+            cfw.addAStore(5);
+            cfw.addALoad(5);
+            cfw.addInvoke(ByteCode.INVOKESTATIC, "com.anatawa12.sai.StackTraceEditor",
+                    "editTrace",
+                    "(Ljava/lang/Throwable;)V");
+            cfw.addALoad(5);
+            cfw.add(ByteCode.ATHROW);
+
+            cfw.addExceptionHandler(tryStart, tryEnd, handleStart, "java.lang.Throwable");
+        }
+
+        cfw.stopMethod((short)6);
+        // 5: this, cx, scope, js this, args[], throwable
     }
 
     private void generateMain(ClassFileWriter cfw)

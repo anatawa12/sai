@@ -2,9 +2,11 @@ package com.anatawa12.sai.optimizer;
 
 import com.anatawa12.sai.CompilerEnvirons;
 import com.anatawa12.sai.Context;
+import com.anatawa12.sai.FileNameMapping;
 import com.anatawa12.sai.Kit;
 import com.anatawa12.sai.NativeGenerator;
 import com.anatawa12.sai.Node;
+import com.anatawa12.sai.Parser;
 import com.anatawa12.sai.ScriptRuntime;
 import com.anatawa12.sai.Token;
 import com.anatawa12.sai.ast.FunctionNode;
@@ -938,8 +940,18 @@ class BodyCodegen
             "com/anatawa12/sai/JavaScriptException");
         cfw.add(ByteCode.DUP_X1);
         cfw.add(ByteCode.SWAP);
-        cfw.addPush(scriptOrFn.getSourceName());
-        cfw.addPush(itsLineNumber);
+        int lineNumber = itsLineNumber;
+        String fileName = scriptOrFn.getSourceName();
+        FileNameMapping fileNameMapping = scriptOrFn.getFileNameMapping();
+        if (fileNameMapping != null) {
+            Parser.LineNoMapping mapping = fileNameMapping.findMapping(lineNumber);
+            if (mapping != null) {
+                lineNumber = mapping.mapLineNumber(lineNumber);
+                fileName = mapping.fileName;
+            }
+        }
+        cfw.addPush(fileName);
+        cfw.addPush(lineNumber);
         cfw.addInvoke(
             ByteCode.INVOKESPECIAL,
             "com/anatawa12/sai/JavaScriptException",

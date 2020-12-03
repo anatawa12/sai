@@ -158,6 +158,7 @@ public class Parser
     private boolean defaultUseStrictDirective;
 
     private List<LineNoMapping> lineNoMappings;
+    private FileNameMapping fileNameMapping;
 
     // Exception to unwind
     private static class ParserException extends RuntimeException
@@ -559,6 +560,18 @@ public class Parser
         loopAndSwitchSet.remove(loopAndSwitchSet.size() - 1);
     }
 
+    public FileNameMapping createFileNameMapping() {
+        if (lineNoMappings == null) return null;
+        if (fileNameMapping != null) {
+            fileNameMapping.lastLine = ts.lineno;
+            return fileNameMapping;
+        }
+        return fileNameMapping = new FileNameMapping(
+                ts.lineno,
+                lineNoMappings
+        );
+    }
+
     /**
      * Builds a parse tree from the given source string.
      *
@@ -697,6 +710,7 @@ public class Parser
         root.setSourceName(sourceURI);
         root.setBaseLineno(baseLineno);
         root.setEndLineno(ts.lineno);
+        root.setFileNameMapping(createFileNameMapping());
         return root;
     }
 
@@ -969,6 +983,7 @@ public class Parser
         fnNode.setSourceName(sourceURI);
         fnNode.setBaseLineno(baseLineno);
         fnNode.setEndLineno(ts.lineno);
+        fnNode.setFileNameMapping(createFileNameMapping());
 
         // Set the parent scope.  Needed for finding undeclared vars.
         // Have to wait until after parsing the function to set its parent
@@ -1032,6 +1047,7 @@ public class Parser
         fnNode.setSourceName(sourceURI);
         fnNode.setBaseLineno(baseLineno);
         fnNode.setEndLineno(ts.lineno);
+        fnNode.setFileNameMapping(createFileNameMapping());
 
         return fnNode;
     }
@@ -4314,6 +4330,8 @@ public class Parser
     }
 
     public static class LineNoMapping {
+        public static final LineNoMapping[] EMPTY_ARRAY = new LineNoMapping[0];
+
         public final int startLineNo;
         public final int inTraceLineNo;
         public final String fileName;
@@ -4322,6 +4340,10 @@ public class Parser
             this.startLineNo = startLineNo;
             this.inTraceLineNo = inTraceLineNo;
             this.fileName = fileName;
+        }
+
+        public int mapLineNumber(int line) {
+            return line - startLineNo + inTraceLineNo;
         }
 
         @Override
