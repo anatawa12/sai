@@ -27,7 +27,7 @@ public class SaiDirectiveProcessor {
         String name = readString();
         if (name == null) return;
         int lineno = ts.lineno;
-        parser.addLineNumberMapping(lineno, line + 1, name);
+        parser.addLineNumberMapping(lineno + 1, line + 1, name);
     }
 
     private Integer readInteger() {
