@@ -16,6 +16,7 @@ public class StackTraceEditor {
             throw new IllegalStateException("the mapping for '" + sourceName + "' is already exists");
     }
 
+    @SuppressWarnings("unused") // used by generated source
     public static void editTrace(Throwable throwable) {
         if (editedExceptions.contains(throwable)) return;
         StackTraceElement[] trace = throwable.getStackTrace();
