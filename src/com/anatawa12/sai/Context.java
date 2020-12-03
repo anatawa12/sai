@@ -2577,6 +2577,7 @@ public class Context
          * number from an enclosing frame.
          */
         StackTraceElement[] stackTrace = new Throwable().getStackTrace();
+        StackTraceEditor.editTrace(stackTrace);
         for (StackTraceElement st : stackTrace) {
             String file = st.getFileName();
             if (!(file == null || file.endsWith(".java"))) {

@@ -20,14 +20,7 @@ public class StackTraceEditor {
     public static void editTrace(Throwable throwable) {
         if (editedExceptions.contains(throwable)) return;
         StackTraceElement[] trace = throwable.getStackTrace();
-        boolean modified = false;
-        for (int i = 0; i < trace.length; i++) {
-            StackTraceElement edited = edit(trace[i]);
-            if (edited != trace[i]) {
-                modified = true;
-                trace[i] = edited;
-            }
-        }
+        boolean modified = editTrace(trace);
         if (modified) {
             throwable.setStackTrace(trace);
         }
@@ -38,6 +31,18 @@ public class StackTraceEditor {
         for (Throwable suppressed : throwable.getSuppressed()) {
             editTrace(suppressed);
         }
+    }
+
+    public static boolean editTrace(StackTraceElement[] trace) {
+        boolean modified = false;
+        for (int i = 0; i < trace.length; i++) {
+            StackTraceElement edited = edit(trace[i]);
+            if (edited != trace[i]) {
+                modified = true;
+                trace[i] = edited;
+            }
+        }
+        return modified;
     }
 
     private static StackTraceElement edit(StackTraceElement stackTraceElement) {
