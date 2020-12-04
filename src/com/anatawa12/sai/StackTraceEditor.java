@@ -69,6 +69,7 @@ public class StackTraceEditor {
     }
 
     private static StackTraceElement edit(StackTraceElement stackTraceElement) {
+        if (stackTraceElement.getFileName() == null) return stackTraceElement;
         FileNameMapping mapping = mappingMap.get(stackTraceElement.getFileName());
         if (mapping != null) {
             return mapping.modify(stackTraceElement);

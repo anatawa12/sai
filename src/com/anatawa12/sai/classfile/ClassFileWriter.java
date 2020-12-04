@@ -710,8 +710,17 @@ public class ClassFileWriter {
                     throw new IllegalArgumentException("unsupported primitive: " + k);
             }
         } else {
-            add(ByteCode.LDC, itsConstantPool.addClass(k.getName()));
+            addLoadClassConstant(k.getName());
         }
+    }
+
+    /**
+     * Generate the load constant bytecode for the given integer.
+     *
+     * @param name the name of constant of class
+     */
+    public void addLoadClassConstant(String name) {
+        add(ByteCode.LDC, itsConstantPool.addClass(name));
     }
 
     /**
@@ -2177,6 +2186,10 @@ public class ClassFileWriter {
                         case ConstantPool.CONSTANT_String:
                             push(TypeInfo.OBJECT("java/lang/String",
                                 itsConstantPool));
+                            break;
+                        case ConstantPool.CONSTANT_Class:
+                            push(TypeInfo.OBJECT("java/lang/Class",
+                                    itsConstantPool));
                             break;
                         default:
                             throw new IllegalArgumentException(

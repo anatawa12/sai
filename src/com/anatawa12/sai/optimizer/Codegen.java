@@ -9,12 +9,14 @@ package com.anatawa12.sai.optimizer;
 import com.anatawa12.sai.CompilerEnvirons;
 import com.anatawa12.sai.Context;
 import com.anatawa12.sai.Evaluator;
+import com.anatawa12.sai.FileNameMapping;
 import com.anatawa12.sai.Function;
 import com.anatawa12.sai.GeneratedClassLoader;
 import com.anatawa12.sai.Kit;
 import com.anatawa12.sai.NativeFunction;
 import com.anatawa12.sai.ObjArray;
 import com.anatawa12.sai.ObjToIntMap;
+import com.anatawa12.sai.Parser;
 import com.anatawa12.sai.RhinoException;
 import com.anatawa12.sai.Script;
 import com.anatawa12.sai.Scriptable;
@@ -28,6 +30,7 @@ import com.anatawa12.sai.classfile.ByteCode;
 import com.anatawa12.sai.classfile.ClassFileWriter;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -280,7 +283,6 @@ public class Codegen implements Evaluator
         if (compilerEnv.isGenerateDebugInfo()) {
             if (compilerEnv.isSaiDirectiveEnabled()) {
                 sourceFile = "sai-adapter-" + UUID.randomUUID();
-                StackTraceEditor.addMapping(sourceFile, scriptOrFnNodes[0].getFileNameMapping());
             } else {
                 sourceFile = scriptOrFnNodes[0].getSourceName();
             }
@@ -330,7 +332,8 @@ public class Codegen implements Evaluator
         }
 
         emitRegExpInit(cfw);
-        emitConstantDudeInitializers(cfw);
+        emitConstantDudeInitializers(cfw,
+                compilerEnv.isSaiDirectiveEnabled() ? sourceFile : null);
 
         return cfw.toByteArray();
     }
@@ -1091,10 +1094,10 @@ public class Codegen implements Evaluator
         cfw.stopMethod((short)2);
     }
 
-    private void emitConstantDudeInitializers(ClassFileWriter cfw)
+    private void emitConstantDudeInitializers(ClassFileWriter cfw, String sourceFile)
     {
         int N = itsConstantListSize;
-        if (N == 0)
+        if (N == 0 && sourceFile == null)
             return;
 
         cfw.startMethod("<clinit>", "()V", (short)(ACC_STATIC | ACC_FINAL));
@@ -1117,6 +1120,40 @@ public class Codegen implements Evaluator
             }
             cfw.add(ByteCode.PUTSTATIC, mainClassName,
                     constantName, constantType);
+        }
+
+        if (sourceFile != null) {
+            FileNameMapping mappings = scriptOrFnNodes[0].getFileNameMapping();
+
+            cfw.addLoadClassConstant(mainClassName);
+            cfw.addLoadConstant(sourceFile);
+            cfw.add(ByteCode.NEW, "com.anatawa12.sai.FileNameMapping");
+            cfw.add(ByteCode.DUP);
+            cfw.addLoadConstant(mappings.lastLine);
+            cfw.addLoadConstant(mappings.mappings.size());
+            cfw.add(ByteCode.ANEWARRAY, "com.anatawa12.sai.Parser$LineNoMapping");
+            for (int i = 0; i < mappings.mappings.size(); i++) {
+                Parser.LineNoMapping mapping = mappings.mappings.get(i);
+                cfw.add(ByteCode.DUP);
+                cfw.addLoadConstant(i);
+                cfw.add(ByteCode.NEW, "com.anatawa12.sai.Parser$LineNoMapping");
+                cfw.add(ByteCode.DUP);
+                cfw.addLoadConstant(mapping.startLineNo);
+                cfw.addLoadConstant(mapping.inTraceLineNo);
+                cfw.addLoadConstant(mapping.fileName);
+                cfw.addInvoke(ByteCode.INVOKESPECIAL, "com.anatawa12.sai.Parser$LineNoMapping",
+                        "<init>", "(IILjava/lang/String;)V");
+                cfw.add(ByteCode.AASTORE);
+            }
+            cfw.addInvoke(ByteCode.INVOKESTATIC, "java.util.Arrays",
+                    "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+
+            cfw.addInvoke(ByteCode.INVOKESPECIAL, "com.anatawa12.sai.FileNameMapping",
+                    "<init>", "(ILjava/util/List;)V");
+
+            cfw.addInvoke(ByteCode.INVOKESTATIC, "com.anatawa12.sai.StackTraceEditor",
+                    "addMapping", "(Ljava/lang/Object;" +
+                            "Ljava/lang/String;Lcom/anatawa12/sai/FileNameMapping;)V");
         }
 
         cfw.add(ByteCode.RETURN);

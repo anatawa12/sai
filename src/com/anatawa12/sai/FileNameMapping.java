@@ -4,8 +4,8 @@ import java.util.List;
 
 public class FileNameMapping {
     // inclusive
-    int lastLine;
-    final List<Parser.LineNoMapping> mappings;
+    public int lastLine;
+    public final List<Parser.LineNoMapping> mappings;
 
     public FileNameMapping(int lastLine, List<Parser.LineNoMapping> mappings) {
         this.lastLine = lastLine;
