@@ -21,7 +21,6 @@ import com.anatawa12.sai.RhinoException;
 import com.anatawa12.sai.Script;
 import com.anatawa12.sai.Scriptable;
 import com.anatawa12.sai.SecurityController;
-import com.anatawa12.sai.StackTraceEditor;
 import com.anatawa12.sai.Token;
 import com.anatawa12.sai.ast.FunctionNode;
 import com.anatawa12.sai.ast.Name;
@@ -30,7 +29,6 @@ import com.anatawa12.sai.classfile.ByteCode;
 import com.anatawa12.sai.classfile.ClassFileWriter;
 
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
