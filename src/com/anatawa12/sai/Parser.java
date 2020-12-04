@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.anatawa12.sai.ast.ArrayComprehension;
@@ -4344,6 +4345,26 @@ public class Parser
 
         public int mapLineNumber(int line) {
             return line - startLineNo + inTraceLineNo;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            LineNoMapping mapping = (LineNoMapping) o;
+
+            if (startLineNo != mapping.startLineNo) return false;
+            if (inTraceLineNo != mapping.inTraceLineNo) return false;
+            return Objects.equals(fileName, mapping.fileName);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = startLineNo;
+            result = 31 * result + inTraceLineNo;
+            result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
+            return result;
         }
 
         @Override

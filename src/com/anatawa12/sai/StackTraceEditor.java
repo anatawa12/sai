@@ -30,7 +30,7 @@ public class StackTraceEditor {
 
     public static void addMapping(String sourceName, FileNameMapping mapping) {
         FileNameMapping oldValue = mappingMap.putIfAbsent(sourceName, mapping);
-        if (oldValue != null && oldValue != mapping)
+        if (oldValue != null && !oldValue.equals(mapping))
             throw new IllegalStateException("the mapping for '" + sourceName + "' is already exists");
     }
 

@@ -1,6 +1,7 @@
 package com.anatawa12.sai;
 
 import java.util.List;
+import java.util.Objects;
 
 public class FileNameMapping {
     // inclusive
@@ -46,6 +47,24 @@ public class FileNameMapping {
                 mapping.fileName,
                 mapping.mapLineNumber(element.getLineNumber())
         );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        FileNameMapping that = (FileNameMapping) o;
+
+        if (lastLine != that.lastLine) return false;
+        return Objects.equals(mappings, that.mappings);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = lastLine;
+        result = 31 * result + (mappings != null ? mappings.hashCode() : 0);
+        return result;
     }
 
     @Override
