@@ -8,6 +8,7 @@ package com.anatawa12.sai;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -4330,7 +4331,8 @@ public class Parser
         return inUseStrictDirective;
     }
 
-    public static class LineNoMapping {
+    public static class LineNoMapping implements Serializable {
+        private static final long serialVersionUID = 7211918540423885536L;
         public static final LineNoMapping[] EMPTY_ARRAY = new LineNoMapping[0];
 
         public final int startLineNo;

@@ -1,9 +1,11 @@
 package com.anatawa12.sai;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-public class FileNameMapping {
+public class FileNameMapping implements Serializable {
+    private static final long serialVersionUID = 8978976940655118196L;
     // inclusive
     public int lastLine;
     public final List<Parser.LineNoMapping> mappings;
