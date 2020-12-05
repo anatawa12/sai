@@ -20,12 +20,15 @@ final class InterpreterData implements Serializable, DebuggableScript
     static final int INITIAL_NUMBERTABLE_SIZE = 64;
 
     InterpreterData(int languageVersion, String sourceFile,
-                    String encodedSource, String sourceString, boolean isStrict)
+                    String encodedSource, String sourceString,
+                    FileNameMapping fileNameMapping,
+                    boolean isStrict)
     {
         this.languageVersion = languageVersion;
         this.itsSourceFile = sourceFile;
         this.encodedSource = encodedSource;
         this.sourceString = sourceString;
+        this.fileNameMapping = fileNameMapping;
         this.isStrict = isStrict;
         init();
     }
@@ -37,6 +40,7 @@ final class InterpreterData implements Serializable, DebuggableScript
         this.itsSourceFile = parent.itsSourceFile;
         this.encodedSource = parent.encodedSource;
         this.sourceString = parent.sourceString;
+        this.fileNameMapping = parent.fileNameMapping;
         this.isStrict = parent.isStrict;
         init();
     }
@@ -80,6 +84,8 @@ final class InterpreterData implements Serializable, DebuggableScript
     String sourceString;
     int sourceStringStart;
     int sourceStringEnd;
+
+    FileNameMapping fileNameMapping;
 
     int languageVersion;
 

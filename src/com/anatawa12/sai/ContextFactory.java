@@ -301,6 +301,9 @@ public class ContextFactory
 
           case Context.FEATURE_FUNCTION_TO_STRING_RETURN_REAL_SOURCE:
             return false;
+
+          case Context.FEATURE_SAI_DIRECTIVES:
+            return true;
         }
         // It is a bug to call the method with unknown featureIndex
         throw new IllegalArgumentException(String.valueOf(featureIndex));

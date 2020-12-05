@@ -902,12 +902,21 @@ public final class Interpreter extends Icode implements Evaluator
                     sb.append(idata.itsName);
                 }
                 sb.append('(');
-                sb.append(idata.itsSourceFile);
+
+                String fileName = idata.itsSourceFile;
                 int pc = linePC[linePCIndex];
-                if (pc >= 0) {
+                int lineNumber = pc >= 0 ? getIndex(idata.itsICode, pc) : -1;
+                Parser.LineNoMapping mapping = idata.fileNameMapping.findMapping(lineNumber);
+                if (mapping != null) {
+                    lineNumber = mapping.mapLineNumber(lineNumber);
+                    fileName = mapping.fileName;
+                }
+
+                sb.append(fileName);
+                if (lineNumber >= 0) {
                     // Include line info only if available
                     sb.append(':');
-                    sb.append(getIndex(idata.itsICode, pc));
+                    sb.append(lineNumber);
                 }
                 sb.append(')');
                 frame = frame.parentFrame;
@@ -961,6 +970,11 @@ public final class Interpreter extends Icode implements Evaluator
                 int pc = linePC[linePCIndex];
                 if (pc >= 0) {
                     lineNumber = getIndex(idata.itsICode, pc);
+                }
+                Parser.LineNoMapping mapping = idata.fileNameMapping.findMapping(lineNumber);
+                if (mapping != null) {
+                    lineNumber = mapping.mapLineNumber(lineNumber);
+                    fileName = mapping.fileName;
                 }
                 if (idata.itsName != null && idata.itsName.length() != 0) {
                     functionName = idata.itsName;

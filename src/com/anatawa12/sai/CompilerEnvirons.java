@@ -20,6 +20,7 @@ public class CompilerEnvirons
         reservedKeywordAsIdentifier = true;
         allowMemberExprAsFunctionName = false;
         xmlAvailable = true;
+        saiDirective = false;
         optimizationLevel = 0;
         generatingSource = true;
         strictMode = false;
@@ -43,6 +44,7 @@ public class CompilerEnvirons
         warningAsError = cx.hasFeature(Context.FEATURE_WARNING_AS_ERROR);
         xmlAvailable
             = cx.hasFeature(Context.FEATURE_E4X);
+        saiDirective = cx.hasFeature(Context.FEATURE_SAI_DIRECTIVES);
 
         optimizationLevel = cx.getOptimizationLevel();
 
@@ -117,6 +119,16 @@ public class CompilerEnvirons
     public void setXmlAvailable(boolean flag)
     {
         xmlAvailable = flag;
+    }
+
+    public final boolean isSaiDirectiveEnabled()
+    {
+        return saiDirective;
+    }
+
+    public void setSaiDirectiveEnabled(boolean flag)
+    {
+        saiDirective = flag;
     }
 
     public final int getOptimizationLevel()
@@ -280,6 +292,7 @@ public class CompilerEnvirons
     private boolean reservedKeywordAsIdentifier;
     private boolean allowMemberExprAsFunctionName;
     private boolean xmlAvailable;
+    private boolean saiDirective;
     private int optimizationLevel;
     private boolean generatingSource;
     private boolean strictMode;

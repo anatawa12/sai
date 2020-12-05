@@ -25,6 +25,7 @@ public abstract class RhinoException extends RuntimeException
 
     RhinoException()
     {
+        StackTraceEditor.editTrace(this);
         Evaluator e = Context.createInterpreter();
         if (e != null)
             e.captureStackInfo(this);
@@ -33,6 +34,7 @@ public abstract class RhinoException extends RuntimeException
     RhinoException(String details)
     {
         super(details);
+        StackTraceEditor.editTrace(this);
         Evaluator e = Context.createInterpreter();
         if (e != null)
             e.captureStackInfo(this);

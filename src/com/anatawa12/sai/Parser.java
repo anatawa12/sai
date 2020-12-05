@@ -8,11 +8,13 @@ package com.anatawa12.sai;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import com.anatawa12.sai.ast.ArrayComprehension;
@@ -156,6 +158,9 @@ public class Parser
     private int prevNameTokenLineno;
 
     private boolean defaultUseStrictDirective;
+
+    private List<LineNoMapping> lineNoMappings;
+    private FileNameMapping fileNameMapping;
 
     // Exception to unwind
     private static class ParserException extends RuntimeException
@@ -364,6 +369,13 @@ public class Parser
         return saved;
     }
 
+    void addLineNumberMapping(int startLineNo, int inTraceLineNo, String fileName) {
+        if (lineNoMappings == null) {
+            lineNoMappings = new ArrayList<>();
+        }
+        lineNoMappings.add(new LineNoMapping(startLineNo, inTraceLineNo, fileName));
+    }
+
 
     // Returns the next token without consuming it.
     // If previous token was consumed, calls scanner to get new token.
@@ -550,6 +562,18 @@ public class Parser
         loopAndSwitchSet.remove(loopAndSwitchSet.size() - 1);
     }
 
+    public FileNameMapping createFileNameMapping() {
+        if (lineNoMappings == null) return null;
+        if (fileNameMapping != null) {
+            fileNameMapping.lastLine = ts.lineno;
+            return fileNameMapping;
+        }
+        return fileNameMapping = new FileNameMapping(
+                ts.lineno,
+                lineNoMappings
+        );
+    }
+
     /**
      * Builds a parse tree from the given source string.
      *
@@ -565,6 +589,8 @@ public class Parser
         if (compilerEnv.isIdeMode()) {
             this.sourceChars = sourceString.toCharArray();
         }
+        if (compilerEnv.isSaiDirectiveEnabled())
+            addLineNumberMapping(lineno, lineno, sourceURI);
         this.ts = new TokenStream(this, null, sourceString, lineno);
         try {
             return parse();
@@ -592,6 +618,8 @@ public class Parser
         }
         try {
             this.sourceURI = sourceURI;
+            if (compilerEnv.isSaiDirectiveEnabled())
+                addLineNumberMapping(lineno, lineno, sourceURI);
             ts = new TokenStream(this, sourceReader, null, lineno);
             return parse();
         } finally {
@@ -684,6 +712,7 @@ public class Parser
         root.setSourceName(sourceURI);
         root.setBaseLineno(baseLineno);
         root.setEndLineno(ts.lineno);
+        root.setFileNameMapping(createFileNameMapping());
         return root;
     }
 
@@ -956,6 +985,7 @@ public class Parser
         fnNode.setSourceName(sourceURI);
         fnNode.setBaseLineno(baseLineno);
         fnNode.setEndLineno(ts.lineno);
+        fnNode.setFileNameMapping(createFileNameMapping());
 
         // Set the parent scope.  Needed for finding undeclared vars.
         // Have to wait until after parsing the function to set its parent
@@ -1019,6 +1049,7 @@ public class Parser
         fnNode.setSourceName(sourceURI);
         fnNode.setBaseLineno(baseLineno);
         fnNode.setEndLineno(ts.lineno);
+        fnNode.setFileNameMapping(createFileNameMapping());
 
         return fnNode;
     }
@@ -4298,5 +4329,53 @@ public class Parser
 
     public boolean inUseStrictDirective() {
         return inUseStrictDirective;
+    }
+
+    public static class LineNoMapping implements Serializable {
+        private static final long serialVersionUID = 7211918540423885536L;
+        public static final LineNoMapping[] EMPTY_ARRAY = new LineNoMapping[0];
+
+        public final int startLineNo;
+        public final int inTraceLineNo;
+        public final String fileName;
+
+        public LineNoMapping(int startLineNo, int inTraceLineNo, String fileName) {
+            this.startLineNo = startLineNo;
+            this.inTraceLineNo = inTraceLineNo;
+            this.fileName = fileName;
+        }
+
+        public int mapLineNumber(int line) {
+            return line - startLineNo + inTraceLineNo;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            LineNoMapping mapping = (LineNoMapping) o;
+
+            if (startLineNo != mapping.startLineNo) return false;
+            if (inTraceLineNo != mapping.inTraceLineNo) return false;
+            return Objects.equals(fileName, mapping.fileName);
+        }
+
+        @Override
+        public int hashCode() {
+            int result = startLineNo;
+            result = 31 * result + inTraceLineNo;
+            result = 31 * result + (fileName != null ? fileName.hashCode() : 0);
+            return result;
+        }
+
+        @Override
+        public String toString() {
+            return "LineNoMapping{" +
+                    "startLineNo=" + startLineNo +
+                    ", inTraceLineNo=" + inTraceLineNo +
+                    ", fileName='" + fileName + '\'' +
+                    '}';
+        }
     }
 }
