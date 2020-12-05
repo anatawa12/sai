@@ -137,6 +137,18 @@ public abstract class NativeFunction extends BaseFunction
     }
 
     /**
+     * for generating statically typed interface implementation.
+     * Integer.MIN_VALUE: not supported
+     */
+    protected int getSourceStartLineNo() {
+        return Integer.MIN_VALUE;
+    }
+
+    protected FileNameMapping getFileNameMapping() {
+        return null;
+    }
+
+    /**
      * Get parameter or variable const-ness.
      * If <code>index &lt; {@link #getParamCount()}</code>, then return the const-ness
      * of the corresponding parameter. Otherwise return whether the variable is

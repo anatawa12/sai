@@ -330,10 +330,24 @@ public class Codegen implements Evaluator
         }
 
         emitRegExpInit(cfw);
+
+        if (compilerEnv.isSaiDirectiveEnabled()) {
+            cfw.addField(MAPPING_FIELD_NAME, "Lcom/anatawa12/sai/FileNameMapping;", (short)(ACC_PRIVATE | ACC_STATIC));
+            emitGetFileNameMapping(cfw);
+        }
+
         emitConstantDudeInitializers(cfw,
                 compilerEnv.isSaiDirectiveEnabled() ? sourceFile : null);
 
         return cfw.toByteArray();
+    }
+
+    private void emitGetFileNameMapping(ClassFileWriter cfw) {
+        cfw.startMethod("getFileNameMapping", "()Lcom/anatawa12/sai/FileNameMapping;", ACC_PROTECTED);
+        cfw.add(ByteCode.GETSTATIC, mainClassName, MAPPING_FIELD_NAME, "Lcom/anatawa12/sai/FileNameMapping;");
+        cfw.add(ByteCode.ARETURN);
+        // only this
+        cfw.stopMethod((short) 1);
     }
 
     private void emitDirectConstructor(ClassFileWriter cfw,
@@ -792,7 +806,8 @@ public class Codegen implements Evaluator
         final int Do_getParamOrVarConst   = 5;
         final int Do_isGeneratorFunction  = 6;
         final int Do_getRealSource        = 7;
-        final int SWITCH_COUNT            = 8;
+        final int Do_getSourceStartLineNo = 8;
+        final int SWITCH_COUNT            = 9;
 
         for (int methodIndex = 0; methodIndex != SWITCH_COUNT; ++methodIndex) {
             if (methodIndex == Do_getEncodedSource && encodedSource == null) {
@@ -850,6 +865,11 @@ public class Codegen implements Evaluator
                 cfw.startMethod("getRealSource", "()Ljava/lang/String;",
                         ACC_PROTECTED);
                 cfw.addPush(sourceString);
+                break;
+              case Do_getSourceStartLineNo:
+                methodLocals = 1; // Only this
+                cfw.startMethod("getSourceStartLineNo", "()I",
+                        ACC_PROTECTED);
                 break;
               default:
                 throw Kit.codeBug();
@@ -1015,6 +1035,11 @@ public class Codegen implements Evaluator
                         cfw.add(ByteCode.ARETURN);
                         break;
 
+                    case Do_getSourceStartLineNo:
+                        cfw.addPush(n.getLineno());
+                        cfw.add(ByteCode.IRETURN);
+                        break;
+
                   default:
                     throw Kit.codeBug();
                 }
@@ -1123,8 +1148,6 @@ public class Codegen implements Evaluator
         if (sourceFile != null) {
             FileNameMapping mappings = scriptOrFnNodes[0].getFileNameMapping();
 
-            cfw.addLoadClassConstant(mainClassName);
-            cfw.addLoadConstant(sourceFile);
             cfw.add(ByteCode.NEW, "com.anatawa12.sai.FileNameMapping");
             cfw.add(ByteCode.DUP);
             cfw.addLoadConstant(mappings.lastLine);
@@ -1149,6 +1172,11 @@ public class Codegen implements Evaluator
             cfw.addInvoke(ByteCode.INVOKESPECIAL, "com.anatawa12.sai.FileNameMapping",
                     "<init>", "(ILjava/util/List;)V");
 
+            cfw.add(ByteCode.PUTSTATIC, mainClassName, MAPPING_FIELD_NAME, "Lcom/anatawa12/sai/FileNameMapping;");
+
+            cfw.addLoadClassConstant(mainClassName);
+            cfw.addLoadConstant(sourceFile);
+            cfw.add(ByteCode.GETSTATIC, mainClassName, MAPPING_FIELD_NAME, "Lcom/anatawa12/sai/FileNameMapping;");
             cfw.addInvoke(ByteCode.INVOKESTATIC, "com.anatawa12.sai.StackTraceEditor",
                     "addMapping", "(Ljava/lang/Object;" +
                             "Ljava/lang/String;Lcom/anatawa12/sai/FileNameMapping;)V");
@@ -1325,6 +1353,8 @@ public class Codegen implements Evaluator
         = "com.anatawa12.sai.NativeFunction";
 
     static final String ID_FIELD_NAME = "_id";
+
+    static final String MAPPING_FIELD_NAME = "_mapping";
 
     static final String REGEXP_INIT_METHOD_NAME = "_reInit";
     static final String REGEXP_INIT_METHOD_SIGNATURE
