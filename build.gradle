@@ -9,6 +9,8 @@ plugins {
     id 'checkstyle'
     id 'com.github.spotbugs' version "4.6.0"
     id "com.jfrog.bintray" version "1.8.5"
+
+    id "org.jetbrains.kotlin.jvm" version "1.4.20"
 }
 
 tasks.withType(JavaCompile) {
@@ -16,6 +18,12 @@ tasks.withType(JavaCompile) {
     targetCompatibility = 1.8
     options.encoding = "UTF-8"
     options.compilerArgs = [ "-Xlint:deprecation,unchecked" ]
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
 }
 
 compileTestJava {
@@ -65,6 +73,12 @@ sourceSets {
         compileClasspath += sourceSets.test.runtimeClasspath
         runtimeClasspath += sourceSets.test.runtimeClasspath
     }
+
+    stia {
+        java {
+            srcDirs "stiasrc"
+        }
+    }
 }
 
 dependencies {
@@ -73,6 +87,9 @@ dependencies {
     jmhImplementation project
     jmhImplementation 'org.openjdk.jmh:jmh-core:1.26'
     jmhAnnotationProcessor 'org.openjdk.jmh:jmh-generator-annprocess:1.23'
+
+    stiaImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.20"
+    stiaImplementation sourceSets.main.runtimeClasspath
 }
 
 test {
@@ -178,6 +195,23 @@ task engineJar(type: Jar) {
     }
 }
 
+task stiaJar(type: Jar) {
+    dependsOn compileStiaJava
+    archiveBaseName = 'sai-stia'
+    from (sourceSets.stia.output)
+    manifest {
+        attributes(
+                "Manifest-Version": "1.0",
+                "Implementation-Version": project.version,
+                "Implementation-Title":  "Sai Statically Typed Interface Adapter",
+//                "Implementation-Vendor": "Mozilla Foundation",
+                "Implementation-URL": "https://github.com/anatawa12/sai",
+                "Built-Date": new Date().format("yyyy-MM-dd"),
+                "Built-Time": new Date().format("HH:mm:ss"),
+        )
+    }
+}
+
 jar {
     dependsOn runtimeJar, engineJar
     from "LICENSE.txt"
@@ -237,6 +271,11 @@ task engineSourceJar(type: Jar) {
     classifier 'sources'
     from sourceSets.main.allJava
     include 'com/anatawa12/sai/engine/**'
+}
+
+task stiaSourceJar(type: Jar) {
+    classifier 'sources'
+    from sourceSets.stia.allJava
 }
 
 bintray {
@@ -328,6 +367,34 @@ publishing {
                 sai.appendNode("groupId", "com.anatawa12.sai")
                 sai.appendNode("artifactId", "sai")
                 sai.appendNode("version", project.version)
+            }
+        }
+
+        saistia(MavenPublication) {
+            groupId 'com.anatawa12.sai'
+            artifactId 'sai-stia'
+            artifacts = [stiaJar, stiaSourceJar]
+
+            pom.withXml {
+                def root = asNode()
+                configurePom(root)
+
+                def deps = root.appendNode("dependencies")
+
+                for (def config : configurations.stiaApi.dependencies) {
+                    if (config instanceof ModuleDependency) {
+                        def dep = deps.appendNode("dependency")
+                        dep.appendNode("groupId", config.group)
+                        dep.appendNode("artifactId", config.name)
+                        dep.appendNode("version", config.version)
+                    }
+                }
+
+                def sai = deps.appendNode("dependency")
+                sai.appendNode("groupId", "com.anatawa12.sai")
+                sai.appendNode("artifactId", "sai")
+                sai.appendNode("version", project.version)
+
             }
         }
     }
