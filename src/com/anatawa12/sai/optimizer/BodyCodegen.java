@@ -1003,6 +1003,21 @@ class BodyCodegen
             }
             break;
 
+            case Token.CONVERT_EXCEPTION:
+            {
+                generateExpression(child, node); // load expression object
+                cfw.addALoad(contextLocal);
+                cfw.addALoad(variableObjectLocal);
+
+                addScriptRuntimeInvoke(
+                        "newErrorForThrowable",
+                        "(Ljava/lang/Throwable;"
+                                +"Lcom/anatawa12/sai/Context;"
+                                +"Lcom/anatawa12/sai/Scriptable;"
+                                +")Ljava/lang/Object;");
+            }
+            break;
+
             case Token.CALL:
             case Token.NEW:
             {

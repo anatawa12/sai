@@ -3729,20 +3729,22 @@ public class ScriptRuntime {
         return null;
     }
 
-    public static Scriptable newCatchScope(Throwable t,
-                                           Scriptable lastCatchScope,
-                                           String exceptionName,
-                                           Context cx, Scriptable scope)
+    public static Object newErrorForThrowable(Throwable t,
+                                              Context cx, Scriptable scope)
+    {
+        return newErrorForThrowable(t, null, cx, scope);
+    }
+
+    public static Object newErrorForThrowable(Throwable t,
+                                              Scriptable lastCatchScope,
+                                              Context cx, Scriptable scope)
     {
         Object obj;
-        boolean cacheObj;
 
     getObj:
         if (t instanceof JavaScriptException) {
-            cacheObj = false;
             obj = ((JavaScriptException)t).getValue();
         } else {
-            cacheObj = true;
 
             // Create wrapper object unless it was associated with
             // the previous scope object
@@ -3817,6 +3819,17 @@ public class ScriptRuntime {
             obj = errorObject;
         }
 
+        return obj;
+    }
+
+    public static Scriptable newCatchScope(Throwable t,
+                                           Scriptable lastCatchScope,
+                                           String exceptionName,
+                                           Context cx, Scriptable scope)
+    {
+        Object obj = newErrorForThrowable(t, lastCatchScope, cx, scope);
+        boolean cacheObj = !(t instanceof JavaScriptException);
+
         NativeObject catchScopeObject = new NativeObject();
         // See ECMA 12.4
         catchScopeObject.defineProperty(
@@ -3856,7 +3869,7 @@ public class ScriptRuntime {
             javaException = we.getWrappedException();
             errorName = "JavaException";
             errorMsg = javaException.getClass().getName()
-                       +": "+javaException.getMessage();
+                    +": "+javaException.getMessage();
         } else if (t instanceof EvaluatorException) {
             // Pure evaluator exception, nor WrappedException instance
             EvaluatorException ee = (EvaluatorException)t;
@@ -3890,10 +3903,10 @@ public class ScriptRuntime {
 
         if (javaException != null && isVisible(cx, javaException)) {
             Object wrap = cx.getWrapFactory().wrap(cx, scope, javaException,
-                                                   null);
+                    null);
             ScriptableObject.defineProperty(
-                errorObject, "javaException", wrap,
-                ScriptableObject.PERMANENT | ScriptableObject.READONLY | ScriptableObject.DONTENUM);
+                    errorObject, "javaException", wrap,
+                    ScriptableObject.PERMANENT | ScriptableObject.READONLY | ScriptableObject.DONTENUM);
         }
         if (isVisible(cx, re)) {
             Object wrap = cx.getWrapFactory().wrap(cx, scope, re, null);
