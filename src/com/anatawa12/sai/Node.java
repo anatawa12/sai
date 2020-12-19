@@ -64,7 +64,10 @@ public class Node implements Iterable<Node>
         EXPRESSION_CLOSURE_PROP = 25, // JS 1.8 expression closure pseudo-return
         DESTRUCTURING_SHORTHAND = 26, // JS 1.8 destructuring shorthand
         ARROW_FUNCTION_PROP  = 27,
-        LAST_PROP            = 27;
+
+        // sai's props
+        STIA_INTERNAL_PROP   = 28,
+        LAST_PROP            = 28;
 
     // values of ISNUMBER_PROP to specify
     // which of the children are Number types
@@ -432,6 +435,8 @@ public class Node implements Iterable<Node>
                                            return "destructuring_array_length";
                 case DESTRUCTURING_NAMES:  return "destructuring_names";
                 case DESTRUCTURING_PARAMS: return "destructuring_params";
+
+                case STIA_INTERNAL_PROP:   return "stia_internal";
 
                 default: Kit.codeBug();
             }
