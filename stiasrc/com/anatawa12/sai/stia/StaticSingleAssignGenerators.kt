@@ -98,8 +98,6 @@ class StaticSingleAssignGenerators {
             Token.SETPROP_OP, // a.b op= c
             Token.SETELEM_OP, // a.[b] op= c
             Token.LOCAL_BLOCK, // contextual local variable (hidden) // TODO
-            Token.TO_OBJECT, // double to object wrapping
-            Token.TO_DOUBLE, // similar to Number(expr)
             Token.COMMA, // expr, expr, expr....
             Token.OR, // ||
             Token.AND, // &&
@@ -395,7 +393,9 @@ class StaticSingleAssignGenerators {
             -> unsupported("array comprehension expression")
             Token.LETEXPR,//TODO:CHECK
             -> unsupported("deconstructing const assign")
-            Token.RETURN_RESULT
+            Token.RETURN_RESULT,
+            Token.TO_OBJECT, // double to object wrapping
+            Token.TO_DOUBLE, // similar to Number(expr)
             -> unsupported("transformed insn")
             //Token.SEMI,
             //Token.LB,
