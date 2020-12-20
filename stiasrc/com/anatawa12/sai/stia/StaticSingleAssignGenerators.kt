@@ -633,7 +633,10 @@ class StaticSingleAssignGenerators {
                     val variable = Variable(symbol.name)
                     variable.getCurrent().producer = declaringScope
                     when (symbol.declType) {
-                        Token.FUNCTION -> unsupported("function decl")
+                        Token.FUNCTION -> {
+                            variable.enabledSinceHere()
+                            // TODO: set type if possible
+                        }
                         Token.LP -> {
                             if (declaringScope !is FunctionNode)
                                 unsupported("function arguments since block")
