@@ -602,6 +602,7 @@ class StaticSingleAssignGenerators {
                 }
             }
 
+            target.internalProps.remove(ssaGenTargetInfoKey)
             target.targetInfo = targetInfo
         }
     }
@@ -612,7 +613,7 @@ class StaticSingleAssignGenerators {
 
     fun removeFinallyInfos() {
         for (finally in finallies) {
-            finally.removeProp(Node.STIA_INTERNAL_PROP)
+            finally.internalProps.remove(finallyInternalInfoKey)
         }
     }
 
@@ -862,16 +863,9 @@ class StaticSingleAssignGenerators {
         }
     }
 
+    private val ssaGenTargetInfoKey = InternalPropMap.Key<SSAGenTargetInfo>("ssaGenTargetInfo")
     private val Node.ssaGenTargetInfo: SSAGenTargetInfo
-        get() {
-            require(isJumpTarget)
-            val got = getProp(Node.STIA_INTERNAL_PROP)
-            if (got != null)
-                return got as SSAGenTargetInfo
-            val value = SSAGenTargetInfo()
-            putProp(Node.STIA_INTERNAL_PROP, value)
-            return value
-        }
+            by ssaGenTargetInfoKey.computing(::SSAGenTargetInfo) { require(it.isJumpTarget) }
 
     /**
      * If [returningTo] is not null and [snapshot] is null, the finally block is not proceed and will be proceed.
@@ -888,16 +882,9 @@ class StaticSingleAssignGenerators {
         var snapshot: ScopeSnapshot? = null
     }
 
+    private val finallyInternalInfoKey = InternalPropMap.Key<FinallyInfo>("finallyInternalInfo")
     private val Node.finallyInternalInfo: FinallyInfo
-        get() {
-            require(type == Token.FINALLY)
-            val got = getProp(Node.STIA_INTERNAL_PROP)
-            if (got != null)
-                return got as FinallyInfo
-            val value = FinallyInfo()
-            putProp(Node.STIA_INTERNAL_PROP, value)
-            return value
-        }
+            by finallyInternalInfoKey.computing(::FinallyInfo) { require(it.type == Token.FINALLY) }
 
     companion object {
         private fun unsupported(message: String): Nothing {
