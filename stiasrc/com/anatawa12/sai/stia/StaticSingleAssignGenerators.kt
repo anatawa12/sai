@@ -87,8 +87,6 @@ class StaticSingleAssignGenerators {
             Token.IN,
             Token.INSTANCEOF,
             Token.LOCAL_LOAD,
-            Token.GETVAR,
-            Token.SETVAR,
             Token.ARRAYLIT, // array literal
             Token.OBJECTLIT, // object literal
             Token.VOID, // void expr;
@@ -198,6 +196,8 @@ class StaticSingleAssignGenerators {
                 for (case in cases) {
                     check(case.type == Token.CASE)
                     case as Jump
+                    val value = case.single()
+                    processNode(value, scope)
                     processJump(case.target, scope, node)
                 }
                 return ProcessResult.Continue
@@ -322,6 +322,9 @@ class StaticSingleAssignGenerators {
             -> {
                 for (name in node) {
                     name as Name
+                    val initializer = name.singleOrNull()
+                    if (initializer != null)
+                        processNode(initializer, scope)
                     val variable = scope.variableExactly(name.identifier)
                     name.varId = variable.makeNext(name)
                     if (node.type != Token.VAR)
@@ -342,19 +345,22 @@ class StaticSingleAssignGenerators {
                 return ProcessResult.Continue
             }
 
+            Token.CONVERT_EXCEPTION,
+            -> {
+                val convertFrom = node.single()
+                processNode(convertFrom, scope)
+                return ProcessResult.Continue
+            }
+
             Token.ENTERWITH,
             Token.LEAVEWITH,
             Token.WITH,
             Token.WITHEXPR,
             -> unsupported("with")
-            Token.STRICT_SETNAME,
-            -> unsupported("no difference between")
             Token.DEBUGGER,
             -> unsupported("debugger")
             Token.METHOD,
             -> unsupported("method")
-            Token.CONVERT_EXCEPTION,
-            -> unsupported("debugger")
             Token.SCRIPT, // TODO: BLOCK
             -> unsupported("root script is not supported")
             Token.CATCH_SCOPE, // TODO
@@ -398,6 +404,9 @@ class StaticSingleAssignGenerators {
             -> unsupported("array comprehension expression")
             Token.LETEXPR,//TODO:CHECK
             -> unsupported("deconstructing const assign")
+            Token.STRICT_SETNAME,
+            Token.GETVAR,
+            Token.SETVAR,
             Token.RETURN_RESULT,
             Token.TO_OBJECT, // double to object wrapping
             Token.TO_DOUBLE, // similar to Number(expr)
