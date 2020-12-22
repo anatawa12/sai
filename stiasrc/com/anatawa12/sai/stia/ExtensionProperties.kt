@@ -2,6 +2,7 @@ package com.anatawa12.sai.stia
 
 import com.anatawa12.sai.Node
 import com.anatawa12.sai.Token
+import com.anatawa12.sai.ast.Jump
 import com.anatawa12.sai.ast.Name
 import java.util.function.BiConsumer
 import kotlin.reflect.KProperty
@@ -19,11 +20,11 @@ internal val Node.internalProps: InternalPropMap
 internal class InternalPropMap : BiConsumer<String, String> {
     private val props = mutableListOf<Entry<*>>()
 
-    fun <T: Any> getOrNull(key: Key<T>): T? {
+    fun <T> getOrNull(key: Key<T>): T? {
         return props.firstOrNull { it.key == key }?.valueAs<T>()
     }
 
-    inline fun <T: Any> getOrCompute(key: Key<T>, compute: () -> T): T {
+    inline fun <T> getOrCompute(key: Key<T>, compute: () -> T): T {
         return getOrNull(key) ?: kotlin.run {
             val value = compute()
             put(key, value)
@@ -31,7 +32,7 @@ internal class InternalPropMap : BiConsumer<String, String> {
         }
     }
 
-    fun <T: Any> put(key: Key<T>, value: T) {
+    fun <T> put(key: Key<T>, value: T) {
         @Suppress("UNCHECKED_CAST")
         val entry = props.firstOrNull { it.key == key } as Entry<T>?
         if (entry == null)
@@ -45,9 +46,9 @@ internal class InternalPropMap : BiConsumer<String, String> {
     }
 
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun <T: Any> set(key: Key<T>, value: T) = put(key, value)
+    inline operator fun <T> set(key: Key<T>, value: T) = put(key, value)
     @Suppress("NOTHING_TO_INLINE")
-    inline operator fun <T: Any> get(key: Key<T>): T? = getOrNull(key)
+    inline operator fun <T> get(key: Key<T>): T? = getOrNull(key)
 
     override fun accept(indent: String, forLast: String) {
         val it = props.iterator()
@@ -63,25 +64,25 @@ internal class InternalPropMap : BiConsumer<String, String> {
             if (value is Array<*>) print(value.contentDeepToString())
             else print(value)
             print("(")
-            print(value.javaClass)
+            print(value?.javaClass)
             print(":")
-            System.out.printf("%04x", System.identityHashCode(value) and 0xFFFF)
+            print(value.shortHash())
             print(")")
             println()
         }
     }
 
-    private class Entry<T: Any>(val key: Key<T>, var value: T) {
+    private class Entry<T>(val key: Key<T>, var value: T) {
         @Suppress("UNCHECKED_CAST")
         fun <U> valueAs(): U? = value as U
     }
 
-    class Key<T : Any>(val name: String) {
+    class Key<T>(val name: String) {
         fun computing(compute: () -> T) = ComputingProp(this, {}, compute)
         fun computing(compute: () -> T, condition: (Node) -> Unit) = ComputingProp(this, condition, compute)
     }
 
-    class ComputingProp<T : Any>(
+    class ComputingProp<T>(
         val key: Key<T>,
         val condition: (Node) -> Unit,
         val compute: () -> T
@@ -115,6 +116,7 @@ internal class InternalPropMap : BiConsumer<String, String> {
 }
 
 private val varIdKey = InternalPropMap.Key<VariableId>("varId")
+fun Name.deleteVarId() = internalProps.remove(varIdKey)
 var Name.varId: VariableId
     get() = internalProps[varIdKey]
         ?: error("$this(${this.shortHash()}) doesn't have varId")
@@ -123,6 +125,16 @@ var Name.varId: VariableId
         internalProps[varIdKey]?.usedBy?.remove(this)
         internalProps[varIdKey] = value
         value.usedBy.add(this)
+    }
+
+private val jumpFromKey = InternalPropMap.Key<Node?>("jumpFrom")
+var Name.jumpFrom: Node?
+    set(value) {
+        require(value is Jump? || value?.type == Token.FINALLY)
+        internalProps[jumpFromKey] = value
+    }
+    get() {
+        return internalProps[jumpFromKey]
     }
 
 val Node.isJumpTarget get() = type == Token.TARGET || type == Token.JSR

@@ -11,7 +11,9 @@ import com.anatawa12.sai.ast.*
  * TARGET
  *  `--Name(new variable id)
  *      +--Name (old variable id 1)
+ *      |   `-jumpFrom: GOTO (if jumped from this instruction, this variable is used)
  *      `--Name (old variable id 2...)
+ *          `-jumpFrom: GOTO (if jumped from this instruction, this variable is used)
  * ```
  */
 class StaticSingleAssignGenerators {
@@ -26,10 +28,10 @@ class StaticSingleAssignGenerators {
             ?: scope
 
         statementsBlock(node, scope)
-        optimizeSSAPhis() // Nameのidを統合
         markUnreachable()
         replaceSSAGenInfoToNormalInfo()
         removeFinallyInfos()
+        optimizeSSAPhis() // Nameのidを統合
     }
 
     //region processNode
@@ -127,7 +129,7 @@ class StaticSingleAssignGenerators {
             Token.GOTO,
             -> {
                 node as Jump
-                processJump(node.target, scope)
+                processJump(node.target, scope, node)
                 return ProcessResult.Jumped
             }
             Token.JSR, // TODO: return from finally
@@ -142,7 +144,7 @@ class StaticSingleAssignGenerators {
                 finallies.add(node)
 
                 // jsr -> node: as a jump insn
-                processJump(target, scope)
+                processJump(target, scope, node)
 
                 // finally -> jsr: as a target insn
                 targets.add(node)
@@ -151,7 +153,7 @@ class StaticSingleAssignGenerators {
 
                 // do something for jumping of finally
                 if (finallyInfo.snapshot != null) {
-                    processJump(target = node, snapshot = finallyInfo.snapshot!!)
+                    processJump(target = node, snapshot = finallyInfo.snapshot!!, finally)
                 } else {
                     finallyInfo.returningTo?.add(node)
                 }
@@ -168,7 +170,7 @@ class StaticSingleAssignGenerators {
                     }
                     ProcessResult.Jumped -> return ProcessResult.Jumped
                 }
-                processJump(node.target, scope)
+                processJump(node.target, scope, node)
                 // ScriptRuntime.newErrorForThrowable
                 return ProcessResult.Continue
             }
@@ -178,7 +180,7 @@ class StaticSingleAssignGenerators {
                 node as Jump
                 val loop = node.jumpStatement
                 val target = if (node.type == Token.BREAK) loop.target else loop.`continue`
-                processJump(target, scope)
+                processJump(target, scope, node)
                 return ProcessResult.Jumped
             }
 
@@ -196,7 +198,7 @@ class StaticSingleAssignGenerators {
                 for (case in cases) {
                     check(case.type == Token.CASE)
                     case as Jump
-                    processJump(case.target, scope)
+                    processJump(case.target, scope, node)
                 }
                 return ProcessResult.Continue
             }
@@ -206,7 +208,7 @@ class StaticSingleAssignGenerators {
                 targets.add(node)
                 val curSnapshot = scope.createSnapshot()
                 val newSnapshot = scope.updateAll(producer = node)
-                if (!afterJump) node.ssaGenTargetInfo.addJumpingFrom(curSnapshot)
+                if (!afterJump) node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
                 node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
                 return ProcessResult.Continue
             }
@@ -257,7 +259,7 @@ class StaticSingleAssignGenerators {
                     val isReturnedOld = isReturned
                     isReturned = false
                     if (child === catchTarget || child === finallyTarget)
-                        child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot))
+                        child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot), node)
                     when (processNode(child, scope, isReturnedOld)) {
                         ProcessResult.Continue -> {
                         }
@@ -288,7 +290,7 @@ class StaticSingleAssignGenerators {
                 val snapshot = scope.createSnapshot()
                 info.snapshot = snapshot
                 for (returningTo in info.returningTo!!) {
-                    processJump(returningTo, snapshot)
+                    processJump(returningTo, snapshot, node)
                 }
                 info.returningTo = null
                 return ProcessResult.Jumped
@@ -335,7 +337,10 @@ class StaticSingleAssignGenerators {
             }
 
             Token.FUNCTION, // literal or root definition
-            -> TODO("reference maybe")
+            -> {
+                //TODO("reference maybe")
+                return ProcessResult.Continue
+            }
 
             Token.ENTERWITH,
             Token.LEAVEWITH,
@@ -451,13 +456,13 @@ class StaticSingleAssignGenerators {
         return statementsBlock(node, newScope)
     }
 
-    private fun processJump(target: Node, scope: VariablesScope) {
-        processJump(target, scope.createSnapshot())
+    private fun processJump(target: Node, scope: VariablesScope, jump: Node?) {
+        processJump(target, scope.createSnapshot(), jump)
     }
 
-    private fun processJump(target: Node, snapshot: ScopeSnapshot) {
+    private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node?) {
         check(target.isJumpTarget)
-        target.ssaGenTargetInfo.addJumpingFrom(snapshot)
+        target.ssaGenTargetInfo.addJumpingFrom(snapshot, jump)
     }
 
     private fun statementsBlock(node: Node, scope: VariablesScope): ProcessResult {
@@ -498,68 +503,35 @@ class StaticSingleAssignGenerators {
     private fun runOptimizeSSAPhis(): Boolean {
         var modified = false
         for (target in targets) {
-            modified = modified or runOptimizeSSAPhis(target)
+            modified = modified or runOptimizeSSAPhis1(target)
         }
         return modified
     }
 
-    private fun runOptimizeSSAPhis(target: Node): Boolean {
-        var modified = false
-        val info = target.ssaGenTargetInfo
-        val atTarget = info.atTargetSnapshot!!
-        for ((scope, versionScope) in atTarget.scopes.zip(info.versions)) {
-            for (name in scope) {
-                val versionsMut = versionScope[name.identifier]
+    /**
+     * merge `NAME`s which has same varId to one `NAME`
+     */
+    private fun runOptimizeSSAPhis1(target: Node): Boolean {
+        check(target.isJumpTarget)
+        val names = target.toList() as List<Name>
+        val nameById = names.groupBy { it.varId }
+        // if same size, this mean there isn't `NAME` to be merged
+        if (nameById.size == names.size)
+            return false
 
-                versionsMut?.uniqueBy { it.varId }
-                //versionsMut?.removeAll { it.varId == name.varId }
-                versionsMut?.removeAll {
-                    // TODO: remove also re-assigneds
-                    val producer = it.varId.producerNoAssigning
-                    (producer.isJumpTarget)
-                            && !producer.ssaGenTargetInfo.isReachable
-                }
-                val versions = versionsMut.orEmpty()
-
-                when (versions.size) {
-                    0 -> {
-                        if (name.varId.producer == target) {
-                            // this means unreachable scope
-                            info.markAsUnreachable()
-                            return true
-                        }
-                    }
-                    1 -> {
-                        val replacement = versions.single().varId
-                        if (replacement == name.varId) {
-                            versionsMut?.clear()
-                        } else {
-                            name.varId.replacedBy(replacement)
-                            modified = true
-                        }
-                    }
-                    2 -> {
-                        val another: Name
-                        val maySame: Name
-                        if (versions[0].varId == name.varId) {
-                            maySame = versions[0]
-                            another = versions[1]
-                        } else {
-                            maySame = versions[1]
-                            another = versions[0]
-                        }
-
-                        if (maySame.varId == name.varId) {
-                            maySame.varId.replacedBy(another.varId)
-                            check(name.varId == another.varId)
-                            versionsMut!!.clear()
-                            versionsMut.add(another)
-                        }
-                    }
-                }
+        nameById.values
+            .asSequence()
+            .filterNot { it.size == 1 }
+            .forEach { names ->
+                val first = names.first()
+                names.asSequence()
+                    .drop(1)
+                    .flatten()
+                    .castAsElementsAre<Name>()
+                    .forEach { first.addChildToBack(it) }
             }
-        }
-        return modified
+
+        return true
     }
 
     //endregion
@@ -594,11 +566,10 @@ class StaticSingleAssignGenerators {
                 for (name in scope) {
                     val newVersions = versions[name.identifier] ?: continue
                     if (newVersions.isEmpty()) continue
-                    val newName = name.copy()
                     for (newVersion in newVersions) {
-                        newName.addChildToBack(newVersion.copy())
+                        name.addChildToBack(newVersion)
                     }
-                    target.addChildToBack(newName)
+                    target.addChildToBack(name)
                 }
             }
 
@@ -792,13 +763,13 @@ class StaticSingleAssignGenerators {
                 _versions.add(hashMapOf())
         }
 
-        fun addJumpingFrom(snapshot: ScopeSnapshot) {
+        fun addJumpingFrom(snapshot: ScopeSnapshot, jump: Node?) {
             resizeVersionsTo(snapshot.scopes.size)
             for ((versionScope, snapScope) in _versions.zip(snapshot.scopes)) {
                 for (name in snapScope) {
                     val versions = versionScope.computeIfAbsent(name.identifier) { arrayListOf() }
                     if (versions.none { it.varId == name.varId }) {
-                        versions.add(name)
+                        versions.add(name.copy().apply { jumpFrom = jump })
                     }
                 }
             }
@@ -808,13 +779,13 @@ class StaticSingleAssignGenerators {
         /**
          * @param adding adding[scopeIndex\] = list of versioned variable to add to the scope
          */
-        fun addJumpingFroms(adding: List<Iterable<VariableId>>) {
+        fun addJumpingFroms(adding: List<Iterable<VariableId>>, jump: Jump?) {
             resizeVersionsTo(adding.size)
             for ((versionScope, variables) in _versions.zip(adding)) {
                 for (variable in variables) {
                     val versions = versionScope.computeIfAbsent(variable.name) { arrayListOf() }
                     if (versions.none { it.varId == variable }) {
-                        versions.add(createName(variable))
+                        versions.add(createName(variable).apply { jumpFrom = jump })
                     }
                 }
             }
@@ -838,7 +809,7 @@ class StaticSingleAssignGenerators {
                                 append("<:none")
                             } else {
                                 append("<:[")
-                                versions.joinTo(this) { it.varId.shortHash() }
+                                versions.joinTo(this) { it.varId.shortHash() + "by" + it.joinToString { it.shortHash() } }
                                 append("]")
                             }
                             ""
