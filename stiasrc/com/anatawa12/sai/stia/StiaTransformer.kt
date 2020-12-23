@@ -14,11 +14,25 @@ class StiaTransformer {
     private fun transform(node: Node, top: ScriptNode) {
         for (child in node) {
             when (child.type) {
-                Token.TRY -> transformTry(child as Jump, node, top)
+                Token.TRY -> {
+                    transformTry(child as Jump, node, top)
+                    transform(child, top)
+                }
+                Token.INC, Token.DEC -> {
+                    val expr = child.single()
+                    if (expr.type == Token.NAME) {
+                        expr as Name
+                        child.type = Token.INC_DEC_NAME
+                        child.addChildToBack(Name().apply {
+                            identifier = expr.identifier
+                        })
+                    }
+                    transform(child, top)
+                }
                 else -> transform(child, top)
             }
         }
-        if (node is AstRoot) {
+        if (node is ScriptNode) {
             for (function in node.functions) {
                 transform(function, function)
             }

@@ -115,6 +115,18 @@ class StaticSingleAssignGenerators {
                 return ProcessResult.Continue
             }
 
+            Token.INC_DEC_NAME,
+            -> {
+                val (old, new) = node.asPair()
+                old as Name
+                new as Name
+                scope.variable(old.identifier)?.let {
+                    old.varId = it.getCurrent()
+                    new.varId = it.makeNext(node)
+                }
+                return ProcessResult.Continue
+            }
+
             Token.RETURN, // void
             -> {
                 val returnValue = node.firstChild.nullable()

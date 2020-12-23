@@ -234,10 +234,9 @@ public class Token
         YIELD_STAR     = 166;  // ES6 "yield *", a specialization of yield\
 
     public final static int
-            CONVERT_EXCEPTION = 167; // ScriptRuntime.newErrorForThrowable
-
-    public final static int
-        LAST_TOKEN     = 168;
+            CONVERT_EXCEPTION = 167, // ScriptRuntime.newErrorForThrowable
+            INC_DEC_NAME      = 168,
+            LAST_TOKEN        = 169;
 
     /**
      * Returns a name for the token.  If Rhino is compiled with certain
