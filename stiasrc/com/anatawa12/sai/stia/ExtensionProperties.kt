@@ -128,6 +128,49 @@ var Name.varId: VariableId
         value.usedBy.add(this)
     }
 
+private val realLocalVarIdKey = InternalPropMap.Key<VariableId>("realLocalVarId")
+fun Node.deleteRealLocalVarId() = internalProps.remove(realLocalVarIdKey)
+val Node.realLocalVarIdOrNull: VariableId?
+    get() {
+        require(hasLocalBlockVariableRef) { "$type can't have realVarName" }
+        return internalProps[realLocalVarIdKey]
+    }
+var Node.realLocalVarId: VariableId
+    get() {
+        require(hasLocalBlockVariableRef) { "$type can't have realVarName" }
+        return internalProps[realLocalVarIdKey]
+            ?: error("${this.type}(${this.shortHash()}) doesn't have realVarName")
+    }
+    set(value) {
+        require(hasLocalBlockVariableRef) { "$type can't have realVarName" }
+        require(type != Token.TRY) { "TRY can't have realVarName" } // use custom struct
+        internalProps[realLocalVarIdKey] = value
+    }
+val Node.hasLocalBlockVariableRef: Boolean get() = when (this.type) {
+    // declare
+    Token.LOCAL_BLOCK,
+    // simple load
+    Token.LOCAL_LOAD,
+    // try-catch-scope
+    Token.TRY,
+    Token.FINALLY,
+    Token.RETHROW,
+    // enumeration
+    Token.ENUM_INIT_KEYS,
+    Token.ENUM_INIT_VALUES,
+    Token.ENUM_INIT_ARRAY,
+    Token.ENUM_INIT_VALUES_IN_ORDER,
+    Token.ENUM_NEXT,
+    Token.ENUM_ID,
+    -> true
+    else -> false
+}
+
+private val tryInfoKey = InternalPropMap.Key<TryInfo>("tryInfo")
+var Jump.tryInfo by tryInfoKey.computing(::TryInfo) {
+    require(it.type == Token.TRY)
+}
+
 private val jumpFromKey = InternalPropMap.Key<Node?>("jumpFrom")
 var Name.jumpFrom: Node?
     set(value) {

@@ -19,6 +19,7 @@ import com.anatawa12.sai.ast.*
 class StaticSingleAssignGenerators {
     private val targets = mutableListOf<Node>()
     private val finallies = mutableListOf<Node>()
+    private val localBlocks = mutableListOf<Node>()
 
     fun process(node: ScriptNode) {
         // TODO: global scope
@@ -30,7 +31,7 @@ class StaticSingleAssignGenerators {
         statementsBlock(node, scope)
         markUnreachable()
         replaceSSAGenInfoToNormalInfo()
-        removeFinallyInfos()
+        removeInternalInfos()
         optimizeSSAPhis() // Nameのidを統合
     }
 
@@ -83,10 +84,8 @@ class StaticSingleAssignGenerators {
             Token.SHNE, // shallow !==
             Token.REGEXP, // regexp literal
             Token.THROW,
-            Token.RETHROW,
             Token.IN,
             Token.INSTANCEOF,
-            Token.LOCAL_LOAD,
             Token.ARRAYLIT, // array literal
             Token.OBJECTLIT, // object literal
             Token.VOID, // void expr;
@@ -97,7 +96,6 @@ class StaticSingleAssignGenerators {
             Token.USE_STACK, // use the value on the stack,
             Token.SETPROP_OP, // a.b op= c
             Token.SETELEM_OP, // a.[b] op= c
-            Token.LOCAL_BLOCK, // contextual local variable (hidden) // TODO
             Token.COMMA, // expr, expr, expr....
             Token.OR, // ||
             Token.AND, // &&
@@ -151,7 +149,7 @@ class StaticSingleAssignGenerators {
                     unsupported("jsr to not just before finally block")
                 val finallyInfo = finally.finallyInternalInfo
 
-                finallies.add(node)
+                finallies.add(finally)
 
                 // jsr -> node: as a jump insn
                 processJump(target, scope, node)
@@ -232,6 +230,20 @@ class StaticSingleAssignGenerators {
                 return statementsBlock(node, scope)
             }
 
+            // contextual non-visible local variable
+            Token.LOCAL_LOAD,
+            -> {
+                node.realLocalVarId = localBlockVariableId(node)
+                return ProcessResult.Continue
+            }
+
+            Token.LOCAL_BLOCK, // contextual local variable (hidden) // TODO
+            -> {
+                localBlocks.add(node)
+                node.putIntProp(Node.LOCAL_PROP, localBlocks.size)
+                return statementsBlock(node, scope)
+            }
+
             // scope block
             Token.BLOCK, //Token.ARRAYCOMP, unsupported
             Token.LOOP,
@@ -264,14 +276,26 @@ class StaticSingleAssignGenerators {
                 val catchTarget = node.target.nullable()
                 val finallyTarget = node.finally.nullable()
 
+                val tryInfo = node.tryInfo
+                val localBlock = getLocalBlock(node)
+                var variableId: VariableId? = null
                 var isReturned = false
                 for (child in node) {
                     if (isReturned && child.type != Token.TARGET)
                         continue
                     val isReturnedOld = isReturned
                     isReturned = false
-                    if (child === catchTarget || child === finallyTarget)
+                    if (child === catchTarget || child === finallyTarget) {
                         child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot), node)
+                        check(localBlock.realLocalVarIdOrNull == variableId) { "local block conflict" }
+                        variableId = makeNextLocalBlockVariableId(node, variableId)
+                        variableId.producer = node
+                        localBlock.realLocalVarId = variableId
+                        if (child === catchTarget)
+                            tryInfo.catchVariable = variableId
+                        else
+                            tryInfo.finallyVariable = variableId
+                    }
                     when (processNode(child, scope, isReturnedOld)) {
                         ProcessResult.Continue -> {
                         }
@@ -280,14 +304,15 @@ class StaticSingleAssignGenerators {
                         }
                     }
                 }
+                localBlock.deleteRealLocalVarId()
 
                 if (isReturned) return ProcessResult.Jumped
                 return ProcessResult.Continue
             }
-            Token.FINALLY, // TODO
+            Token.FINALLY,
             -> {
-                // TODO: LOCAL_BLOCK
                 val info = node.finallyInternalInfo
+                node.realLocalVarId = localBlockVariableId(node)
 
                 when (statementsBlock(node, scope)) {
                     ProcessResult.Jumped -> {
@@ -305,6 +330,12 @@ class StaticSingleAssignGenerators {
                     processJump(returningTo, snapshot, node)
                 }
                 info.returningTo = null
+                return ProcessResult.Jumped
+            }
+
+            Token.RETHROW,
+            -> {
+                node.realLocalVarId = localBlockVariableId(node)
                 return ProcessResult.Jumped
             }
 
@@ -467,6 +498,24 @@ class StaticSingleAssignGenerators {
         }
     }
 
+    fun makeNextLocalBlockVariableId(node: Node, prev: VariableId?): VariableId {
+        val localId = getLocalBlock(node).getExistingIntProp(Node.LOCAL_PROP)
+        return VariableId(
+            name = localBlockVariableNamePrefix + localId,
+            version = prev?.version?.plus(1) ?: 0,
+            previousVersion = prev
+        )
+    }
+
+    private fun getLocalBlock(node: Node): Node {
+        return if (node.type == Token.LOCAL_BLOCK) node
+        else node.getProp(Node.LOCAL_BLOCK_PROP) as Node? ?: error("LOCAL_BLOCK_PROP not found")
+    }
+
+    private fun localBlockVariableId(node: Node): VariableId {
+        return getLocalBlock(node).realLocalVarId
+    }
+
     private fun processScope(node: Node, scope: VariablesScope): ProcessResult {
         val scopeNode = node as? Scope
         val newScope = scopeNode
@@ -603,9 +652,12 @@ class StaticSingleAssignGenerators {
 
     //region removeFinallyInfos
 
-    fun removeFinallyInfos() {
+    fun removeInternalInfos() {
         for (finally in finallies) {
             finally.internalProps.remove(finallyInternalInfoKey)
+        }
+        for (localBlock in localBlocks) {
+            localBlock.removeProp(Node.LOCAL_PROP)
         }
     }
 
@@ -898,5 +950,6 @@ class StaticSingleAssignGenerators {
             }
         }
 
+        private const val localBlockVariableNamePrefix = "local block variable#"
     }
 }
