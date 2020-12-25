@@ -583,25 +583,37 @@ class StaticSingleAssignGenerators {
      */
     private fun runOptimizeSSAPhis1(target: Node): Boolean {
         check(target.isJumpTarget)
-        val names = target.toList() as List<Name>
+        val names = target.toList().castAsElementsAre<Name>()
         val nameById = names.groupBy { it.varId }
-        // if same size, this mean there isn't `NAME` to be merged
-        if (nameById.size == names.size)
-            return false
+        var modified = nameById.size != names.size
 
+        target.removeChildren()
         nameById.values
             .asSequence()
-            .filterNot { it.size == 1 }
-            .forEach { names ->
-                val first = names.first()
-                names.asSequence()
-                    .drop(1)
+            .forEach { namesById ->
+                val first = namesById.first()
+                val values = namesById.asSequence()
                     .flatten()
                     .castAsElementsAre<Name>()
-                    .forEach { first.addChildToBack(it) }
+                    .associateBy { it.varId }
+                    .values
+                first.removeChildren()
+                if (values.size <= 2) {
+                    val excludedValues = values.filter { it.varId != first.varId }
+                    if (excludedValues.isEmpty()) {
+                        modified = true
+                        return@forEach
+                    } else if (excludedValues.size == 1) {
+                        modified = true
+                        excludedValues.single().varId.replacedBy(first.varId)
+                        return@forEach
+                    }
+                }
+                values.forEach { first.addChildToBack(it) }
+                target.addChildToBack(first)
             }
 
-        return true
+        return modified
     }
 
     //endregion
