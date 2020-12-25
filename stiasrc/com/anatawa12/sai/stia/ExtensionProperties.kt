@@ -4,6 +4,7 @@ import com.anatawa12.sai.Node
 import com.anatawa12.sai.Token
 import com.anatawa12.sai.ast.Jump
 import com.anatawa12.sai.ast.Name
+import com.anatawa12.sai.ast.Scope
 import java.util.function.BiConsumer
 import kotlin.reflect.KProperty
 
@@ -119,7 +120,7 @@ private val varIdKey = InternalPropMap.Key<VariableId>("varId")
 fun Name.deleteVarId() = internalProps.remove(varIdKey)
 var Name.varId: VariableId
     get() = internalProps[varIdKey]
-        ?: error("$this(${this.shortHash()}) doesn't have varId")
+        ?: error("${this.identifier}(${this.shortHash()}) doesn't have varId")
     set(value) {
         require(value.name == identifier)
         internalProps[varIdKey]?.usedBy?.remove(this)
@@ -149,3 +150,6 @@ var Node.targetInfo: TargetInfo
         require(isJumpTarget)
         return internalProps[targetInfoKey] ?: error("not initialized")
     }
+
+private val scopeInfoKey = InternalPropMap.Key<ScopeInfo>("scopeInfo")
+var Scope.scopeInfo: ScopeInfo by scopeInfoKey.computing(::ScopeInfo)

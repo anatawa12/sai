@@ -621,8 +621,8 @@ class StaticSingleAssignGenerators {
             declaringScope: Scope,
         ) : this(
             parent = parent,
-            variables = names
-                .map { symbol ->
+            variables = kotlin.run {
+                val variables = names.map { symbol ->
                     val variable = Variable(symbol.name)
                     variable.getCurrent().producer = declaringScope
                     when (symbol.declType) {
@@ -642,8 +642,16 @@ class StaticSingleAssignGenerators {
                         }
                     }
                     symbol.name to variable
+                }.toMap()
+                if (declaringScope is FunctionNode) {
+                    for (param in declaringScope.params) {
+                        param as Name
+                        val variable = checkNotNull(variables[param.identifier])
+                        declaringScope.scopeInfo.addParameter(createName(variable.getCurrent()))
+                    }
                 }
-                .toMap()
+                variables
+            }
         )
 
         /**
