@@ -353,8 +353,7 @@ class StaticSingleAssignGenerators {
 
             Token.FUNCTION, // literal or root definition
             -> {
-                //TODO("reference maybe")
-                return ProcessResult.Continue
+                unsupported("function literal")
             }
 
             Token.CONVERT_EXCEPTION,
