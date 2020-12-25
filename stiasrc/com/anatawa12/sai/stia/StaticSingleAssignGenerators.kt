@@ -315,6 +315,7 @@ class StaticSingleAssignGenerators {
                 variable as Name
                 scope.variable(variable.identifier)?.makeNext(node)
                     ?.let { variable.varId = it }
+                    ?: unsupported("assignment to unknown or outer function variable")
                 return processNode(expr, scope)
             }
             Token.NAME, // TODO
