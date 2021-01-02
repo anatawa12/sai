@@ -116,8 +116,4 @@ class StiaTransformer {
             tryStat.replaceChild(catchLocalBlock, newBlock)
         }
     }
-
-    private fun unsupported(message: String): Nothing{
-        TODO("unsupported: $message")
-    }
 }

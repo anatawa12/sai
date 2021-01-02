@@ -951,10 +951,6 @@ class StaticSingleAssignGenerators {
             by finallyInternalInfoKey.computing(::FinallyInfo) { require(it.type == Token.FINALLY) }
 
     companion object {
-        private fun unsupported(message: String): Nothing {
-            error("unsupported: $message")
-        }
-
         private fun createName(id: VariableId): Name {
             return Name().apply {
                 string = id.name
