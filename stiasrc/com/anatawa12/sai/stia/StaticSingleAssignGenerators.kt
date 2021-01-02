@@ -25,9 +25,9 @@ class StaticSingleAssignGenerators {
 
     fun process(node: ScriptNode) {
         // TODO: global scope
-        var scope = VariablesScope(null, emptyMap())
+        var scope: VariablesScope = GlobalVariablesScope()
         scope = node.symbolTable
-            ?.let { VariablesScope(scope, it.values, node) }
+            ?.let { BlockVariablesScope(scope, it.values, node) }
             ?: scope
 
         statementsBlock(node, scope)
@@ -281,7 +281,7 @@ class StaticSingleAssignGenerators {
 
                 val tryInfo = node.tryInfo
                 val localBlock = getLocalBlock(node)
-                var variableId: VariableId? = null
+                var variableId: VariableId.Internal? = null
                 reachStatus.makeJump(node)
 
                 statementsBlockWithBlock(node, scope) { child ->
@@ -478,10 +478,10 @@ class StaticSingleAssignGenerators {
         }
     }
 
-    fun makeNextLocalBlockVariableId(node: Node, prev: VariableId?): VariableId {
+    fun makeNextLocalBlockVariableId(node: Node, prev: VariableId.Internal?): VariableId.Internal {
         val localId = getLocalBlock(node).getExistingIntProp(Node.LOCAL_PROP)
-        return VariableId(
-            name = localBlockVariableNamePrefix + localId,
+        return VariableId.Internal(
+            id = localId,
             version = prev?.version?.plus(1) ?: 0,
             previousVersion = prev
         )
@@ -503,7 +503,7 @@ class StaticSingleAssignGenerators {
         val scopeNode = node as? Scope
         val newScope = scopeNode
             ?.symbolTable
-            ?.let { VariablesScope(scope, it.values, scopeNode) }
+            ?.let { BlockVariablesScope(scope, it.values, scopeNode) }
             ?: scope
 
         statementsBlock(node, newScope)
@@ -612,7 +612,7 @@ class StaticSingleAssignGenerators {
                         return@forEach
                     } else if (excludedValues.size == 1) {
                         modified = true
-                        excludedValues.single().varId.replacedBy(first.varId)
+                        excludedValues.single().varId.asLocal().replacedBy(first.varId.asLocal())
                         return@forEach
                     }
                 }
@@ -635,7 +635,7 @@ class StaticSingleAssignGenerators {
                     .scopes
                     .asSequence()
                     .flatMap { it }
-                    .map { it.varId }
+                    .map { it.varId.asLocal() }
                     .forEach { it.markUnreachable() }
             }
         }
@@ -678,19 +678,51 @@ class StaticSingleAssignGenerators {
 
     //endregion
 
-    private class VariablesScope(
-        val parent: VariablesScope? = null,
-        private val variables: Map<String, Variable>,
-    ) {
+    private abstract class VariablesScope() {
+        abstract fun variable(name: String): Variable
+        abstract fun variableExactly(name: String): Variable.Local
+        abstract fun createSnapshot(): ScopeSnapshot
+        abstract fun updateAll(producer: Node): ScopeSnapshot
+        abstract fun allVariableVersions(since: ScopeSnapshot? = null): List<Iterable<VariableId.Local>>
+    }
+
+    private class GlobalVariablesScope() : VariablesScope() {
+        private val variables = mutableMapOf<String, Variable.Global>()
+
+        override fun variable(name: String): Variable {
+            return variables.getOrPut(name) { Variable.Global(name) }
+        }
+
+        override fun variableExactly(name: String): Variable.Local {
+            error("undefined variable")
+        }
+
+        override fun createSnapshot(): ScopeSnapshot {
+            return ScopeSnapshot(emptyList())
+        }
+
+        override fun updateAll(producer: Node): ScopeSnapshot {
+            return ScopeSnapshot(emptyList())
+        }
+
+        override fun allVariableVersions(since: ScopeSnapshot?): List<Iterable<VariableId.Local>> {
+            return emptyList()
+        }
+    }
+
+    private class BlockVariablesScope(
+        val parent: VariablesScope,
+        private val variables: Map<String, Variable.Local>,
+    ) : VariablesScope() {
         constructor(
-            parent: VariablesScope? = null,
+            parent: VariablesScope,
             names: Collection<Symbol>,
             declaringScope: Scope,
         ) : this(
             parent = parent,
             variables = kotlin.run {
                 val variables = names.map { symbol ->
-                    val variable = Variable(symbol.name)
+                    val variable = Variable.Local(symbol.name)
                     variable.getCurrent().producer = declaringScope
                     when (symbol.declType) {
                         Token.FUNCTION -> {
@@ -721,26 +753,23 @@ class StaticSingleAssignGenerators {
             }
         )
 
-        /**
-         * null means not a variable
-         */
-        fun variable(name: String): Variable {
-            var cur = this.nullable()
-            while (cur != null) {
+        override fun variable(name: String): Variable {
+            var cur: VariablesScope = this
+            while (cur is BlockVariablesScope) {
                 cur.variables[name]?.let { return it }
                 cur = cur.parent
             }
-            unsupported("undefined variables")
+            return cur.variable(name)
         }
 
-        fun variableExactly(name: String): Variable {
+        override fun variableExactly(name: String): Variable.Local {
             return this.variables[name] ?: error("$name is not variable")
         }
 
-        fun createSnapshot(): ScopeSnapshot {
+        override fun createSnapshot(): ScopeSnapshot {
             val scopes = mutableListOf<List<Name>>()
-            var cur = this.nullable()
-            while (cur != null) {
+            var cur: VariablesScope = this
+            while (cur is BlockVariablesScope) {
                 scopes += cur
                     .variables
                     .values
@@ -751,9 +780,9 @@ class StaticSingleAssignGenerators {
             return ScopeSnapshot(scopes.asReversed())
         }
 
-        fun updateAll(producer: Node): ScopeSnapshot {
-            var cur = this.nullable()
-            while (cur != null) {
+        override fun updateAll(producer: Node): ScopeSnapshot {
+            var cur: VariablesScope = this
+            while (cur is BlockVariablesScope) {
                 cur.variables.values.forEach { it.makeNext(producer = producer) }
                 cur = cur.parent
             }
@@ -763,16 +792,16 @@ class StaticSingleAssignGenerators {
         /**
          * @return result[scopeIndex\] = list of versioned variable of the scope
          */
-        fun allVariableVersions(since: ScopeSnapshot? = null): List<Iterable<VariableId>> {
+        override fun allVariableVersions(since: ScopeSnapshot?): List<Iterable<VariableId.Local>> {
             @Suppress("NAME_SHADOWING")
             val since = since
                 ?.scopes
-                ?.map { it.map { it.varId }.map { it.name to it }.toMap() }
-            val scopes = mutableListOf<List<VariableId>>()
+                ?.map { it.map { it.varId.asLocal() }.map { it.name to it }.toMap() }
+            val scopes = mutableListOf<List<VariableId.Local>>()
 
             val sinceItr = since?.listIterator(since.size)
-            var cur = this.nullable()
-            while (cur != null) {
+            var cur: VariablesScope = this
+            while (cur is BlockVariablesScope) {
                 val snapshot = sinceItr?.previous()
                 for (variable in cur.variables.values) {
                     val snapshotVar = snapshot?.get(variable.name)
@@ -785,42 +814,55 @@ class StaticSingleAssignGenerators {
         }
     }
 
-    private class Variable(val name: String) {
-        private val versions = mutableListOf<VariableId>()
-        private var enabledSince: VariableId? = null
+    private sealed class Variable(val name: String) {
+        class Global(name: String): Variable(name) {
+            val variableId = VariableId.Global(name)
+            override fun getCurrent(): VariableId = variableId
 
-        init {
-            makeNext(producer = null)
+            override fun makeNext(producer: Node): VariableId {
+                variableId.producers.add(producer)
+                return variableId
+            }
         }
 
-        fun getCurrent() = versions.last()
+        class Local(name: String): Variable(name) {
+            private val versions = mutableListOf<VariableId.Local>()
+            private var enabledSince: VariableId? = null
 
-        fun makeNext(producer: Node?): VariableId {
-            val result = VariableId(name, versions.size, versions.lastOrNull())
-            if (producer != null)
-                result.producer = producer
-            versions += result
-            return result
-        }
-
-        fun enabledSinceHere() {
-            check(enabledSince == null) { "already enabled" }
-            enabledSince = getCurrent()
-        }
-
-        fun getVersions(since: VariableId?): List<VariableId> {
-            if (since == null)
-                return versions
-
-            val result = arrayListOf<VariableId>()
-            for (variableId in versions.asReversed()) {
-                result += variableId
-                if (variableId == since)
-                    return result
+            init {
+                versions += VariableId.Local(name, 0, null)
             }
 
-            throw IllegalArgumentException("since is not a version of this variable: $since")
+            override fun getCurrent(): VariableId.Local = versions.last()
+
+            override fun makeNext(producer: Node): VariableId {
+                val result = VariableId.Local(name, versions.size, versions.last())
+                versions += result
+                return result
+            }
+
+            fun enabledSinceHere() {
+                check(enabledSince == null) { "already enabled" }
+                enabledSince = getCurrent()
+            }
+
+            fun getVersions(since: VariableId.Local?): List<VariableId.Local> {
+                if (since == null)
+                    return versions
+
+                val result = arrayListOf<VariableId.Local>()
+                for (variableId in versions.asReversed()) {
+                    result += variableId
+                    if (variableId == since)
+                        return result
+                }
+
+                throw IllegalArgumentException("since is not a version of this variable: $since")
+            }
         }
+
+        abstract fun getCurrent(): VariableId
+        abstract fun makeNext(producer: Node): VariableId
     }
 
     private class ScopeSnapshot(
@@ -875,7 +917,7 @@ class StaticSingleAssignGenerators {
         /**
          * @param adding adding[scopeIndex\] = list of versioned variable to add to the scope
          */
-        fun addJumpingFroms(adding: List<Iterable<VariableId>>, jump: Jump?) {
+        fun addJumpingFroms(adding: List<Iterable<VariableId.Local>>, jump: Jump?) {
             resizeVersionsTo(adding.size)
             for ((versionScope, variables) in _versions.zip(adding)) {
                 for (variable in variables) {
@@ -954,7 +996,7 @@ class StaticSingleAssignGenerators {
             by finallyInternalInfoKey.computing(::FinallyInfo) { require(it.type == Token.FINALLY) }
 
     companion object {
-        private fun createName(id: VariableId): Name {
+        private fun createName(id: VariableId.Local): Name {
             return Name().apply {
                 string = id.name
                 varId = id

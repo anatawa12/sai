@@ -122,7 +122,7 @@ var Name.varId: VariableId
     get() = internalProps[varIdKey]
         ?: error("${this.identifier}(${this.shortHash()}) doesn't have varId")
     set(value) {
-        require(value.name == identifier)
+        value.checkName(this)
         internalProps[varIdKey]?.usedBy?.remove(this)
         internalProps[varIdKey] = value
         value.usedBy.add(this)
