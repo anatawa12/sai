@@ -3,6 +3,7 @@ package com.anatawa12.sai.stia
 import com.anatawa12.sai.Node
 import com.anatawa12.sai.Token
 import com.anatawa12.sai.ast.*
+import com.anatawa12.sai.stia.JumpingInfo.Companion.jumpingInfo
 
 /**
  * Phi function is now expressed as shown below:
@@ -20,6 +21,7 @@ class StaticSingleAssignGenerators {
     private val targets = mutableListOf<Node>()
     private val finallies = mutableListOf<Node>()
     private val localBlocks = mutableListOf<Node>()
+    private val reachStatus = ReachableRef(Reachable.alwaysReach())
 
     fun process(node: ScriptNode) {
         // TODO: global scope
@@ -37,12 +39,10 @@ class StaticSingleAssignGenerators {
 
     //region processNode
 
-    private sealed class ProcessResult {
-        object Continue : ProcessResult()
-        object Jumped : ProcessResult()
-    }
-
-    private fun processNode(node: Node, scope: VariablesScope, afterJump: Boolean = false): ProcessResult {
+    private fun processNode(
+        node: Node,
+        scope: VariablesScope,
+    ) {
         when (node.type) {
             Token.BITOR,
             Token.BITXOR,
@@ -104,13 +104,10 @@ class StaticSingleAssignGenerators {
             -> {
                 // simple expr default
                 for (child in node) {
-                    when (processNode(child, scope)) {
-                        ProcessResult.Continue -> {
-                        }
-                        ProcessResult.Jumped -> return ProcessResult.Jumped
-                    }
+                    processNode(child, scope)
+                    if (reachStatus.neverReach)
+                        return
                 }
-                return ProcessResult.Continue
             }
 
             Token.INC_DEC_NAME,
@@ -122,7 +119,6 @@ class StaticSingleAssignGenerators {
                     old.varId = it.getCurrent()
                     new.varId = it.makeNext(node)
                 }
-                return ProcessResult.Continue
             }
 
             Token.RETURN, // void
@@ -130,7 +126,7 @@ class StaticSingleAssignGenerators {
                 val returnValue = node.firstChild.nullable()
                 if (returnValue != null)
                     processNode(returnValue, scope)
-                return ProcessResult.Jumped
+                reachStatus.nextNever()
             }
 
             // jumping instructions
@@ -138,7 +134,8 @@ class StaticSingleAssignGenerators {
             -> {
                 node as Jump
                 processJump(node.target, scope, node)
-                return ProcessResult.Jumped
+                reachStatus.makeJump(node)
+                reachStatus.reachable.never()
             }
             Token.JSR, // TODO: return from finally
             -> {
@@ -152,10 +149,13 @@ class StaticSingleAssignGenerators {
                 finallies.add(finally)
 
                 // jsr -> node: as a jump insn
+                reachStatus.makeJump(node)
+                reachStatus.reachable.never()
                 processJump(target, scope, node)
 
                 // finally -> jsr: as a target insn
                 targets.add(node)
+                reachStatus.makeTarget(node)
                 val newSnapshot = scope.updateAll(producer = node)
                 node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
 
@@ -165,22 +165,20 @@ class StaticSingleAssignGenerators {
                 } else {
                     finallyInfo.returningTo?.add(node)
                 }
-
-                return ProcessResult.Continue
             }
             Token.IFEQ,
             Token.IFNE,
             -> {
                 node as Jump
                 val condition = node.single()
-                when (processNode(condition, scope)) {
-                    ProcessResult.Continue -> {
-                    }
-                    ProcessResult.Jumped -> return ProcessResult.Jumped
-                }
+
+                processNode(condition, scope)
+                if (reachStatus.neverReach)
+                    return
+
+                reachStatus.makeJump(node)
                 processJump(node.target, scope, node)
                 // ScriptRuntime.newErrorForThrowable
-                return ProcessResult.Continue
             }
             Token.BREAK,
             Token.CONTINUE,
@@ -188,8 +186,9 @@ class StaticSingleAssignGenerators {
                 node as Jump
                 val loop = node.jumpStatement
                 val target = if (node.type == Token.BREAK) loop.target else loop.`continue`
+                reachStatus.makeJump(node)
+                reachStatus.reachable.never()
                 processJump(target, scope, node)
-                return ProcessResult.Jumped
             }
 
             // switch statement
@@ -198,11 +197,12 @@ class StaticSingleAssignGenerators {
                 node as Jump
                 val expr = node.first()
                 val cases = node.drop(1)
-                when (processNode(expr, scope)) {
-                    ProcessResult.Continue -> {
-                    }
-                    ProcessResult.Jumped -> return ProcessResult.Jumped
-                }
+
+                processNode(expr, scope)
+                if (reachStatus.neverReach)
+                    return
+
+                reachStatus.makeJump(node)
                 for (case in cases) {
                     check(case.type == Token.CASE)
                     case as Jump
@@ -210,7 +210,6 @@ class StaticSingleAssignGenerators {
                     processNode(value, scope)
                     processJump(case.target, scope, node)
                 }
-                return ProcessResult.Continue
             }
 
             Token.TARGET, // TODO: CHECK
@@ -218,36 +217,36 @@ class StaticSingleAssignGenerators {
                 targets.add(node)
                 val curSnapshot = scope.createSnapshot()
                 val newSnapshot = scope.updateAll(producer = node)
-                if (!afterJump) node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
+                if (!reachStatus.neverReach)
+                    node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
                 node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
-                return ProcessResult.Continue
+                reachStatus.makeTarget(node)
             }
 
             // statements or expressions block
             Token.LABEL, // block
                 //Token.WITH, // unsuppoted
             -> {
-                return statementsBlock(node, scope)
+                statementsBlock(node, scope)
             }
 
             // contextual non-visible local variable
             Token.LOCAL_LOAD,
             -> {
                 node.realLocalVarId = localBlockVariableId(node)
-                return ProcessResult.Continue
             }
 
             Token.LOCAL_BLOCK, // contextual local variable (hidden) // TODO
             -> {
                 localBlocks.add(node)
                 node.putIntProp(Node.LOCAL_PROP, localBlocks.size)
-                return statementsBlock(node, scope)
+                statementsBlock(node, scope)
             }
 
             // scope block
             Token.BLOCK, //Token.ARRAYCOMP, unsupported
             Token.LOOP,
-            -> return processScope(node, scope)
+            -> processScope(node, scope)
 
             Token.CASE, // case label(?)
             -> unsupported("case must be in switch")
@@ -255,18 +254,23 @@ class StaticSingleAssignGenerators {
             Token.HOOK, // condition ? then : else
             -> {
                 val (condition, ifTrue, ifFalse) = node.asTriple()
-                when (processNode(condition, scope)) {
-                    ProcessResult.Continue -> {
-                    }
-                    ProcessResult.Jumped -> return ProcessResult.Jumped
-                }
-                val ifTrueResult = processNode(ifTrue, scope)
-                val ifFalseResult = processNode(ifFalse, scope)
-                if (ifTrueResult == ProcessResult.Jumped
-                    && ifFalseResult == ProcessResult.Jumped
-                )
-                    return ProcessResult.Jumped
-                return ProcessResult.Continue
+
+                processNode(condition, scope)
+                if (reachStatus.neverReach)
+                    return
+
+                val afterCond = reachStatus.reachable
+                val afterProcess = Reachable()
+
+                reachStatus.startWith(afterCond)
+                processNode(ifTrue, scope)
+                afterProcess.addFrom(reachStatus.reachable)
+
+                reachStatus.startWith(afterCond)
+                processNode(ifFalse, scope)
+                afterProcess.addFrom(reachStatus.reachable)
+
+                reachStatus.reachable = afterProcess
             }
 
             Token.TRY, // try {} catch {} finally {}
@@ -279,64 +283,49 @@ class StaticSingleAssignGenerators {
                 val tryInfo = node.tryInfo
                 val localBlock = getLocalBlock(node)
                 var variableId: VariableId? = null
-                var isReturned = false
-                for (child in node) {
-                    if (isReturned && child.type != Token.TARGET)
-                        continue
-                    val isReturnedOld = isReturned
-                    isReturned = false
+                reachStatus.makeJump(node)
+
+                statementsBlockWithBlock(node, scope) { child ->
                     if (child === catchTarget || child === finallyTarget) {
+                        child.targetInfo.reachable.addFrom(node.jumpingInfo.mayJump)
                         child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot), node)
                         check(localBlock.realLocalVarIdOrNull == variableId) { "local block conflict" }
                         variableId = makeNextLocalBlockVariableId(node, variableId)
-                        variableId.producer = node
-                        localBlock.realLocalVarId = variableId
+                        variableId!!.producer = node
+                        localBlock.realLocalVarId = variableId!!
                         if (child === catchTarget)
                             tryInfo.catchVariable = variableId
                         else
                             tryInfo.finallyVariable = variableId
                     }
-                    when (processNode(child, scope, isReturnedOld)) {
-                        ProcessResult.Continue -> {
-                        }
-                        ProcessResult.Jumped -> {
-                            isReturned = true
-                        }
-                    }
                 }
-                localBlock.deleteRealLocalVarId()
 
-                if (isReturned) return ProcessResult.Jumped
-                return ProcessResult.Continue
+                localBlock.deleteRealLocalVarId()
             }
             Token.FINALLY,
             -> {
                 val info = node.finallyInternalInfo
                 node.realLocalVarId = localBlockVariableId(node)
 
-                when (statementsBlock(node, scope)) {
-                    ProcessResult.Jumped -> {
-                        // never reached
-                        info.returningTo = null
-                        return ProcessResult.Jumped
-                    }
-                    ProcessResult.Continue -> {
-                    }
+                statementsBlock(node, scope)
+                if (reachStatus.neverReach) {
+                    info.returningTo = null
+                    return
                 }
 
                 val snapshot = scope.createSnapshot()
                 info.snapshot = snapshot
+                reachStatus.makeJump(node)
                 for (returningTo in info.returningTo!!) {
                     processJump(returningTo, snapshot, node)
                 }
                 info.returningTo = null
-                return ProcessResult.Jumped
             }
 
             Token.RETHROW,
             -> {
                 node.realLocalVarId = localBlockVariableId(node)
-                return ProcessResult.Jumped
+                reachStatus.nextNever()
             }
 
             Token.SETNAME,
@@ -347,15 +336,13 @@ class StaticSingleAssignGenerators {
                 scope.variable(variable.identifier)?.makeNext(node)
                     ?.let { variable.varId = it }
                     ?: unsupported("assignment to unknown or outer function variable")
-                return processNode(expr, scope)
+                processNode(expr, scope)
             }
             Token.NAME, // TODO
             -> {
                 node as Name
                 scope.variable(node.identifier)?.getCurrent()
                     ?.let { node.varId = it }
-                // nop
-                return ProcessResult.Continue
             }
             Token.BINDNAME,
             -> unsupported("BINDNAME")
@@ -374,13 +361,11 @@ class StaticSingleAssignGenerators {
                     if (node.type != Token.VAR)
                         variable.enabledSinceHere()
                 }
-                return ProcessResult.Continue
             }
 
             Token.THISFN, // reference to this function
             -> {
                 // nop
-                return ProcessResult.Continue
             }
 
             Token.FUNCTION, // literal or root definition
@@ -392,7 +377,6 @@ class StaticSingleAssignGenerators {
             -> {
                 val convertFrom = node.single()
                 processNode(convertFrom, scope)
-                return ProcessResult.Continue
             }
 
             Token.ENTERWITH,
@@ -516,43 +500,69 @@ class StaticSingleAssignGenerators {
         return getLocalBlock(node).realLocalVarId
     }
 
-    private fun processScope(node: Node, scope: VariablesScope): ProcessResult {
+    private fun processScope(
+        node: Node,
+        scope: VariablesScope,
+    ) {
         val scopeNode = node as? Scope
         val newScope = scopeNode
             ?.symbolTable
             ?.let { VariablesScope(scope, it.values, scopeNode) }
             ?: scope
 
-        return statementsBlock(node, newScope)
+        statementsBlock(node, newScope)
     }
 
-    private fun processJump(target: Node, scope: VariablesScope, jump: Node?) {
+    private fun processJump(target: Node, scope: VariablesScope, jump: Node) {
         processJump(target, scope.createSnapshot(), jump)
     }
 
-    private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node?) {
+    private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node) {
         check(target.isJumpTarget)
         target.ssaGenTargetInfo.addJumpingFrom(snapshot, jump)
+        target.targetInfo.reachable.addFrom(jump.jumpingInfo.mayJump)
     }
 
-    private fun statementsBlock(node: Node, scope: VariablesScope): ProcessResult {
-        var isReturned = false
+    private fun statementsBlock(
+        node: Node,
+        scope: VariablesScope,
+    ) {
+        statementsBlockWithBlock(node, scope) {}
+    }
+
+    private inline fun statementsBlockWithBlock(
+        node: Node,
+        scope: VariablesScope,
+        customPreProcess: (child: Node) -> Unit,
+    ) {
         for (child in node) {
-            if (isReturned && child.type != Token.TARGET)
+            if (reachStatus.neverReach && child.type != Token.TARGET)
                 continue
-            val isReturnedOld = isReturned
-            isReturned = false
-            when (processNode(child, scope, isReturnedOld)) {
-                ProcessResult.Continue -> {
-                }
-                ProcessResult.Jumped -> {
-                    isReturned = true
-                }
-            }
+            customPreProcess(child)
+            processNode(child, scope)
+        }
+    }
+
+    private class ReachableRef(var reachable: Reachable) {
+        fun nextNever() {
+            reachable = Reachable.neverReach()
         }
 
-        if (isReturned) return ProcessResult.Jumped
-        return ProcessResult.Continue
+        fun makeTarget(node: Node) {
+            node.targetInfo.setPrev(reachable)
+            reachable = node.targetInfo.reachable
+        }
+
+        fun startWith(pre: Reachable) {
+            reachable = Reachable.withBefore(pre)
+        }
+
+        fun makeJump(jump: Node) {
+            jump.jumpingInfo.addFrom(reachable)
+            reachable = jump.jumpingInfo.mayContinue
+        }
+
+        val neverReach get() = reachable.neverReach
     }
 
     //endregion processNode
@@ -595,6 +605,7 @@ class StaticSingleAssignGenerators {
                 val values = namesById.asSequence()
                     .flatten()
                     .castAsElementsAre<Name>()
+                    .filter { it.jumpFrom?.jumpingInfo?.mayJump?.reachable ?: true }
                     .associateBy { it.varId }
                     .values
                 first.removeChildren()
@@ -641,9 +652,6 @@ class StaticSingleAssignGenerators {
     private fun replaceSSAGenInfoToNormalInfo() {
         for (target in targets) {
             val ssaGenInfo = target.ssaGenTargetInfo
-            val targetInfo = TargetInfo(
-                reachable = ssaGenInfo.isReachable
-            )
             for ((scope, versions) in ssaGenInfo.atTargetSnapshot!!.scopes.zip(ssaGenInfo.versions)) {
                 for (name in scope) {
                     val newVersions = versions[name.identifier] ?: continue
@@ -656,7 +664,6 @@ class StaticSingleAssignGenerators {
             }
 
             target.internalProps.remove(ssaGenTargetInfoKey)
-            target.targetInfo = targetInfo
         }
     }
 

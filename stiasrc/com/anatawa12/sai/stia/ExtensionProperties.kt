@@ -184,15 +184,7 @@ var Name.jumpFrom: Node?
 val Node.isJumpTarget get() = type == Token.TARGET || type == Token.JSR
 
 private val targetInfoKey = InternalPropMap.Key<TargetInfo>("targetInfo")
-var Node.targetInfo: TargetInfo
-    set(value) {
-        require(isJumpTarget)
-        internalProps[targetInfoKey] = value
-    }
-    get() {
-        require(isJumpTarget)
-        return internalProps[targetInfoKey] ?: error("not initialized")
-    }
+var Node.targetInfo: TargetInfo by targetInfoKey.computing(::TargetInfo) { require(it.isJumpTarget) }
 
 private val scopeInfoKey = InternalPropMap.Key<ScopeInfo>("scopeInfo")
 var Scope.scopeInfo: ScopeInfo by scopeInfoKey.computing(::ScopeInfo)

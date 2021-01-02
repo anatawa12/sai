@@ -428,6 +428,7 @@ public class Token
           case YIELD_STAR:      return "YIELD_STAR";
 
             case CONVERT_EXCEPTION:   return "CONVERT_EXCEPTION";
+            case INC_DEC_NAME:        return "INC_DEC_NAME";
         }
 
         // Token without name
