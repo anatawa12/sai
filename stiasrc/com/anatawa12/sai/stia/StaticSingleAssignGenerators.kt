@@ -115,10 +115,9 @@ class StaticSingleAssignGenerators {
                 val (old, new) = node.asPair()
                 old as Name
                 new as Name
-                scope.variable(old.identifier)?.let {
-                    old.varId = it.getCurrent()
-                    new.varId = it.makeNext(node)
-                }
+                val variable = scope.variable(old.identifier)
+                old.varId = variable.getCurrent()
+                new.varId = variable.makeNext(node)
             }
 
             Token.RETURN, // void
@@ -333,16 +332,13 @@ class StaticSingleAssignGenerators {
                 // TODO: global scopee
                 val (variable, expr) = node.asPair()
                 variable as Name
-                scope.variable(variable.identifier)?.makeNext(node)
-                    ?.let { variable.varId = it }
-                    ?: unsupported("assignment to unknown or outer function variable")
+                variable.varId = scope.variable(variable.identifier).makeNext(node)
                 processNode(expr, scope)
             }
             Token.NAME, // TODO
             -> {
                 node as Name
-                scope.variable(node.identifier)?.getCurrent()
-                    ?.let { node.varId = it }
+                node.varId = scope.variable(node.identifier).getCurrent()
             }
             Token.BINDNAME,
             -> unsupported("BINDNAME")
@@ -728,13 +724,13 @@ class StaticSingleAssignGenerators {
         /**
          * null means not a variable
          */
-        fun variable(name: String): Variable? {
+        fun variable(name: String): Variable {
             var cur = this.nullable()
             while (cur != null) {
                 cur.variables[name]?.let { return it }
                 cur = cur.parent
             }
-            return null
+            unsupported("undefined variables")
         }
 
         fun variableExactly(name: String): Variable {
