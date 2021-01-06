@@ -117,7 +117,10 @@ internal class InternalPropMap : BiConsumer<String, String> {
 }
 
 private val varIdKey = InternalPropMap.Key<VariableId>("varId")
-fun Name.deleteVarId() = internalProps.remove(varIdKey)
+fun Name.deleteVarId() {
+    internalProps[varIdKey]?.usedBy?.remove(this)
+    internalProps.remove(varIdKey)
+}
 var Name.varId: VariableId
     get() = internalProps[varIdKey]
         ?: error("${this.identifier}(${this.shortHash()}) doesn't have varId")

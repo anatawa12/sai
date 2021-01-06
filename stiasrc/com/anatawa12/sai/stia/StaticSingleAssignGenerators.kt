@@ -222,6 +222,7 @@ class StaticSingleAssignGenerators {
                     node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
                 node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
                 reachStatus.makeTarget(node)
+                curSnapshot.close()
             }
 
             // statements or expressions block
@@ -301,6 +302,7 @@ class StaticSingleAssignGenerators {
                     }
                 }
 
+                snapshot.close()
                 localBlock.deleteRealLocalVarId()
             }
             Token.FINALLY,
@@ -321,6 +323,7 @@ class StaticSingleAssignGenerators {
                     processJump(returningTo, snapshot, node)
                 }
                 info.returningTo = null
+                snapshot.close()
             }
 
             Token.RETHROW,
@@ -513,7 +516,9 @@ class StaticSingleAssignGenerators {
     }
 
     private fun processJump(target: Node, scope: VariablesScope, jump: Node) {
-        processJump(target, scope.createSnapshot(), jump)
+        val snapshot = scope.createSnapshot()
+        processJump(target, snapshot, jump)
+        snapshot.close()
     }
 
     private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node) {
@@ -601,21 +606,39 @@ class StaticSingleAssignGenerators {
             .asSequence()
             .forEach { namesById ->
                 val first = namesById.first()
+                namesById.asSequence().drop(1).forEach(Name::deleteVarId)
                 val values = namesById.asSequence()
                     .flatten()
                     .castAsElementsAre<Name>()
-                    .filter { it.jumpFrom?.jumpingInfo?.mayJump?.reachable ?: true }
-                    .associateBy { it.varId }
+                    .mapNotNull {
+                        if (it.jumpFrom?.jumpingInfo?.mayJump?.reachable != false) {
+                            it
+                        } else {
+                            it.deleteVarId()
+                            null
+                        }
+                    }
+                    .groupBy { it.varId }
                     .values
+                    .map {
+                        it.asSequence().drop(1).forEach(Name::deleteVarId)
+                        it.first()
+                    }
+
                 first.removeChildren()
                 if (values.size <= 2) {
                     val excludedValues = values.filter { it.varId != first.varId }
                     if (excludedValues.isEmpty()) {
+                        first.deleteVarId()
+                        values.asSequence().forEach(Name::deleteVarId)
                         modified = true
                         return@forEach
                     } else if (excludedValues.size == 1) {
                         modified = true
-                        excludedValues.single().varId.asLocal().replacedBy(first.varId.asLocal())
+                        val replaceTo = excludedValues.single()
+                        replaceTo.varId.asLocal().replacedBy(first.varId.asLocal(), replaceAt = target)
+                        first.deleteVarId()
+                        values.asSequence().forEach(Name::deleteVarId)
                         return@forEach
                     }
                 }
@@ -655,12 +678,15 @@ class StaticSingleAssignGenerators {
                 for (name in scope) {
                     val newVersions = versions[name.identifier] ?: continue
                     if (newVersions.isEmpty()) continue
+                    @Suppress("NAME_SHADOWING")
+                    val name = createName(name.varId.asLocal())
                     for (newVersion in newVersions) {
-                        name.addChildToBack(newVersion)
+                        name.addChildToBack(createName(newVersion.varId.asLocal()))
                     }
                     target.addChildToBack(name)
                 }
             }
+            ssaGenInfo.close()
 
             target.internalProps.remove(ssaGenTargetInfoKey)
         }
@@ -876,9 +902,15 @@ class StaticSingleAssignGenerators {
          * - scopes\[N]: block scope
          */
         val scopes: List<List<Name>>,
-    ) {
+    ) : AutoCloseable {
         override fun toString(): String {
             return "S(${scopes.joinToString { it.joinToString(prefix = "[", postfix = "]") { "${it.varId}" } }})"
+        }
+
+        override fun close() {
+            scopes.asSequence()
+                .flatten()
+                .forEach(Name::deleteVarId)
         }
     }
 
@@ -973,6 +1005,15 @@ class StaticSingleAssignGenerators {
                 }
                 append(")")
             }
+        }
+
+        fun close() {
+            atTargetSnapshot!!.close()
+            versions.asSequence()
+                .map { it.values }
+                .flatten()
+                .flatten()
+                .forEach(Name::deleteVarId)
         }
     }
 
