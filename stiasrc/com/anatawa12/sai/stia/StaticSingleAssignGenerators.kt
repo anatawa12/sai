@@ -23,18 +23,20 @@ class StaticSingleAssignGenerators {
     private val localBlocks = mutableListOf<Node>()
     private val reachStatus = ReachableRef(Reachable.alwaysReach())
 
-    fun process(node: ScriptNode) {
+    fun process(node: ScriptNode): Map<String, VariableId.Global> {
         // TODO: global scope
-        var scope: VariablesScope = GlobalVariablesScope()
-        scope = node.symbolTable
-            ?.let { BlockVariablesScope(scope, it.values, node) }
-            ?: scope
+        val globalScope = GlobalVariablesScope()
+        val scope = node.symbolTable
+            ?.let { BlockVariablesScope(globalScope, it.values, node) }
+            ?: globalScope
 
         statementsBlock(node, scope)
         markUnreachable()
         replaceSSAGenInfoToNormalInfo()
         removeInternalInfos()
         optimizeSSAPhis() // Nameのidを統合
+
+        return globalScope.variables.mapValues { it.value.variableId }
     }
 
     //region processNode
@@ -687,7 +689,7 @@ class StaticSingleAssignGenerators {
     }
 
     private class GlobalVariablesScope() : VariablesScope() {
-        private val variables = mutableMapOf<String, Variable.Global>()
+        val variables = mutableMapOf<String, Variable.Global>()
 
         override fun variable(name: String): Variable {
             return variables.getOrPut(name) { Variable.Global(name) }
