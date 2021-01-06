@@ -344,7 +344,9 @@ class TypeResolver : AbstractVisitor() {
     }
 
     override fun visitLocalLoad(node: Node) {
-        node.realLocalVarId.valueInfo.assignTo(node.valueInfo)
+        node.valueInfo = SSAValueInfo().also { valueInfo ->
+            node.realLocalVarId.valueInfo.assignTo(valueInfo)
+        }
     }
 
     override fun visitCommaExpr(node: Node, exprs: List<Node>) {
@@ -356,24 +358,26 @@ class TypeResolver : AbstractVisitor() {
 
     override fun visitOr(node: Node, left: Node, right: Node) {
         visitExprs(left, right)
+        val valueInfo = SSAValueInfo().also { node.valueInfo = it }
         //TODO: node.valueInfo.type = computeOrType(left.valueInfo.type, right.valueInfo.type)
         left.valueInfo.onValue(BooleanType) {
             if (it) {
-                left.valueInfo.assignTo(node.valueInfo)
+                left.valueInfo.assignTo(valueInfo)
             } else {
-                right.valueInfo.assignTo(node.valueInfo)
+                right.valueInfo.assignTo(valueInfo)
             }
         }
     }
 
     override fun visitAnd(node: Node, left: Node, right: Node) {
         visitExprs(left, right)
+        val valueInfo = SSAValueInfo().also { node.valueInfo = it }
         //TODO: node.valueInfo.type = computeOrType(left.valueInfo.type, right.valueInfo.type)
         left.valueInfo.onValue(BooleanType) {
             if (it) {
-                right.valueInfo.assignTo(node.valueInfo)
+                right.valueInfo.assignTo(valueInfo)
             } else {
-                left.valueInfo.assignTo(node.valueInfo)
+                left.valueInfo.assignTo(valueInfo)
             }
         }
     }
@@ -402,17 +406,18 @@ class TypeResolver : AbstractVisitor() {
     private fun visitInDecrementName(node: Node, getting: Name, setting: Name, isIncrement: Boolean, isPrefix: Boolean) {
         visitExprs(getting)
         getting.valueInfo.expect(NumberType)
-        val settingValueInfo = setting.valueInfo as SSAValueInfo
+        val modifiedValueInfo = SSAValueInfo()
+        val settingValueInfo = setting.valueInfo
         val nodeValueInfo = SSAValueInfo().also { node.valueInfo = it }
 
-        settingValueInfo.exactly(NumberType)
+        modifiedValueInfo.assignTo(settingValueInfo)
         nodeValueInfo.exactly(NumberType)
 
         getting.valueInfo.onValue(NumberType) { value ->
             val modified = if (isIncrement) value + 1 else value - 1
             val result = if (isPrefix) modified else value
             nodeValueInfo.exactlyValue(result)
-            settingValueInfo.exactlyValue(modified)
+            modifiedValueInfo.exactlyValue(modified)
         }
     }
 
@@ -426,12 +431,13 @@ class TypeResolver : AbstractVisitor() {
 
         // TODO: node.valueInfo.type = computeOrType(ifTrue.valueInfo.type, ifFalse.valueInfo.type)
 
+        val valueInfo = SSAValueInfo().also { node.valueInfo = it }
         condition.valueInfo.expect(BooleanType)
         condition.valueInfo.onValue(BooleanType) {
             if (it) {
-                ifTrue.valueInfo.assignTo(node.valueInfo)
+                ifTrue.valueInfo.assignTo(valueInfo)
             } else {
-                ifFalse.valueInfo.assignTo(node.valueInfo)
+                ifFalse.valueInfo.assignTo(valueInfo)
             }
         }
     }
@@ -450,6 +456,7 @@ class TypeResolver : AbstractVisitor() {
     override fun visitConvertException(node: Node, throwable: Node) {
         val convertFrom = node.single()
         visitExpr(convertFrom)
+        node.valueInfo = SSAValueInfo()
         convertFrom.valueInfo.expect(InternalValueType(Throwable::class.java))
         // this expression returns any type.
     }
@@ -484,8 +491,8 @@ class TypeResolver : AbstractVisitor() {
 
     override fun visitIfNE(node: Jump, condition: Node) {
         visitExpr(condition)
-        node.valueInfo.expect(BooleanType)
-        node.valueInfo.onValue(BooleanType) { value ->
+        condition.valueInfo.expect(BooleanType)
+        condition.valueInfo.onValue(BooleanType) { value ->
             if (!value) { // jump so remove continuous
                 removeContinuousJump(node)
             } else { // continuous so remove jump
