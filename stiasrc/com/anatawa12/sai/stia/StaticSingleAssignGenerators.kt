@@ -356,6 +356,7 @@ class StaticSingleAssignGenerators {
                         processNode(initializer, scope)
                     val variable = scope.variableExactly(name.identifier)
                     name.varId = variable.makeNext(name)
+                    variable.getCurrent().producer = node
                     if (node.type != Token.VAR)
                         variable.enabledSinceHere()
                 }
@@ -839,6 +840,7 @@ class StaticSingleAssignGenerators {
 
             override fun makeNext(producer: Node): VariableId {
                 val result = VariableId.Local(name, versions.size, versions.last())
+                result.producer = producer
                 versions += result
                 return result
             }

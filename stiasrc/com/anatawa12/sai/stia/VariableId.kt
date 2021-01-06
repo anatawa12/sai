@@ -65,6 +65,7 @@ sealed class VariableId {
         fun replacedBy(replacement: Local) {
             require(replacement !== this) { "can't replace this with this" }
             //println("$this <- $replacement")
+            replacement.producer = producer
             for (name in usedBy.toList()) {
                 name.varId = replacement
             }
