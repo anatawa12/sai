@@ -17,19 +17,23 @@ public class DynamicMethod implements Serializable {
         this.name = name;
     }
 
-    public MethodOrConstructor getInvocation(ClassList classes) {
-        OverloadedMethod method = cache.get(classes.size());
+    public OverloadedMethod getOverloads(int argc) {
+        OverloadedMethod method = cache.get(argc);
         if (method == null) {
             @SuppressWarnings({"unchecked", "rawtypes"})
             final List<MethodOrConstructor> invokables = (List) methods.clone();
-            invokables.removeIf(m -> !isApplicableDynamically(classes.size(), m));
+            invokables.removeIf(m -> !isApplicableDynamically(argc, m));
 
-            method = new OverloadedMethod(invokables, name, classes.size());
+            method = new OverloadedMethod(invokables, name, argc);
 
-            cache.put(classes.size(), method);
+            cache.put(argc, method);
         }
 
-        return method.selectMethod(classes);
+        return method;
+    }
+
+    public MethodOrConstructor getInvocation(ClassList classes) {
+        return getOverloads(classes.size()).selectMethod(classes);
     }
 
     private static boolean isApplicableDynamically(

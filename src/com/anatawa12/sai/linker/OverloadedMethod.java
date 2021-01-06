@@ -33,6 +33,18 @@ public class OverloadedMethod {
         this.varArgMethods.trimToSize();
     }
 
+    public int methodsCount() {
+        return this.fixArgMethods.size() + this.varArgMethods.size();
+    }
+
+    public MethodOrConstructor theOnlyMethod() {
+        if (methodsCount() != 1)
+            throw new IllegalArgumentException("there's two or more or no elements");
+        if (fixArgMethods.isEmpty())
+            return varArgMethods.get(0);
+        return fixArgMethods.get(0);
+    }
+
     public MethodOrConstructor selectMethod(ClassList classes) {
         CacheEntry cacheEntry = this.argTypesToMethods.get(classes);
         if (cacheEntry != null) return cacheEntry.get(this, classes);

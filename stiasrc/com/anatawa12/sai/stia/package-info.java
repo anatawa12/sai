@@ -41,6 +41,9 @@
  *     <li>
  *         Assignments to outer-scope's local variables. (It's allowed to assign to global variables)
  *     </li>
+ *     <li>
+ *         Assignments to global variables many times.
+ *     </li>
  * </ul>
  * </p>
  */

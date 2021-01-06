@@ -2,6 +2,9 @@ package com.anatawa12.sai.stia
 
 import com.anatawa12.sai.Node
 import com.anatawa12.sai.ast.Name
+import com.anatawa12.sai.stia.types.RSAValueInfo
+import com.anatawa12.sai.stia.types.SSAValueInfo
+import com.anatawa12.sai.stia.types.ValueInfo
 
 sealed class VariableId {
     val usedBy = mutableSetOf<Name>()
@@ -23,9 +26,13 @@ sealed class VariableId {
                 append('#')
                 append(version)
                 append('#')
-                append(shortHash())
+                append(this@Internal.shortHash())
                 append('<')
                 append(producerOrNull.shortHash())
+                append(':')
+                append(valueInfo)
+                append('>')
+                append(usedBy.size)
                 append('\'')
             }
         }
@@ -33,6 +40,8 @@ sealed class VariableId {
         override fun checkName(name: Name) {
             require(false) { "internal variable cannot be assigned to Name" }
         }
+
+        override val valueInfo = SSAValueInfo()
     }
 
     class Local internal constructor(val name: String, val version: Int, val previousVersion: Local?)
@@ -51,9 +60,13 @@ sealed class VariableId {
                 append('#')
                 append(version)
                 append('#')
-                append(shortHash())
+                append(this@Local.shortHash())
                 append('<')
                 append(producerOrNull.shortHash())
+                append(':')
+                append(valueInfo)
+                append('>')
+                usedBy.joinTo(this, ",","[", "]") { it.shortHash() }
                 append('\'')
             }
         }
@@ -76,6 +89,8 @@ sealed class VariableId {
         override fun checkName(name: Name) {
             require(name.identifier == this.name) { "name mismatch" }
         }
+
+        override val valueInfo = SSAValueInfo()
     }
 
     class Global internal constructor(val name: String) : VariableId() {
@@ -86,7 +101,11 @@ sealed class VariableId {
                 append('\'')
                 append("global#")
                 append(name)
-                append(shortHash())
+                append(this@Global.shortHash())
+                append(':')
+                append(valueInfo)
+                append('>')
+                append(usedBy.size)
                 append('\'')
             }
         }
@@ -94,5 +113,9 @@ sealed class VariableId {
         override fun checkName(name: Name) {
             require(name.identifier == this.name) { "name mismatch" }
         }
+
+        override val valueInfo: RSAValueInfo = RSAValueInfo()
     }
+
+    abstract val valueInfo: ValueInfo
 }
