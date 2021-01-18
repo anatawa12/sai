@@ -241,8 +241,16 @@ class TypeResolver : AbstractVisitor() {
             }
             is JavaClassType -> {
                 val fieldType = SaiAccessor.resolveField(ownerType.type, name, true)
-                    ?: return
-                valueInfo.exactly(ResolvingType.byClass(fieldType))
+                if (fieldType != null) {
+                    valueInfo.exactly(ResolvingType.byClass(fieldType))
+                } else if (name == "class" || name == "__javaObject__") {
+                    valueInfo.exactly(ResolvingType.byClass(Class::class.java))
+                } else {
+                    val childClass = kotlin.runCatching { Class.forName("${ownerType.type.name}$$name") }.getOrNull()
+                    if (childClass != null) {
+                        valueInfo.exactly(JavaClassType(childClass))
+                    }
+                }
             }
             else -> {
             }
