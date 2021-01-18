@@ -1003,7 +1003,7 @@ class BodyCodegen
             }
             break;
 
-            case Token.CONVERT_EXCEPTION:
+            case -1: // CONVERT_EXCEPTION
             {
                 generateExpression(child, node); // load expression object
                 cfw.addALoad(contextLocal);

@@ -231,12 +231,9 @@ public class Token
         GENEXPR        = 163,
         METHOD         = 164,  // ES6 MethodDefinition
         ARROW          = 165,  // ES6 ArrowFunction
-        YIELD_STAR     = 166;  // ES6 "yield *", a specialization of yield\
+        YIELD_STAR     = 166,  // ES6 "yield *", a specialization of yield
+        LAST_TOKEN     = 167;
 
-    public final static int
-            CONVERT_EXCEPTION = 167, // ScriptRuntime.newErrorForThrowable
-            INC_DEC_NAME      = 168,
-            LAST_TOKEN        = 169;
 
     /**
      * Returns a name for the token.  If Rhino is compiled with certain
@@ -245,7 +242,6 @@ public class Token
      */
     public static String name(int token)
     {
-        boolean printNames = true;
         if (!printNames) {
             return String.valueOf(token);
         }
@@ -427,8 +423,6 @@ public class Token
           case ARROW:           return "ARROW";
           case YIELD_STAR:      return "YIELD_STAR";
 
-            case CONVERT_EXCEPTION:   return "CONVERT_EXCEPTION";
-            case INC_DEC_NAME:        return "INC_DEC_NAME";
         }
 
         // Token without name

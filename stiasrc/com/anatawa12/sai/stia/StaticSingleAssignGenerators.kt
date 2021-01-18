@@ -112,7 +112,7 @@ class StaticSingleAssignGenerators {
                 }
             }
 
-            Token.INC_DEC_NAME,
+            ExToken.INC_DEC_NAME,
             -> {
                 val (old, new) = node.asPair()
                 old as Name
@@ -375,7 +375,7 @@ class StaticSingleAssignGenerators {
                 unsupported("function literal")
             }
 
-            Token.CONVERT_EXCEPTION,
+            ExToken.CONVERT_EXCEPTION,
             -> {
                 val convertFrom = node.single()
                 processNode(convertFrom, scope)

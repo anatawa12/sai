@@ -22,7 +22,7 @@ class StiaTransformer {
                     val expr = child.single()
                     if (expr.type == Token.NAME) {
                         expr as Name
-                        child.type = Token.INC_DEC_NAME
+                        child.type = ExToken.INC_DEC_NAME
                         child.addChildToBack(Name().apply {
                             identifier = expr.identifier
                         })
@@ -102,7 +102,7 @@ class StiaTransformer {
 
             val letExpr = VariableDeclaration().apply {
                 addChildToBack(Name(-1, name.string).apply {
-                    addChildToBack(Node(Token.CONVERT_EXCEPTION).apply {
+                    addChildToBack(Node(ExToken.CONVERT_EXCEPTION).apply {
                         addChildToBack(Node(Token.LOCAL_LOAD).apply {
                             putProp(Node.LOCAL_BLOCK_PROP, localBlock)
                         })

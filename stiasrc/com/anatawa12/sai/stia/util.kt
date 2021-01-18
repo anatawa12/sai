@@ -238,7 +238,7 @@ fun Node.toInformationString(): String {
         }
         else -> ""
     }
-    return Token.name(node.type) +
+    return ExToken.name(node.type) +
                 "(${node.javaClass.simpleName}" +
                 ";${node.shortHash()}" +
                 ")$extra"

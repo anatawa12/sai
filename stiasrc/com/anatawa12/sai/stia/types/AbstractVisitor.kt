@@ -207,7 +207,7 @@ abstract class AbstractVisitor {
                     else
                         visitUnary(node, ::visitPrefixDecrement)
             }
-            Token.INC_DEC_NAME, // -- expr or expr --
+            ExToken.INC_DEC_NAME, // -- expr or expr --
             -> {
                 val prop = node.getExistingIntProp(Node.INCRDECR_PROP)
                 val (left, right) = node.asPair()
@@ -244,7 +244,7 @@ abstract class AbstractVisitor {
             // literal or root definition
             Token.FUNCTION -> unsupported("FUNCTION")
 
-            Token.CONVERT_EXCEPTION,
+            ExToken.CONVERT_EXCEPTION,
             -> {
                 val convertFrom = node.single()
                 visitConvertException(node, convertFrom)
@@ -549,7 +549,7 @@ abstract class AbstractVisitor {
             -> unsupported("debugger")
             Token.METHOD,
             -> unsupported("method")
-            Token.CONVERT_EXCEPTION,
+            ExToken.CONVERT_EXCEPTION,
             -> unsupported("debugger")
             Token.SCRIPT,
             -> unsupported("root script is not supported")
