@@ -4,6 +4,8 @@ import com.anatawa12.sai.Node
 import com.anatawa12.sai.Token
 import com.anatawa12.sai.ast.*
 import com.anatawa12.sai.stia.JumpingInfo.Companion.jumpingInfo
+import com.anatawa12.sai.stia.types.AbstractVisitor
+import com.anatawa12.sai.stia.types.CompileTimeConstantType
 
 /**
  * Phi function is now expressed as shown below:
@@ -30,7 +32,7 @@ class StaticSingleAssignGenerators {
             ?.let { BlockVariablesScope(globalScope, it.values, node) }
             ?: globalScope
 
-        statementsBlock(node, scope)
+        Visitor(scope).statementsBlock1(node)
         markUnreachable()
         replaceSSAGenInfoToNormalInfo()
         removeInternalInfos()
@@ -41,446 +43,338 @@ class StaticSingleAssignGenerators {
 
     //region processNode
 
-    private fun processNode(
-        node: Node,
-        scope: VariablesScope,
-    ) {
-        when (node.type) {
-            Token.BITOR,
-            Token.BITXOR,
-            Token.BITAND,
-            Token.EQ,
-            Token.NE,
-            Token.LT,
-            Token.LE,
-            Token.GT,
-            Token.GE,
-            Token.LSH,
-            Token.RSH,
-            Token.URSH,
-            Token.ADD,
-            Token.SUB,
-            Token.MUL,
-            Token.DIV,
-            Token.MOD,
-            Token.NOT,
-            Token.BITNOT,
-            Token.POS, // + expr
-            Token.NEG, // - expr
-            Token.NEW,
-            Token.DELPROP, // delete expr
-            Token.TYPEOF, // typeof expr
-            Token.GETPROP,
-            Token.GETPROPNOWARN,
-            Token.SETPROP,
-            Token.GETELEM,
-            Token.SETELEM,
-            Token.CALL,
-            Token.NUMBER, // literal
-            Token.STRING,
-            Token.NULL,
-            Token.THIS,
-            Token.FALSE,
-            Token.TRUE,
-            Token.SHEQ, // shallow ===
-            Token.SHNE, // shallow !==
-            Token.REGEXP, // regexp literal
-            Token.THROW,
-            Token.IN,
-            Token.INSTANCEOF,
-            Token.ARRAYLIT, // array literal
-            Token.OBJECTLIT, // object literal
-            Token.VOID, // void expr;
-            Token.EMPTY, // ; // empty statement
-            Token.EXPR_VOID, // expression statement
-            Token.EXPR_RESULT, // expression statement for root script // TODO maybe unsupported because for script
-            Token.TYPEOFNAME, // typeof expr
-            Token.USE_STACK, // use the value on the stack,
-            Token.SETPROP_OP, // a.b op= c
-            Token.SETELEM_OP, // a.[b] op= c
-            Token.COMMA, // expr, expr, expr....
-            Token.OR, // ||
-            Token.AND, // &&
-            Token.INC, // ++ expr or expr ++
-            Token.DEC, // -- expr or expr --
-            -> {
-                // simple expr default
-                for (child in node) {
-                    processNode(child, scope)
-                    if (reachStatus.neverReach)
-                        return
+    private inner class Visitor(var scope: VariablesScope) : AbstractVisitor() {
+
+        //region visitExprs
+
+        private fun visitExprs(n1: Node) {
+            visitExpr(n1)
+        }
+
+        private fun visitExprs(n1: Node, n2: Node) {
+            visitExpr(n1)
+            visitExpr(n2)
+        }
+
+        private fun visitExprs(n1: Node, n2: Node, n3: Node) {
+            visitExpr(n1)
+            visitExpr(n2)
+            visitExpr(n3)
+        }
+
+        override fun visitBitOr(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitBitXor(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitBitAnd(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitLsh(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitRsh(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitURsh(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitEq(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitNe(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitLt(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitLe(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitGt(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitGe(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitIn(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitShallowEq(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitShallowNe(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitInstanceOf(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitSub(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitMul(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitDiv(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitMod(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitAdd(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitNot(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitBitNot(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitPositive(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitNegative(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitTypeOf(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitVoid(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitGetProperty(node: Node, owner: Node, name: Node, isProperty: Boolean) = visitExprs(owner, name)
+        override fun visitSetProperty(node: Node, owner: Node, name: Node, value: Node, isProperty: Boolean) = visitExprs(owner, name, value)
+        override fun visitThrow(node: Node, throws: Node) = visitExprs(throws)
+        override fun visitEmptyStatement(node: Node) = Unit
+        override fun visitExprStatement(node: Node, expr: Node, isForReturn: Boolean) = visitExprs(expr)
+        override fun visitConvertException(node: Node, throwable: Node) = visitExprs(throwable)
+        override fun visitNewOrCall(node: Node, function: Node, args: List<Node>, isNewInstance: Boolean) {
+            visitExprs(function)
+            args.forEach(::visitExpr)
+        }
+
+        override fun <T> visitLiteral(node: Node, type: CompileTimeConstantType<T>, value: T) = Unit
+        override fun visitCommaExpr(node: Node, exprs: List<Node>) = exprs.forEach(::visitExpr)
+        override fun visitOr(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitAnd(node: Node, left: Node, right: Node) = visitExprs(left, right)
+        override fun visitPrefixIncrement(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitPrefixDecrement(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitPostfixIncrement(node: Node, operand: Node) = visitExprs(operand)
+        override fun visitPostfixDecrement(node: Node, operand: Node) = visitExprs(operand)
+
+        //endregion
+
+        override fun visitPostfixIncrementName(node: Node, getting: Name, setting: Name)  = visitInDecrementName(node, getting, setting)
+        override fun visitPrefixIncrementName(node: Node, getting: Name, setting: Name)  = visitInDecrementName(node, getting, setting)
+        override fun visitPostfixDecrementName(node: Node, getting: Name, setting: Name)  = visitInDecrementName(node, getting, setting)
+        override fun visitPrefixDecrementName(node: Node, getting: Name, setting: Name)  = visitInDecrementName(node, getting, setting)
+
+        private fun visitInDecrementName(node: Node, getting: Name, setting: Name) {
+            val variable = scope.variable(getting.identifier)
+            getting.varId = variable.getCurrent()
+            setting.varId = variable.makeNext(node)
+        }
+
+        override fun visitReturn(node: Node, returns: Node?) {
+            if (returns != null)
+                visitExprs(returns)
+            reachStatus.nextNever()
+        }
+
+        override fun visitGoto(node: Jump) {
+            processJump(node.target, scope, node)
+            reachStatus.makeJump(node)
+            reachStatus.reachable.never()
+        }
+
+        override fun visitJSR(node: Jump) {
+            val target = node.target
+            val finally = target.next
+            if (finally.type != Token.FINALLY)
+                unsupported("jsr to not just before finally block")
+            val finallyInfo = finally.finallyInternalInfo
+
+            finallies.add(finally)
+
+            // jsr -> node: as a jump insn
+            reachStatus.makeJump(node)
+            reachStatus.reachable.never()
+            processJump(target, scope, node)
+
+            // finally -> jsr: as a target insn
+            targets.add(node)
+            reachStatus.makeTarget(node)
+            val newSnapshot = scope.updateAll(producer = node)
+            node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
+
+            // do something for jumping of finally
+            if (finallyInfo.snapshot != null) {
+                processJump(target = node, snapshot = finallyInfo.snapshot!!, finally)
+            } else {
+                finallyInfo.returningTo?.add(node)
+            }
+        }
+
+        override fun visitIfEQ(node: Jump, condition: Node) = visitIfJump(node, condition)
+        override fun visitIfNE(node: Jump, condition: Node) = visitIfJump(node, condition)
+
+        private fun visitIfJump(node: Jump, condition: Node) {
+            visitExprs(condition)
+            if (reachStatus.neverReach)
+                return
+
+            reachStatus.makeJump(node)
+            processJump(node.target, scope, node)
+            // ScriptRuntime.newErrorForThrowable
+        }
+
+        override fun visitInLoopJump(node: Jump, isContinue: Boolean) {
+            val loop = node.jumpStatement
+            val target = if (isContinue) loop.`continue` else loop.target
+            reachStatus.makeJump(node)
+            reachStatus.reachable.never()
+            processJump(target, scope, node)
+        }
+
+        override fun visitSwitch(node: Jump, value: Node, cases: List<Pair<Jump, Node>>) {
+            visitExprs(value)
+            if (reachStatus.neverReach)
+                return
+
+            reachStatus.makeJump(node)
+            for ((case, condition) in cases) {
+                check(case.type == Token.CASE)
+                visitExprs(condition)
+                processJump(case.target, scope, node)
+            }
+        }
+
+        override fun visitTarget(node: Node) {
+            targets.add(node)
+            val curSnapshot = scope.createSnapshot()
+            val newSnapshot = scope.updateAll(producer = node)
+            if (!reachStatus.neverReach)
+                node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
+            node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
+            reachStatus.makeTarget(node)
+            curSnapshot.close()
+        }
+
+        override fun visitLabel(node: Node): ProcessResult {
+            return statementsBlock1(node)
+        }
+
+        override fun visitLocalLoad(node: Node) {
+            node.realLocalVarId = localBlockVariableId(node)
+        }
+
+        override fun visitInternalLocalBlock(node: Node): ProcessResult {
+            localBlocks.add(node)
+            node.putIntProp(Node.LOCAL_PROP, localBlocks.size)
+            return statementsBlock1(node)
+        }
+
+        override fun visitBlock(node: Node): ProcessResult {
+            return processScope(node)
+        }
+
+        override fun visitLoop(node: Node): ProcessResult {
+            return processScope(node)
+        }
+
+        override fun visitConditionalOperator(node: Node, condition: Node, ifTrue: Node, ifFalse: Node) {
+            visitExprs(condition)
+            if (reachStatus.neverReach)
+                return
+
+            val afterCond = reachStatus.reachable
+            val afterProcess = Reachable()
+
+            reachStatus.startWith(afterCond)
+            visitExprs(ifTrue)
+            afterProcess.addFrom(reachStatus.reachable)
+
+            reachStatus.startWith(afterCond)
+            visitExprs(ifFalse)
+            afterProcess.addFrom(reachStatus.reachable)
+
+            reachStatus.reachable = afterProcess
+        }
+
+        override fun visitTryBlock(node: Jump): ProcessResult {
+            val snapshot = scope.createSnapshot()
+            val catchTarget = node.target.nullable()
+            val finallyTarget = node.finally.nullable()
+
+            val tryInfo = node.tryInfo
+            val localBlock = getLocalBlock(node)
+            var variableId: VariableId.Internal? = null
+            reachStatus.makeJump(node)
+
+            statementsBlockWithBlock(node) { child ->
+                if (child === catchTarget || child === finallyTarget) {
+                    child.targetInfo.reachable.addFrom(node.jumpingInfo.mayJump)
+                    child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot), node)
+                    check(localBlock.realLocalVarIdOrNull == variableId) { "local block conflict" }
+                    variableId = makeNextLocalBlockVariableId(node, variableId)
+                    variableId!!.producer = node
+                    localBlock.realLocalVarId = variableId!!
+                    if (child === catchTarget)
+                        tryInfo.catchVariable = variableId
+                    else
+                        tryInfo.finallyVariable = variableId
                 }
             }
 
-            ExToken.INC_DEC_NAME,
-            -> {
-                val (old, new) = node.asPair()
-                old as Name
-                new as Name
-                val variable = scope.variable(old.identifier)
-                old.varId = variable.getCurrent()
-                new.varId = variable.makeNext(node)
-            }
+            snapshot.close()
+            localBlock.deleteRealLocalVarId()
 
-            Token.RETURN, // void
-            -> {
-                val returnValue = node.firstChild.nullable()
-                if (returnValue != null)
-                    processNode(returnValue, scope)
-                reachStatus.nextNever()
-            }
+            return ProcessResult.Continue
+        }
 
-            // jumping instructions
-            Token.GOTO,
-            -> {
-                node as Jump
-                processJump(node.target, scope, node)
-                reachStatus.makeJump(node)
-                reachStatus.reachable.never()
-            }
-            Token.JSR, // TODO: return from finally
-            -> {
-                node as Jump
-                val target = node.target
-                val finally = target.next
-                if (finally.type != Token.FINALLY)
-                    unsupported("jsr to not just before finally block")
-                val finallyInfo = finally.finallyInternalInfo
+        override fun visitFinally(node: Node) {
+            val info = node.finallyInternalInfo
+            node.realLocalVarId = localBlockVariableId(node)
 
-                finallies.add(finally)
-
-                // jsr -> node: as a jump insn
-                reachStatus.makeJump(node)
-                reachStatus.reachable.never()
-                processJump(target, scope, node)
-
-                // finally -> jsr: as a target insn
-                targets.add(node)
-                reachStatus.makeTarget(node)
-                val newSnapshot = scope.updateAll(producer = node)
-                node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
-
-                // do something for jumping of finally
-                if (finallyInfo.snapshot != null) {
-                    processJump(target = node, snapshot = finallyInfo.snapshot!!, finally)
-                } else {
-                    finallyInfo.returningTo?.add(node)
-                }
-            }
-            Token.IFEQ,
-            Token.IFNE,
-            -> {
-                node as Jump
-                val condition = node.single()
-
-                processNode(condition, scope)
-                if (reachStatus.neverReach)
-                    return
-
-                reachStatus.makeJump(node)
-                processJump(node.target, scope, node)
-                // ScriptRuntime.newErrorForThrowable
-            }
-            Token.BREAK,
-            Token.CONTINUE,
-            -> {
-                node as Jump
-                val loop = node.jumpStatement
-                val target = if (node.type == Token.BREAK) loop.target else loop.`continue`
-                reachStatus.makeJump(node)
-                reachStatus.reachable.never()
-                processJump(target, scope, node)
-            }
-
-            // switch statement
-            Token.SWITCH,
-            -> {
-                node as Jump
-                val expr = node.first()
-                val cases = node.drop(1)
-
-                processNode(expr, scope)
-                if (reachStatus.neverReach)
-                    return
-
-                reachStatus.makeJump(node)
-                for (case in cases) {
-                    check(case.type == Token.CASE)
-                    case as Jump
-                    val value = case.single()
-                    processNode(value, scope)
-                    processJump(case.target, scope, node)
-                }
-            }
-
-            Token.TARGET, // TODO: CHECK
-            -> {
-                targets.add(node)
-                val curSnapshot = scope.createSnapshot()
-                val newSnapshot = scope.updateAll(producer = node)
-                if (!reachStatus.neverReach)
-                    node.ssaGenTargetInfo.addJumpingFrom(curSnapshot, null)
-                node.ssaGenTargetInfo.atTargetSnapshot = newSnapshot
-                reachStatus.makeTarget(node)
-                curSnapshot.close()
-            }
-
-            // statements or expressions block
-            Token.LABEL, // block
-                //Token.WITH, // unsuppoted
-            -> {
-                statementsBlock(node, scope)
-            }
-
-            // contextual non-visible local variable
-            Token.LOCAL_LOAD,
-            -> {
-                node.realLocalVarId = localBlockVariableId(node)
-            }
-
-            Token.LOCAL_BLOCK, // contextual local variable (hidden) // TODO
-            -> {
-                localBlocks.add(node)
-                node.putIntProp(Node.LOCAL_PROP, localBlocks.size)
-                statementsBlock(node, scope)
-            }
-
-            // scope block
-            Token.BLOCK, //Token.ARRAYCOMP, unsupported
-            Token.LOOP,
-            -> processScope(node, scope)
-
-            Token.CASE, // case label(?)
-            -> unsupported("case must be in switch")
-
-            Token.HOOK, // condition ? then : else
-            -> {
-                val (condition, ifTrue, ifFalse) = node.asTriple()
-
-                processNode(condition, scope)
-                if (reachStatus.neverReach)
-                    return
-
-                val afterCond = reachStatus.reachable
-                val afterProcess = Reachable()
-
-                reachStatus.startWith(afterCond)
-                processNode(ifTrue, scope)
-                afterProcess.addFrom(reachStatus.reachable)
-
-                reachStatus.startWith(afterCond)
-                processNode(ifFalse, scope)
-                afterProcess.addFrom(reachStatus.reachable)
-
-                reachStatus.reachable = afterProcess
-            }
-
-            Token.TRY, // try {} catch {} finally {}
-            -> {
-                node as Jump
-                val snapshot = scope.createSnapshot()
-                val catchTarget = node.target.nullable()
-                val finallyTarget = node.finally.nullable()
-
-                val tryInfo = node.tryInfo
-                val localBlock = getLocalBlock(node)
-                var variableId: VariableId.Internal? = null
-                reachStatus.makeJump(node)
-
-                statementsBlockWithBlock(node, scope) { child ->
-                    if (child === catchTarget || child === finallyTarget) {
-                        child.targetInfo.reachable.addFrom(node.jumpingInfo.mayJump)
-                        child.ssaGenTargetInfo.addJumpingFroms(scope.allVariableVersions(since = snapshot), node)
-                        check(localBlock.realLocalVarIdOrNull == variableId) { "local block conflict" }
-                        variableId = makeNextLocalBlockVariableId(node, variableId)
-                        variableId!!.producer = node
-                        localBlock.realLocalVarId = variableId!!
-                        if (child === catchTarget)
-                            tryInfo.catchVariable = variableId
-                        else
-                            tryInfo.finallyVariable = variableId
-                    }
-                }
-
-                snapshot.close()
-                localBlock.deleteRealLocalVarId()
-            }
-            Token.FINALLY,
-            -> {
-                val info = node.finallyInternalInfo
-                node.realLocalVarId = localBlockVariableId(node)
-
-                statementsBlock(node, scope)
-                if (reachStatus.neverReach) {
-                    info.returningTo = null
-                    return
-                }
-
-                val snapshot = scope.createSnapshot()
-                info.snapshot = snapshot
-                reachStatus.makeJump(node)
-                for (returningTo in info.returningTo!!) {
-                    processJump(returningTo, snapshot, node)
-                }
+            statementsBlock1(node)
+            if (reachStatus.neverReach) {
                 info.returningTo = null
-                snapshot.close()
+                return
             }
 
-            Token.RETHROW,
-            -> {
-                node.realLocalVarId = localBlockVariableId(node)
-                reachStatus.nextNever()
+            val snapshot = scope.createSnapshot()
+            info.snapshot = snapshot
+            reachStatus.makeJump(node)
+            for (returningTo in info.returningTo!!) {
+                processJump(returningTo, snapshot, node)
             }
+            info.returningTo = null
+            snapshot.close()
+        }
 
-            Token.SETNAME,
-            -> {
-                // TODO: global scopee
-                val (variable, expr) = node.asPair()
-                variable as Name
-                variable.varId = scope.variable(variable.identifier).makeNext(node)
-                processNode(expr, scope)
-            }
-            Token.NAME, // TODO
-            -> {
-                node as Name
-                node.varId = scope.variable(node.identifier).getCurrent()
-            }
-            Token.BINDNAME,
-            -> unsupported("BINDNAME")
+        override fun visitRethrow(node: Node) {
+            node.realLocalVarId = localBlockVariableId(node)
+            reachStatus.nextNever()
+        }
 
-            Token.VAR, // TODO: CHECK
-            Token.LET, // TODO: CHECK
-            Token.CONST, // TODO: CHECK
-            -> {
-                for (name in node) {
-                    name as Name
-                    val initializer = name.singleOrNull()
-                    if (initializer != null)
-                        processNode(initializer, scope)
-                    val variable = scope.variableExactly(name.identifier)
-                    name.varId = variable.makeNext(name)
-                    variable.getCurrent().producer = node
-                    if (node.type != Token.VAR)
-                        variable.enabledSinceHere()
-                }
-            }
+        override fun visitSetVariable(node: Node, variable: Name, value: Node) {
+            // TODO: global scopee
+            variable.varId = scope.variable(variable.identifier).makeNext(node)
+            visitExprs(value)
+        }
 
-            Token.THISFN, // reference to this function
-            -> {
-                // nop
-            }
+        override fun visitGetVariable(node: Name) {
+            node.varId = scope.variable(node.identifier).getCurrent()
+        }
 
-            Token.FUNCTION, // literal or root definition
-            -> {
-                unsupported("function literal")
+        override fun visitVariableDefinition(node: Node, variables: List<Pair<Name, Node?>>, kind: Int) {
+            for ((name, initializer) in variables) {
+                if (initializer != null)
+                    visitExprs(initializer)
+                val variable = scope.variableExactly(name.identifier)
+                name.varId = variable.makeNext(name)
+                variable.getCurrent().producer = node
+                if (node.type != Token.VAR)
+                    variable.enabledSinceHere()
             }
+        }
 
-            ExToken.CONVERT_EXCEPTION,
-            -> {
-                val convertFrom = node.single()
-                processNode(convertFrom, scope)
+        override fun visitFunctionStatement(node: Node) {
+            unsupported("function literal")
+        }
+
+        private fun processScope(
+            node: Node,
+        ): ProcessResult.Continue {
+            val scopeNode = node as? Scope
+            val old = scope
+            scope = scopeNode
+                ?.symbolTable
+                ?.let { BlockVariablesScope(scope, it.values, scopeNode) }
+                ?: scope
+            try {
+                return statementsBlock1(node)
+            } finally {
+                scope = old
             }
+        }
 
-            Token.ENTERWITH,
-            Token.LEAVEWITH,
-            Token.WITH,
-            Token.WITHEXPR,
-            -> unsupported("with")
-            Token.DEBUGGER,
-            -> unsupported("debugger")
-            Token.METHOD,
-            -> unsupported("method")
-            Token.SCRIPT, // TODO: BLOCK
-            -> unsupported("root script is not supported")
-            Token.CATCH_SCOPE, // TODO
-            -> unsupported("catch scope")
-            Token.ENUM_INIT_KEYS,
-            Token.ENUM_INIT_VALUES,
-            Token.ENUM_INIT_ARRAY,
-            Token.ENUM_INIT_VALUES_IN_ORDER,
-            Token.ENUM_NEXT,
-            Token.ENUM_ID,
-            -> unsupported("enumeration loops")
-            Token.GET_REF,
-            Token.SET_REF,
-            Token.DEL_REF,
-            Token.REF_CALL,
-            Token.REF_SPECIAL,
-            -> unsupported("references")
-            Token.YIELD,
-            Token.YIELD_STAR,
-            -> unsupported("generators")
-            Token.DEFAULTNAMESPACE,
-            Token.ESCXMLATTR,
-            Token.ESCXMLTEXT,
-            Token.REF_MEMBER,
-            Token.REF_NS_MEMBER,
-            Token.REF_NAME,
-            Token.REF_NS_NAME,
-            -> unsupported("xml")
-            Token.SET_REF_OP, // TODO: not supported
-            -> unsupported("reference")
-            Token.DOTQUERY,
-            -> unsupported("xml")
-            Token.GET,
-            Token.SET,
-            -> unsupported("get and set in object literal")
-            Token.SETCONST,
-            Token.SETCONSTVAR,
-            -> unsupported("deconstructing const assign")
-            Token.ARRAYCOMP,
-                // see https://developer.mozilla.org/docs/Web/JavaScript/Reference/Operators/Array_comprehensions
-            -> unsupported("array comprehension expression")
-            Token.LETEXPR,//TODO:CHECK
-            -> unsupported("deconstructing const assign")
-            Token.STRICT_SETNAME,
-            Token.GETVAR,
-            Token.SETVAR,
-            Token.RETURN_RESULT,
-            Token.TO_OBJECT, // double to object wrapping
-            Token.TO_DOUBLE, // similar to Number(expr)
-            -> unsupported("transformed insn")
-            //Token.SEMI,
-            //Token.LB,
-            //Token.RB,
-            //Token.LC,
-            //Token.RC,
-            //Token.LP,
-            //Token.RP,
-            //Token.ASSIGN,
-            //Token.ASSIGN_BITOR,
-            //Token.ASSIGN_BITXOR,
-            //Token.ASSIGN_BITAND,
-            //Token.ASSIGN_LSH,
-            //Token.ASSIGN_RSH,
-            //Token.ASSIGN_URSH,
-            //Token.ASSIGN_ADD,
-            //Token.ASSIGN_SUB,
-            //Token.ASSIGN_MUL,
-            //Token.ASSIGN_DIV,
-            //Token.ASSIGN_MOD,
-            //Token.COLON,
-            //Token.DOT,
-            //Token.EXPORT,
-            //Token.IMPORT,
-            //Token.IF,
-            //Token.ELSE,
-            //Token.DEFAULT,
-            //Token.WHILE,
-            //Token.DO,
-            //Token.FOR,
-            //Token.CATCH,
-            //Token.RESERVED,
-            //Token.DOTDOT,
-            //Token.COLONCOLON,
-            //Token.XML,
-            //Token.XMLATTR,
-            //Token.XMLEND,
-            //Token.COMMENT,
-            //Token.GENEXPR,
-            //Token.ARROW,
-            else
-            -> unsupported("unsupported token: ${node.type}")
+        private fun processJump(target: Node, scope: VariablesScope, jump: Node) {
+            val snapshot = scope.createSnapshot()
+            processJump(target, snapshot, jump)
+            snapshot.close()
+        }
+
+        private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node) {
+            check(target.isJumpTarget)
+            target.ssaGenTargetInfo.addJumpingFrom(snapshot, jump)
+            target.targetInfo.reachable.addFrom(jump.jumpingInfo.mayJump)
+        }
+
+        fun statementsBlock1(
+            node: Node,
+        ): ProcessResult.Continue {
+            return statementsBlockWithBlock(node) {}
+        }
+
+        private inline fun statementsBlockWithBlock(
+            node: Node,
+            customPreProcess: (child: Node) -> Unit,
+        ): ProcessResult.Continue {
+            for (child in node) {
+                if (reachStatus.neverReach && child.type != Token.TARGET)
+                    continue
+                customPreProcess(child)
+                visitStatement(child)
+            }
+            return ProcessResult.Continue
         }
     }
 
@@ -500,51 +394,6 @@ class StaticSingleAssignGenerators {
 
     private fun localBlockVariableId(node: Node): VariableId {
         return getLocalBlock(node).realLocalVarId
-    }
-
-    private fun processScope(
-        node: Node,
-        scope: VariablesScope,
-    ) {
-        val scopeNode = node as? Scope
-        val newScope = scopeNode
-            ?.symbolTable
-            ?.let { BlockVariablesScope(scope, it.values, scopeNode) }
-            ?: scope
-
-        statementsBlock(node, newScope)
-    }
-
-    private fun processJump(target: Node, scope: VariablesScope, jump: Node) {
-        val snapshot = scope.createSnapshot()
-        processJump(target, snapshot, jump)
-        snapshot.close()
-    }
-
-    private fun processJump(target: Node, snapshot: ScopeSnapshot, jump: Node) {
-        check(target.isJumpTarget)
-        target.ssaGenTargetInfo.addJumpingFrom(snapshot, jump)
-        target.targetInfo.reachable.addFrom(jump.jumpingInfo.mayJump)
-    }
-
-    private fun statementsBlock(
-        node: Node,
-        scope: VariablesScope,
-    ) {
-        statementsBlockWithBlock(node, scope) {}
-    }
-
-    private inline fun statementsBlockWithBlock(
-        node: Node,
-        scope: VariablesScope,
-        customPreProcess: (child: Node) -> Unit,
-    ) {
-        for (child in node) {
-            if (reachStatus.neverReach && child.type != Token.TARGET)
-                continue
-            customPreProcess(child)
-            processNode(child, scope)
-        }
     }
 
     private class ReachableRef(var reachable: Reachable) {
