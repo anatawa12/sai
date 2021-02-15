@@ -5,7 +5,7 @@
 .project text
 *.html text
 *.htm text
-*.java text
+*.java text linguist-language=Java
 *.js text
 *.jsp text
 *.php text
