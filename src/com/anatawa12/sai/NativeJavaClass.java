@@ -6,7 +6,6 @@
 
 package com.anatawa12.sai;
 
-import com.anatawa12.sai.linker.ClassList;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
 import java.lang.reflect.Modifier;
@@ -161,7 +160,7 @@ public class NativeJavaClass extends NativeJavaObject implements Function
         if (! (Modifier.isInterface(modifiers) ||
                Modifier.isAbstract(modifiers)))
         {
-            MethodOrConstructor ctor = members.dynamicConstructor.getInvocation(ClassList.fromArgs(args));
+            MethodOrConstructor ctor = members.dynamicConstructor.getResolved(args);
 
             // Found the constructor, so try invoking it.
             return constructSpecific(cx, scope, args, ctor);

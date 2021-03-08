@@ -24,7 +24,6 @@ import java.util.Map;
 
 import com.anatawa12.sai.classfile.ByteCode;
 import com.anatawa12.sai.classfile.ClassFileWriter;
-import com.anatawa12.sai.linker.ClassList;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
 public final class JavaAdapter implements IdFunctionCall, Serializable
@@ -202,7 +201,7 @@ public final class JavaAdapter implements IdFunctionCall, Serializable
                 // TODO: cache class wrapper?
                 NativeJavaClass classWrapper = new NativeJavaClass(scope,
                         adapterClass, true);
-                MethodOrConstructor methodOrConstructor = classWrapper.members.dynamicConstructor.getInvocation(ClassList.fromArgs(ctorArgs));
+                MethodOrConstructor methodOrConstructor = classWrapper.members.dynamicConstructor.getResolved(ctorArgs);
 
                 // Found the constructor, so try invoking it.
                 adapter = NativeJavaClass.constructInternal(ctorArgs, methodOrConstructor);

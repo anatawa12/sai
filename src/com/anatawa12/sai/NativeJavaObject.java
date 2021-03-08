@@ -6,7 +6,8 @@
 
 package com.anatawa12.sai;
 
-import com.anatawa12.sai.linker.LinkerServices;
+import com.anatawa12.sai.linker.TypeConvertRules;
+import com.anatawa12.sai.linker.TypeConvertUtil;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -260,7 +261,7 @@ public class NativeJavaObject
         if (fromObj == null)
             return !to.isPrimitive();
 
-        return LinkerServices.INSTANCE.canConvert(fromObj.getClass(), to);
+        return TypeConvertUtil.canConvert(fromObj.getClass(), to);
     }
 
     /**
@@ -279,8 +280,9 @@ public class NativeJavaObject
         try {
             if (value instanceof Wrapper) value = ((Wrapper) value).unwrap();
             Class<?> valueType = value == null ? Object.class : value.getClass();
-            return LinkerServices.INSTANCE.getTypeConverter(valueType, type)
+            Object result = TypeConvertRules.getConverter(valueType, type)
                     .invoke(value);
+            return result;
         } catch (Throwable throwable) {
             throw throwException(RuntimeException.class, throwable);
         }

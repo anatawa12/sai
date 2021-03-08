@@ -11,13 +11,13 @@ import com.anatawa12.sai.StaticJavaMembers.AFieldAndMethods;
 import com.anatawa12.sai.StaticJavaMembers.AMethod;
 import com.anatawa12.sai.StaticJavaMembers.AProperty;
 import com.anatawa12.sai.StaticJavaMembers.TheMember;
-import com.anatawa12.sai.linker.DynamicMethod;
+import com.anatawa12.sai.linker.MethodResolveCache;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -118,7 +118,7 @@ class JavaMembers
                         Context.getContext(),
                         ScriptableObject.getTopLevelScope(scope),
                         scope,
-                        bp.setters.dynamicMethod,
+                        bp.setters.methodResolveCache,
                         args
                 );
             }
@@ -197,7 +197,7 @@ class JavaMembers
         int sigStart = name.indexOf('(');
         if (sigStart < 0) { return null; }
 
-        LinkedList<MethodOrConstructor> methodsOrConstructors = null;
+        List<MethodOrConstructor> methodsOrConstructors  = null;
         boolean isCtor = (isStatic && sigStart == 0);
 
         if (isCtor) {
@@ -209,7 +209,7 @@ class JavaMembers
             TheMember obj = staticJavaMembers.get(trueName, isStatic);
             if (obj instanceof AMethod) {
                 AMethod njm = (AMethod)obj;
-                methodsOrConstructors = njm.dynamicMethod.getMethods();
+                methodsOrConstructors = njm.methodResolveCache.getMethods();
             }
         }
 
@@ -251,7 +251,7 @@ class JavaMembers
                 Object mapValue = ht.get(trueName);
 
                 if (mapValue instanceof AMethod &&
-                    ((AMethod)mapValue).dynamicMethod.size() > 1 ) {
+                    ((AMethod)mapValue).methodResolveCache.size() > 1 ) {
                     NativeJavaMethod fun =
                         new NativeJavaMethod(methodOrCtor);
                     fun.setPrototype(prototype);
@@ -277,7 +277,7 @@ class JavaMembers
             for (Map.Entry<String, TheMember> entry : staticJavaMembers.getMap(isStatic).entrySet()) {
                 TheMember member = entry.getValue();
                 if (member instanceof AMethod) {
-                    NativeJavaMethod fun = new NativeJavaMethod(((AMethod) member).dynamicMethod);
+                    NativeJavaMethod fun = new NativeJavaMethod(((AMethod) member).methodResolveCache);
                     if (scope != null) {
                         ScriptRuntime.setFunctionProtoAndParent(fun, scope);
                     }
@@ -296,7 +296,7 @@ class JavaMembers
         int len = fieldAndMethods.size();
         Map<String,FieldAndMethods> result = new HashMap<>(len);
         for (AFieldAndMethods fam: fieldAndMethods.values()) {
-            FieldAndMethods famNew = new FieldAndMethods(scope, fam.dynamicMethod,
+            FieldAndMethods famNew = new FieldAndMethods(scope, fam.methodResolveCache,
                                                          fam.theField.theField);
             famNew.javaObject = javaObject;
             result.put(fam.theField.theField.getName(), famNew);
@@ -341,7 +341,7 @@ class JavaMembers
         return staticJavaMembers.getCl();
     }
 
-    DynamicMethod dynamicConstructor;
+    MethodResolveCache dynamicConstructor;
     StaticJavaMembers staticJavaMembers;
     Map<String, BaseFunction> staticMethods;
     Map<String, BaseFunction> instanceMethods;
@@ -351,7 +351,7 @@ class FieldAndMethods extends NativeJavaMethod
 {
     private static final long serialVersionUID = -9222428244284796755L;
 
-    FieldAndMethods(Scriptable scope, DynamicMethod methods, Field field)
+    FieldAndMethods(Scriptable scope, MethodResolveCache methods, Field field)
     {
         super(methods);
         this.field = field;
