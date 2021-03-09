@@ -101,7 +101,9 @@ public class OverloadResolution {
                     if (current == Comparison.Type1Better)
                         return Comparison.Same;
                     current = Comparison.Type2Better;
+                    break;
                 case Same:
+                    break;
             }
         }
 
