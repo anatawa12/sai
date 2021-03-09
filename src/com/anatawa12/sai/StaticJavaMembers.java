@@ -1,6 +1,6 @@
 package com.anatawa12.sai;
 
-import com.anatawa12.sai.linker.DynamicMethod;
+import com.anatawa12.sai.linker.MethodResolveCache;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
 import java.lang.ref.SoftReference;
@@ -181,10 +181,10 @@ class StaticJavaMembers {
                 String name = entry.getKey();
 
                 if (!staticMethods.isEmpty())
-                    staticMembers.put(name, new AMethod(new DynamicMethod(new LinkedList<>(staticMethods), name), true));
+                    staticMembers.put(name, new AMethod(new MethodResolveCache(new LinkedList<>(staticMethods), name), true));
 
                 if (!instanceMethods.isEmpty())
-                    instanceMembers.put(name, new AMethod(new DynamicMethod(new LinkedList<>(instanceMethods), name), false));
+                    instanceMembers.put(name, new AMethod(new MethodResolveCache(new LinkedList<>(instanceMethods), name), false));
 
                 staticMethods.clear();
                 instanceMethods.clear();
@@ -203,7 +203,7 @@ class StaticJavaMembers {
                     ht.put(name, new AField(field, isStatic));
                 } else if (member instanceof AMethod) {
                     AMethod method = (AMethod) member;
-                    AFieldAndMethods fam = new AFieldAndMethods(method.dynamicMethod, field, isStatic);
+                    AFieldAndMethods fam = new AFieldAndMethods(method.methodResolveCache, field, isStatic);
                     ht.put(name, fam);
                     getFieldAndMethods(isStatic).put(name, fam);
                 } else if (member instanceof AField) {
@@ -299,14 +299,14 @@ class StaticJavaMembers {
                                 // We have a getter. Now, do we have a matching
                                 // setter?
                                 Class<?> type = getter.returnType();
-                                setter = extractSetMethod(type, njmSet.dynamicMethod,
+                                setter = extractSetMethod(type, njmSet.methodResolveCache,
                                         isStatic);
                             } else {
                                 // No getter, find any set method
-                                setter = extractSetMethod(njmSet.dynamicMethod,
+                                setter = extractSetMethod(njmSet.methodResolveCache,
                                         isStatic);
                             }
-                            if (njmSet.dynamicMethod.size() > 1) {
+                            if (njmSet.methodResolveCache.size() > 1) {
                                 setters = njmSet;
                             }
                         }
@@ -327,7 +327,7 @@ class StaticJavaMembers {
         LinkedList<MethodOrConstructor> ctorMembers = Arrays.stream(constructors)
                 .map(MethodOrConstructor::new)
                 .collect(Collectors.toCollection(LinkedList::new));
-        dynamicConstructor = new DynamicMethod(ctorMembers, cl.getSimpleName());
+        dynamicConstructor = new MethodResolveCache(ctorMembers, cl.getSimpleName());
     }
 
     private Constructor<?>[] getAccessibleConstructors() {
@@ -375,13 +375,13 @@ class StaticJavaMembers {
             Object member = ht.get(getterName);
             if (member instanceof AMethod) {
                 AMethod njmGet = (AMethod) member;
-                return extractGetMethod(njmGet.dynamicMethod, isStatic);
+                return extractGetMethod(njmGet.methodResolveCache, isStatic);
             }
         }
         return null;
     }
 
-    private static MethodOrConstructor extractGetMethod(DynamicMethod methods,
+    private static MethodOrConstructor extractGetMethod(MethodResolveCache methods,
                                                         boolean isStatic) {
         // Inspect the list of all MemberBox for the only one having no
         // parameters
@@ -399,7 +399,7 @@ class StaticJavaMembers {
         return null;
     }
 
-    private static MethodOrConstructor extractSetMethod(Class<?> type, DynamicMethod methods,
+    private static MethodOrConstructor extractSetMethod(Class<?> type, MethodResolveCache methods,
                                                         boolean isStatic) {
         //
         // Note: it may be preferable to allow NativeJavaMethod.findFunction()
@@ -432,7 +432,7 @@ class StaticJavaMembers {
         return null;
     }
 
-    private static MethodOrConstructor extractSetMethod(DynamicMethod methods,
+    private static MethodOrConstructor extractSetMethod(MethodResolveCache methods,
                                                         boolean isStatic) {
 
         for (MethodOrConstructor method : methods.getMethods()) {
@@ -549,7 +549,7 @@ class StaticJavaMembers {
     private final Map<String, AFieldAndMethods> instanceFieldAndMethods = new HashMap<>();
     private final Map<String, AFieldAndMethods> staticFieldAndMethods = new HashMap<>();
     private final Map<ClassCache, SoftReference<JavaMembers>> scoped = Collections.synchronizedMap(new WeakHashMap<>());
-    DynamicMethod dynamicConstructor;
+    MethodResolveCache dynamicConstructor;
 
     static abstract class TheMember {
         final boolean isStatic;
@@ -560,11 +560,11 @@ class StaticJavaMembers {
     }
 
     final static class AMethod extends TheMember {
-        final DynamicMethod dynamicMethod;
+        final MethodResolveCache methodResolveCache;
 
-        private AMethod(DynamicMethod dynamicMethod, boolean isStatic) {
+        private AMethod(MethodResolveCache methodResolveCache, boolean isStatic) {
             super(isStatic);
-            this.dynamicMethod = dynamicMethod;
+            this.methodResolveCache = methodResolveCache;
         }
     }
 
@@ -578,12 +578,12 @@ class StaticJavaMembers {
     }
 
     final static class AFieldAndMethods extends TheMember {
-        final DynamicMethod dynamicMethod;
+        final MethodResolveCache methodResolveCache;
         final AField theField;
 
-        private AFieldAndMethods(DynamicMethod dynamicMethod, Field theField, boolean isStatic) {
+        private AFieldAndMethods(MethodResolveCache methodResolveCache, Field theField, boolean isStatic) {
             super(isStatic);
-            this.dynamicMethod = dynamicMethod;
+            this.methodResolveCache = methodResolveCache;
             this.theField = new AField(theField, isStatic);
         }
     }

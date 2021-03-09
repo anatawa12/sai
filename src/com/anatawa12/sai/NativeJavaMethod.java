@@ -6,8 +6,7 @@
 
 package com.anatawa12.sai;
 
-import com.anatawa12.sai.linker.ClassList;
-import com.anatawa12.sai.linker.DynamicMethod;
+import com.anatawa12.sai.linker.MethodResolveCache;
 import com.anatawa12.sai.linker.MethodOrConstructor;
 
 import java.lang.reflect.Method;
@@ -30,18 +29,18 @@ public class NativeJavaMethod extends BaseFunction
 
     NativeJavaMethod(LinkedList<MethodOrConstructor> methods)
     {
-        this(new DynamicMethod(methods, methods.iterator().next().name()));
+        this(new MethodResolveCache(methods, methods.iterator().next().name()));
     }
 
     NativeJavaMethod(MethodOrConstructor method)
     {
-        this(new DynamicMethod(new LinkedList<>(Collections.singletonList(method)), method.name()));
+        this(new MethodResolveCache(new LinkedList<>(Collections.singletonList(method)), method.name()));
     }
 
-    NativeJavaMethod(DynamicMethod dynamicMethod)
+    NativeJavaMethod(MethodResolveCache methodResolveCache)
     {
-        this.functionName = dynamicMethod.getMethods().iterator().next().name();
-        this.dynamicMethod = dynamicMethod;
+        this.functionName = methodResolveCache.getMethods().iterator().next().name();
+        this.methodResolveCache = methodResolveCache;
     }
 
     @Override
@@ -108,7 +107,7 @@ public class NativeJavaMethod extends BaseFunction
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        for (MethodOrConstructor methodOrCtor : dynamicMethod.getMethods()) {
+        for (MethodOrConstructor methodOrCtor : methodResolveCache.getMethods()) {
 
             // Check member type, we also use this for overloaded constructors
             if (methodOrCtor.isMethod()) {
@@ -129,13 +128,13 @@ public class NativeJavaMethod extends BaseFunction
     public Object call(Context cx, Scriptable scope, Scriptable thisObj,
                        Object[] args)
     {
-        return callMethod(cx, scope, thisObj, dynamicMethod, args);
+        return callMethod(cx, scope, thisObj, methodResolveCache, args);
     }
 
     public static Object callMethod(Context cx, Scriptable scope, Scriptable thisObj,
-                                    DynamicMethod dynamicMethod, Object[] args)
+                                    MethodResolveCache methodResolveCache, Object[] args)
     {
-        MethodOrConstructor method = dynamicMethod.getInvocation(ClassList.fromArgs(args));
+        MethodOrConstructor method = methodResolveCache.getResolved(args);
 
         args = MemberBox.marshallParameters(method, args);
 
@@ -218,6 +217,5 @@ public class NativeJavaMethod extends BaseFunction
 
     private String functionName;
 
-    // TODO DynamicMethod serializabe
-    DynamicMethod dynamicMethod;
+    MethodResolveCache methodResolveCache;
 }

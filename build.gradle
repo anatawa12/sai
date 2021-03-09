@@ -27,10 +27,17 @@ task repladceMHH(type: ReplaceMHHCall) {
     mhhClass = "com.anatawa12.sai.linker.MHH"
 }
 
-repladceMHH.dependsOn
+task repladceMHHS(type: ReplaceMHHSCall) {
+    classpath = sourceSets.main.output.classesDirs.toList()
+    mhhClass = "com.anatawa12.sai.linker.MHHS"
+    methodHandleClass = "com.anatawa12.sai.linker.SMethodHandle"
+}
 
 repladceMHH.dependsOn(compileJava)
 classes.dependsOn(repladceMHH)
+
+repladceMHHS.dependsOn(compileJava)
+classes.dependsOn(repladceMHHS)
 
 repositories {
     mavenCentral()
