@@ -43,13 +43,13 @@ class ClassGen(val name: String, val parent: String) {
 
     fun addConstant(name: String, type: String) {
         params.appendLine("    val $name: $type,")
-        toString.appendLine("        \"$name=\$$name\" +")
+        toString.appendLine("        \"$name=\$$name, \" +")
     }
 
     fun add(name: String, type: String) {
         params.appendLine("    $name: $type,")
         init.appendLine("        this.$name = $name")
-        toString.appendLine("        \"$name=\$$name\" +")
+        toString.appendLine("        \"$name=\$$name, \" +")
         body.appendLine("    var $name: $type by nodeDelegateOf${type.asFunName()}()")
     }
 
@@ -232,14 +232,31 @@ types[IrExpression]!!.addAll(arrayOf(
     "IrNullLiteral",
     "IrBooleanLiteral",
     "IrRegexpLiteral",
+    "IrIncDec",
 ))
+
+types["IrIncDec"] = mutableListOf(
+    "IrNameIncDec",
+    "IrPropertyIncDec",
+)
 
 // add handwritten types to type mapping
 types[IrStatement]!!.addAll(arrayOf(
+    "IrBlockStatement",
+))
+
+types["IrBlockStatement"] = mutableListOf(
     "IrInternalScope",
     "IrBlock",
     "IrScope",
-))
+)
+
+fun addSubclasses(name: String) {
+    for (type in types[name].orEmpty()) {
+        addCode("        $type::class,")
+        addSubclasses(type)
+    }
+}
 
 fun addRootClass(name: String) {
     addCode("@HasVisitor(")
@@ -247,9 +264,7 @@ fun addRootClass(name: String) {
     addCode("    hasCustomDataParam = true,\n")
     addCode("    acceptName = \"accept\",")
     addCode("    subclasses = [")
-    for (type in types[name]!!) {
-        addCode("        $type::class,")
-    }
+    addSubclasses(name)
     addCode("    ]")
     addCode(")")
     addCode("@HasAccept(\"visit${name.removePrefix("Ir")}\", $name::class)")
@@ -265,18 +280,22 @@ addRootClass(IrStatement)
 File("IrNode.generated.kt").writeText(mainCode.toString())
 
 File("IrVisitors.generated.kt").writeText(buildString {
+    fun addVisit(parent: String) {
+        for (name in types[parent].orEmpty()) {
+            appendLine("    open fun visit${name.removePrefix("Ir")}(node: $name, arg: T): R" +
+                    " = visit${parent.removePrefix("Ir")}(node, arg)")
+            addVisit(name)
+        }
+    }
+
     appendLine(header)
     appendLine("abstract class IrExpressionVisitor<out R, in T> {")
-    for (name in types[IrExpression]!!) {
-        appendLine("    fun visit${name.removePrefix("Ir")}(node: $name, arg: T): R = visitExpression(node, arg)")
-    }
-    appendLine("abstract fun visitExpression(node: IrExpression, arg: T): R")
+    addVisit(IrExpression)
+    appendLine("    abstract fun visitExpression(node: IrExpression, arg: T): R")
     appendLine("}")
     appendLine()
     appendLine("abstract class IrStatementVisitor<out R, in T> {")
-    for (name in types[IrStatement]!!) {
-        appendLine("    fun visit${name.removePrefix("Ir")}(node: $name, arg: T): R = visitStatement(node, arg)")
-    }
-    appendLine("abstract fun visitStatement(node: IrStatement, arg: T): R")
+    addVisit(IrStatement)
+    appendLine("    abstract fun visitStatement(node: IrStatement, arg: T): R")
     appendLine("}")
 })

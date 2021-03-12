@@ -40,11 +40,64 @@ enum class IrUnaryOperatorType {
     NEGATIVE,
     TYPEOF,
     VOID,
+}
 
-    POSTFIX_INCREMENT,
-    PREFIX_INCREMENT,
-    POSTFIX_DECREMENT,
-    PREFIX_DECREMENT,
+@HasAccept("visitIncDec", IrExpression::class)
+sealed class IrIncDec(
+    val isDecrement: Boolean,
+    val isSuffix: Boolean,
+) : IrExpression() {
+    protected fun incDecInfo() = if (isDecrement) {
+        if (isSuffix) "suf-dec"
+        else "pre-dec"
+    } else {
+        if (isSuffix) "suf-inc"
+        else "pre-inc"
+    }
+}
+
+@HasAccept("visitNameIncDec", IrExpression::class)
+class IrNameIncDec(
+    val name: String,
+    isDecrement: Boolean,
+    isSuffix: Boolean,
+) : IrIncDec(isDecrement, isSuffix) {
+
+    init {
+    }
+
+    override fun toString() = "IrNameIncDec(" +
+            "name=$name" +
+            "kind=${incDecInfo()}" +
+            ")"
+
+    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNameIncDec(this, arg)
+}
+
+@HasAccept("visitPropertyIncDec", IrExpression::class)
+class IrPropertyIncDec(
+    owner: IrExpression,
+    name: IrExpression,
+    val isProp: Boolean,
+    isDecrement: Boolean,
+    isSuffix: Boolean,
+) : IrIncDec(isDecrement, isSuffix) {
+    var owner: IrExpression by nodeDelegateOfIrExpression()
+    var name: IrExpression by nodeDelegateOfIrExpression()
+
+    init {
+        this.owner = owner
+        this.name = name
+    }
+
+    override fun toString() = "IrPropertyIncDec(" +
+            "owner=$owner" +
+            "name=$name" +
+            "isProp=$isProp" +
+            "kind=${incDecInfo()}" +
+            ")"
+
+    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitPropertyIncDec(this, arg)
 }
 
 // hand written
@@ -94,6 +147,7 @@ enum class VariableKind {
 }
 
 // hand written
+@HasAccept("visitBlockStatement", IrStatement::class)
 sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement()
 
 @HasAccept("visitInternalScope", IrStatement::class)

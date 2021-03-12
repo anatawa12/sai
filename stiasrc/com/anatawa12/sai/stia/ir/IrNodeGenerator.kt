@@ -113,16 +113,21 @@ class IrNodeGenerator {
         Token.DEC, // -- expr or expr --
         -> {
             val prop = node.getExistingIntProp(Node.INCRDECR_PROP)
-            if (prop and Node.DECR_FLAG == 0)
-                if (prop and Node.POST_FLAG != 0)
-                    visitUnary(node, POSTFIX_INCREMENT)
-                else
-                    visitUnary(node, PREFIX_INCREMENT)
-            else
-                if (prop and Node.POST_FLAG != 0)
-                    visitUnary(node, POSTFIX_DECREMENT)
-                else
-                    visitUnary(node, PREFIX_DECREMENT)
+            val isDec = prop and Node.DECR_FLAG != 0
+            val isSuf = prop and Node.POST_FLAG != 0
+
+            val child = node.single()
+            when (child.type) {
+                Token.NAME -> IrNameIncDec(child.string, isDec, isSuf)
+                Token.GETELEM,
+                Token.GETPROP,
+                -> {
+                    val (owner, name) = node.asPair()
+                    IrPropertyIncDec(visitExpr(owner), visitExpr(name),
+                        child.type == Token.GETPROP, isDec, isSuf)
+                }
+                else -> unsupported("INC/DEC with $child.type")
+            }
         }
 
         Token.HOOK, // condition ? then : else

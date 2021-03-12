@@ -23,9 +23,9 @@ class IrBinaryOperator(
     }
 
     override fun toString() = "IrBinaryOperator(" +
-        "type=$type" +
-        "left=$left" +
-        "right=$right" +
+        "type=$type, " +
+        "left=$left, " +
+        "right=$right, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitBinaryOperator(this, arg)
@@ -43,8 +43,8 @@ class IrUnaryOperator(
     }
 
     override fun toString() = "IrUnaryOperator(" +
-        "type=$type" +
-        "expr=$expr" +
+        "type=$type, " +
+        "expr=$expr, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitUnaryOperator(this, arg)
@@ -65,9 +65,9 @@ class IrGetProperty(
     }
 
     override fun toString() = "IrGetProperty(" +
-        "owner=$owner" +
-        "name=$name" +
-        "isProp=$isProp" +
+        "owner=$owner, " +
+        "name=$name, " +
+        "isProp=$isProp, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitGetProperty(this, arg)
@@ -91,10 +91,10 @@ class IrSetProperty(
     }
 
     override fun toString() = "IrSetProperty(" +
-        "owner=$owner" +
-        "name=$name" +
-        "value=$value" +
-        "isProp=$isProp" +
+        "owner=$owner, " +
+        "name=$name, " +
+        "value=$value, " +
+        "isProp=$isProp, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetProperty(this, arg)
@@ -117,9 +117,9 @@ class IrNewOrCall(
     }
 
     override fun toString() = "IrNewOrCall(" +
-        "function=$function" +
+        "function=$function, " +
         "args=$args, " +
-        "isNewInstance=$isNewInstance" +
+        "isNewInstance=$isNewInstance, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNewOrCall(this, arg)
@@ -161,9 +161,9 @@ class IrConditional(
     }
 
     override fun toString() = "IrConditional(" +
-        "condition=$condition" +
-        "ifTrue=$ifTrue" +
-        "ifFalse=$ifFalse" +
+        "condition=$condition, " +
+        "ifTrue=$ifTrue, " +
+        "ifFalse=$ifFalse, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitConditional(this, arg)
@@ -181,8 +181,8 @@ class IrSetName(
     }
 
     override fun toString() = "IrSetName(" +
-        "name=$name" +
-        "value=$value" +
+        "name=$name, " +
+        "value=$value, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetName(this, arg)
@@ -197,7 +197,7 @@ class IrGetName(
     }
 
     override fun toString() = "IrGetName(" +
-        "name=$name" +
+        "name=$name, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitGetName(this, arg)
@@ -213,7 +213,7 @@ class IrConvertException(
     }
 
     override fun toString() = "IrConvertException(" +
-        "internalVar=$internalVar" +
+        "internalVar=$internalVar, " +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitConvertException(this, arg)
@@ -243,7 +243,7 @@ class IrReturn(
     }
 
     override fun toString() = "IrReturn(" +
-        "value=$value" +
+        "value=$value, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitReturn(this, arg)
@@ -258,7 +258,7 @@ class IrGoto(
     }
 
     override fun toString() = "IrGoto(" +
-        "target=$target" +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitGoto(this, arg)
@@ -273,7 +273,7 @@ class IrJsr(
     }
 
     override fun toString() = "IrJsr(" +
-        "target=$target" +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitJsr(this, arg)
@@ -291,8 +291,8 @@ class IrIfFalse(
     }
 
     override fun toString() = "IrIfFalse(" +
-        "condition=$condition" +
-        "target=$target" +
+        "condition=$condition, " +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitIfFalse(this, arg)
@@ -310,8 +310,8 @@ class IrIfTrue(
     }
 
     override fun toString() = "IrIfTrue(" +
-        "condition=$condition" +
-        "target=$target" +
+        "condition=$condition, " +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitIfTrue(this, arg)
@@ -327,7 +327,7 @@ class IrBreak(
     }
 
     override fun toString() = "IrBreak(" +
-        "target=$target" +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitBreak(this, arg)
@@ -343,7 +343,7 @@ class IrContinue(
     }
 
     override fun toString() = "IrContinue(" +
-        "target=$target" +
+        "target=$target, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitContinue(this, arg)
@@ -365,7 +365,7 @@ class IrSwitch(
     }
 
     override fun toString() = "IrSwitch(" +
-        "expr=$expr" +
+        "expr=$expr, " +
         "cases=$cases, " +
     ")"
 
@@ -387,7 +387,7 @@ class IrVariableDecl(
 
     override fun toString() = "IrVariableDecl(" +
         "variables=$variables, " +
-        "kind=$kind" +
+        "kind=$kind, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitVariableDecl(this, arg)
@@ -404,7 +404,7 @@ class IrThrow(
     }
 
     override fun toString() = "IrThrow(" +
-        "exception=$exception" +
+        "exception=$exception, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitThrow(this, arg)
@@ -419,7 +419,7 @@ class IrRethrow(
     }
 
     override fun toString() = "IrRethrow(" +
-        "internalVar=$internalVar" +
+        "internalVar=$internalVar, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitRethrow(this, arg)
@@ -449,7 +449,7 @@ class IrExpressionStatement(
     }
 
     override fun toString() = "IrExpressionStatement(" +
-        "expr=$expr" +
+        "expr=$expr, " +
     ")"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitExpressionStatement(this, arg)
@@ -489,6 +489,9 @@ class IrFunctionStatement(
         IrNullLiteral::class,
         IrBooleanLiteral::class,
         IrRegexpLiteral::class,
+        IrIncDec::class,
+        IrNameIncDec::class,
+        IrPropertyIncDec::class,
     ]
 )
 @HasAccept("visitExpression", IrExpression::class)
@@ -516,6 +519,7 @@ sealed class IrExpression : IrNode() {
         IrEmptyStatement::class,
         IrExpressionStatement::class,
         IrFunctionStatement::class,
+        IrBlockStatement::class,
         IrInternalScope::class,
         IrBlock::class,
         IrScope::class,
