@@ -6,6 +6,8 @@ import com.anatawa12.sai.ast.RegExpLiteral
 
 sealed class IrNode {
     var parent: IrNode? = null
+
+    abstract override fun toString(): String
 }
 
 enum class IrBinaryOperatorType {
@@ -106,26 +108,31 @@ sealed class IrLiteral<T>(val value: T) : IrExpression()
 @HasAccept("visitNumberLiteral", IrExpression::class)
 class IrNumberLiteral(value: Double) : IrLiteral<Double>(value) {
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNumberLiteral(this, arg)
+    override fun toString(): String = "IrNumberLiteral($value)"
 }
 
 @HasAccept("visitStringLiteral", IrExpression::class)
 class IrStringLiteral(value: String) : IrLiteral<String>(value) {
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitStringLiteral(this, arg)
+    override fun toString(): String = "IrStringLiteral($value)"
 }
 
 @HasAccept("visitNullLiteral", IrExpression::class)
 class IrNullLiteral : IrLiteral<Nothing?>(null) {
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNullLiteral(this, arg)
+    override fun toString(): String = "IrNullLiteral($value)"
 }
 
 @HasAccept("visitBooleanLiteral", IrExpression::class)
 class IrBooleanLiteral(value: Boolean) : IrLiteral<Boolean>(value) {
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitBooleanLiteral(this, arg)
+    override fun toString(): String = "IrBooleanLiteral($value)"
 }
 
 @HasAccept("visitRegexpLiteral", IrExpression::class)
 class IrRegexpLiteral(value: RegExpLiteral) : IrLiteral<RegExpLiteral>(value) {
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitRegexpLiteral(this, arg)
+    override fun toString(): String = "IrRegexpLiteral(/${value.value}/${value.flags})"
 }
 
 // convert java exception to js object
@@ -152,22 +159,57 @@ enum class VariableKind {
 
 // hand written
 @HasAccept("visitBlockStatement", IrStatement::class)
-sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement()
+sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement() {
+    override fun toString(): String = buildString { appendToString("") }.removeSuffix("\n")
+
+    @Suppress("RemoveCurlyBracesFromTemplate")
+    fun Appendable.appendToString(indent: String) {
+        appendLine("${indent}${kindName()}(")
+        val newIndent = "$indent  "
+        appendAboutThis(newIndent)
+        for (statement in statements) {
+            if (statement is IrBlockStatement)
+                statement.apply { appendToString(newIndent) }
+            else
+                appendLine("$newIndent$statement")
+        }
+        appendLine("${indent})")
+    }
+
+    protected abstract fun kindName(): String
+    protected abstract fun Appendable.appendAboutThis(indent: String)
+}
 
 @HasAccept("visitInternalScope", IrStatement::class)
 class IrInternalScope(statements: List<IrStatement>, val internalVar: IrInternalVariableId) : IrBlockStatement(statements) {
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitInternalScope(this, arg)
+
+    override fun kindName(): String = "IrInternalScope"
+    override fun Appendable.appendAboutThis(indent: String) {
+        appendLine("${indent}defines $internalVar")
+    }
 }
 
 @HasAccept("visitBlock", IrStatement::class)
 class IrBlock(statements: List<IrStatement>) : IrBlockStatement(statements) {
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitBlock(this, arg)
+
+    override fun kindName(): String = "IrBlock"
+    override fun Appendable.appendAboutThis(indent: String) {
+    }
 }
 
 @HasAccept("visitScope", IrStatement::class)
 class IrScope(statements: List<IrStatement>, val table: Map<String, IrSymbol>) : IrBlockStatement(statements) {
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitScope(this, arg)
+
+    override fun kindName(): String = "IrScope"
+    override fun Appendable.appendAboutThis(indent: String) {
+        for ((_, value) in table) {
+            appendLine("${indent}defines $value")
+        }
+    }
 }
 
-class IrSymbol(val name: String, val kind: VariableKind)
+data class IrSymbol(val name: String, val kind: VariableKind)
 class IrInternalVariableId()
