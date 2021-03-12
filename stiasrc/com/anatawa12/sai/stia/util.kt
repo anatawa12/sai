@@ -110,13 +110,6 @@ fun <T, K> MutableIterable<T>.uniqueBy(keySelector: (T) -> K) {
     }
 }
 
-fun Name.copy(): Name {
-    return Name().also {
-        it.identifier = identifier
-        it.varId = varId
-    }
-}
-
 /**
  * if size of this is less than minimumSize, result will be
  * [this[0], this[1], this[2], ..., this[this.lastIndex], default, default, ...]
@@ -212,7 +205,7 @@ fun <T> Result<T>.getOrNone(): Option<T> = when {
 
 fun <T: Any> T?.asOption(): Option<T> = if (this == null) Option.none() else Option.some(this)
 fun <T> T.asSome(): Option<T> = Option.some(this)
-
+/*
 fun Node.toInformationString(): String {
     val node = this
 
@@ -243,3 +236,4 @@ fun Node.toInformationString(): String {
             ";${node.shortHash()}" +
             ")$extra"
 }
+ */

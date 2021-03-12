@@ -2,7 +2,6 @@ package com.anatawa12.sai.stia.ir
 
 import com.anatawa12.sai.*
 import com.anatawa12.sai.ast.*
-import com.anatawa12.sai.ast.Symbol
 import com.anatawa12.sai.stia.*
 import com.anatawa12.sai.stia.ir.IrBinaryOperatorType.*
 import com.anatawa12.sai.stia.ir.IrUnaryOperatorType.*
@@ -91,7 +90,7 @@ class IrNodeGenerator {
         Token.TRUE -> IrBooleanLiteral(true)
         // regexp literal
         Token.REGEXP -> IrRegexpLiteral(node as RegExpLiteral)
-        Token.LOCAL_LOAD -> IrLocalLoad(node.getProp(Node.LOCAL_BLOCK_PROP))
+        Token.LOCAL_LOAD -> unsupported("internal variable")
         // array literal
         Token.ARRAYLIT -> unsupported("array literal")
         // object literal
@@ -185,7 +184,7 @@ class IrNodeGenerator {
         Token.LOOP -> processScope(node)
 
         // contextual local variable (hidden)
-        Token.LOCAL_BLOCK -> processBlock(node)
+        Token.LOCAL_BLOCK -> IrInternalScope(node.map { visitStatement(it, node) }, node.toId())
 
         Token.TRY -> transformTry(node as Jump, parent)
         Token.FINALLY -> processBlock(node)
@@ -199,7 +198,7 @@ class IrNodeGenerator {
         )
 
         Token.THROW -> IrThrow(visitExpr(node.single()))
-        Token.RETHROW -> IrRethrow(node.getProp(Node.LOCAL_BLOCK_PROP))
+        Token.RETHROW -> IrRethrow(node.getIdByLocalBlockProp())
         // ; // empty statement
         Token.EMPTY -> IrEmptyStatement()
 
@@ -328,7 +327,7 @@ class IrNodeGenerator {
 
             val scope = IrScope(
                 listOf(
-                    IrVariableDecl(listOf(name.string to IrConvertException(IrLocalLoad(localBlock))),
+                    IrVariableDecl(listOf(name.string to IrConvertException(localBlock.toId())),
                         VariableKind.LET),
                     visitStatement(withBody, with),
                 ),
@@ -357,5 +356,12 @@ class IrNodeGenerator {
     private fun unsupported(msg: Any): Nothing {
         error(msg)
     }
+
+    private val idMap = mutableMapOf<Any, IrInternalVariableId>()
+
+    private fun Node.getIdByLocalBlockProp(): IrInternalVariableId =
+        idMap.getOrPut(getProp(Node.LOCAL_BLOCK_PROP), ::IrInternalVariableId)
+    private fun Any.toId(): IrInternalVariableId =
+        idMap.getOrPut(this, ::IrInternalVariableId)
 }
 // */

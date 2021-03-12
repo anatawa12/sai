@@ -11,7 +11,7 @@ plugins {
     id "com.jfrog.bintray" version "1.8.5"
 
     id "org.jetbrains.kotlin.jvm" version "1.4.30"
-    id "com.anatawa12.auto-visitor" version "1.0.2"
+    id "com.anatawa12.auto-visitor" version "1.0.3"
 }
 
 tasks.withType(JavaCompile) {
@@ -23,8 +23,11 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
     kotlinOptions {
+        useIR = true
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+        freeCompilerArgs += "-XXLanguage:+AllowSealedInheritorsInDifferentFilesOfSamePackage"
     }
+    exclude("**/*.kts")
 }
 
 compileTestJava {
@@ -99,11 +102,15 @@ dependencies {
 
     stiaImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.20"
     stiaImplementation sourceSets.main.runtimeClasspath
+    stiaImplementation "org.jetbrains.kotlin:kotlin-script-runtime:1.4.20"
+}
+
+spotbugsStia {
+    enabled = false
 }
 
 autoVisitor {
     addLib "stia"
-    addAnnotationProcessor "stia"
 }
 
 test {
