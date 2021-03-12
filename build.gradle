@@ -11,7 +11,7 @@ plugins {
     id "com.jfrog.bintray" version "1.8.5"
 
     id "org.jetbrains.kotlin.jvm" version "1.4.30"
-    id "com.anatawa12.auto-visitor" version "1.0.1"
+    id "com.anatawa12.auto-visitor" version "1.0.2"
 }
 
 tasks.withType(JavaCompile) {
@@ -50,6 +50,7 @@ classes.dependsOn(repladceMHHS)
 
 repositories {
     mavenCentral()
+    mavenLocal()
 }
 
 sourceSets {
@@ -98,6 +99,11 @@ dependencies {
 
     stiaImplementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.20"
     stiaImplementation sourceSets.main.runtimeClasspath
+}
+
+autoVisitor {
+    addLib "stia"
+    addAnnotationProcessor "stia"
 }
 
 test {
