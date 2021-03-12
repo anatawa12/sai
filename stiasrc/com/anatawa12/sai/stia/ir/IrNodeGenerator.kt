@@ -8,6 +8,10 @@ import com.anatawa12.sai.stia.ir.IrUnaryOperatorType.*
 
 //*
 class IrNodeGenerator {
+    fun transform(node: ScriptNode): IrScope {
+        return processScope(node)
+    }
+
     // region expression accepter
     private fun visitBinary(node: Node, type: IrBinaryOperatorType): IrExpression {
         val (left, right) = node.asPair()
