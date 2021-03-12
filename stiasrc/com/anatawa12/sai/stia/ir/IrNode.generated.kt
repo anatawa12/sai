@@ -469,6 +469,21 @@ class IrFunctionStatement(
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitFunctionStatement(this, arg)
 }
 
+@HasAccept("visitSetThisFn", IrStatement::class)
+class IrSetThisFn(
+    val name: String,
+) : IrStatement() {
+
+    init {
+    }
+
+    override fun toString() = "IrSetThisFn(" +
+        "name=$name, " +
+    ")"
+
+    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitSetThisFn(this, arg)
+}
+
 @HasVisitor(
     visitorType = IrExpressionVisitor::class,
     hasCustomDataParam = true,
@@ -519,6 +534,7 @@ sealed class IrExpression : IrNode() {
         IrEmptyStatement::class,
         IrExpressionStatement::class,
         IrFunctionStatement::class,
+        IrSetThisFn::class,
         IrBlockStatement::class,
         IrInternalScope::class,
         IrBlock::class,

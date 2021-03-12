@@ -42,6 +42,7 @@ abstract class IrStatementVisitor<out R, in T> {
     open fun visitEmptyStatement(node: IrEmptyStatement, arg: T): R = visitStatement(node, arg)
     open fun visitExpressionStatement(node: IrExpressionStatement, arg: T): R = visitStatement(node, arg)
     open fun visitFunctionStatement(node: IrFunctionStatement, arg: T): R = visitStatement(node, arg)
+    open fun visitSetThisFn(node: IrSetThisFn, arg: T): R = visitStatement(node, arg)
     open fun visitBlockStatement(node: IrBlockStatement, arg: T): R = visitStatement(node, arg)
     open fun visitInternalScope(node: IrInternalScope, arg: T): R = visitBlockStatement(node, arg)
     open fun visitBlock(node: IrBlock, arg: T): R = visitBlockStatement(node, arg)

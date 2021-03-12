@@ -8,8 +8,24 @@ import com.anatawa12.sai.stia.ir.IrUnaryOperatorType.*
 
 //*
 class IrNodeGenerator {
+    private val setThisFn = -1
+
     fun transform(node: ScriptNode): IrScope {
+        replaceThisFunAssign(node)
         return processScope(node)
+    }
+
+    private fun replaceThisFunAssign(node: ScriptNode) {
+        val block = node.firstOrNull() ?: return
+        if (block.type != Token.BLOCK) return
+        val expr = block.firstOrNull() ?: return
+        if (expr.type != Token.EXPR_VOID) return
+        val setName = expr.singleOrNull() ?: return
+        if (setName.type != Token.SETNAME) return
+        val (name, thisFn) = setName.asPairOrNull() ?: return
+        if (name.type != Token.BINDNAME) return
+        if (thisFn.type != Token.THISFN) return
+        block.replaceChild(expr, Node(setThisFn, name))
     }
 
     // region expression accepter
@@ -217,6 +233,7 @@ class IrNodeGenerator {
         // literal or root definition
         Token.FUNCTION -> IrFunctionStatement(/*TODO*/)
 
+        setThisFn -> IrSetThisFn(node.single().string)
         else -> unsupported("unsupported token for statement: ${node.type}")
     }
 

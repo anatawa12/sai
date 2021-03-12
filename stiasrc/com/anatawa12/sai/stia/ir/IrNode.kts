@@ -225,6 +225,10 @@ addCode("// TODO: body")
 "IrFunctionStatement"(IrStatement) {
 }
 
+"IrSetThisFn"(IrStatement) {
+    const("name", "String")
+}
+
 // add handwritten types to type mapping
 types[IrExpression]!!.addAll(arrayOf(
     "IrNumberLiteral",

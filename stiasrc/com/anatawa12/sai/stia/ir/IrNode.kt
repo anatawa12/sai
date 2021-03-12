@@ -134,6 +134,8 @@ enum class VariableKind {
     VAR,
     LET,
     CONST,
+    FUNCTION,
+    ARGUMENT,
     ;
 
     companion object {
@@ -141,6 +143,8 @@ enum class VariableKind {
             Token.VAR -> VAR
             Token.LET -> LET
             Token.CONST -> CONST
+            Token.FUNCTION -> FUNCTION
+            Token.LP -> ARGUMENT
             else -> error("not a valid variable decl type: $type")
         }
     }
