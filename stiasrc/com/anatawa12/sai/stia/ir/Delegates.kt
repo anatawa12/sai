@@ -5,10 +5,8 @@ import kotlin.reflect.KProperty
 fun nodeDelegateOfIrExpression() = IrDelegateProperty<IrExpression>(true)
 fun nodeDelegateOfIrExpressionNullable() = IrDelegateProperty<IrExpression?>(false)
 fun IrNode.nodeListDelegateOfIrExpression() = IrListDelegateProperty<IrExpression>(this) { it }
-fun IrNode.nodeListDelegateOfPairIrExpressionIrJumpTarget() =
-    IrListDelegateProperty<Pair<IrExpression, IrJumpTarget>>(this) { it.second }
-fun IrNode.nodeListDelegateOfPairStringIrExpression() =
-    IrListDelegateProperty<Pair<String, IrExpression?>>(this) { it.second }
+
+fun <T> IrNode.nodeListDelegateOf(nodeGetter: (T) -> IrNode?) = IrListDelegateProperty<T>(this, nodeGetter)
 
 class IrDelegateProperty<T : IrNode?>(val notNull: Boolean) {
     private var backed: T? = null
@@ -133,6 +131,48 @@ class IrListDelegateProperty<T>(val thisRef: IrNode, val nodeGetter: (T) -> IrNo
     }
 }
 
+class GettingVariableInfoDelegate(val thisRef: IrGettingName) {
+    private var backed: IrVariableInfo? = null
+    var value: IrVariableInfo?
+    get() = backed
+    set(value) {
+        backed?.onUnusedBy(thisRef)
+        backed = value
+        value?.onUsedBy(thisRef)
+    }
+
+    companion object {
+        operator fun invoke(): GettingVariableInfoDelegateProvider = GettingVariableInfoDelegateProvider()
+    }
+}
+class GettingVariableInfoDelegateProvider
+
+class SettingVariableInfoDelegate(val thisRef: IrSettingName) {
+    private var backed: IrVariableInfo? = null
+    var value: IrVariableInfo?
+        get() = backed
+        set(value) {
+            backed?.onUnsetBy(thisRef)
+            backed = value
+            value?.onSetBy(thisRef)
+        }
+
+    companion object {
+        operator fun invoke(): SettingVariableInfoDelegateProvider = SettingVariableInfoDelegateProvider()
+    }
+}
+class SettingVariableInfoDelegateProvider
+
 inline operator fun <T : IrNode?> IrDelegateProperty<T>.getValue(thisRef: IrNode, prop: KProperty<*>): T = value
 inline operator fun <T : IrNode?> IrDelegateProperty<T>.setValue(thisRef: IrNode, prop: KProperty<*>, value: T) = setValue(thisRef, value)
 inline operator fun <T> IrListDelegateProperty<T>.getValue(thisRef: IrNode, prop: KProperty<*>): MutableList<T> = this
+inline operator fun GettingVariableInfoDelegate.getValue(thisRef: IrGettingName, prop: KProperty<*>): IrVariableInfo? = value
+inline operator fun GettingVariableInfoDelegate.setValue(thisRef: IrGettingName, prop: KProperty<*>, value: IrVariableInfo?) {
+    this.value = value
+}
+inline operator fun GettingVariableInfoDelegateProvider.provideDelegate(thisRef: IrGettingName, prop: KProperty<*>) = GettingVariableInfoDelegate(thisRef)
+inline operator fun SettingVariableInfoDelegate.getValue(thisRef: IrSettingName, prop: KProperty<*>): IrVariableInfo? = value
+inline operator fun SettingVariableInfoDelegate.setValue(thisRef: IrSettingName, prop: KProperty<*>, value: IrVariableInfo?) {
+    this.value = value
+}
+inline operator fun SettingVariableInfoDelegateProvider.provideDelegate(thisRef: IrSettingName, prop: KProperty<*>) = SettingVariableInfoDelegate(thisRef)

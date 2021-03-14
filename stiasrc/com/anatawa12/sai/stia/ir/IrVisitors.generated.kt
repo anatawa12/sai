@@ -12,8 +12,6 @@ abstract class IrExpressionVisitor<out R, in T> {
     open fun visitNewOrCall(node: IrNewOrCall, arg: T): R = visitExpression(node, arg)
     open fun visitCommaExpr(node: IrCommaExpr, arg: T): R = visitExpression(node, arg)
     open fun visitConditional(node: IrConditional, arg: T): R = visitExpression(node, arg)
-    open fun visitSetName(node: IrSetName, arg: T): R = visitExpression(node, arg)
-    open fun visitGetName(node: IrGetName, arg: T): R = visitExpression(node, arg)
     open fun visitConvertException(node: IrConvertException, arg: T): R = visitExpression(node, arg)
     open fun visitNumberLiteral(node: IrNumberLiteral, arg: T): R = visitExpression(node, arg)
     open fun visitStringLiteral(node: IrStringLiteral, arg: T): R = visitExpression(node, arg)
@@ -23,29 +21,7 @@ abstract class IrExpressionVisitor<out R, in T> {
     open fun visitIncDec(node: IrIncDec, arg: T): R = visitExpression(node, arg)
     open fun visitNameIncDec(node: IrNameIncDec, arg: T): R = visitIncDec(node, arg)
     open fun visitPropertyIncDec(node: IrPropertyIncDec, arg: T): R = visitIncDec(node, arg)
+    open fun visitSetName(node: IrSetName, arg: T): R = visitExpression(node, arg)
+    open fun visitGetName(node: IrGetName, arg: T): R = visitExpression(node, arg)
     abstract fun visitExpression(node: IrExpression, arg: T): R
-}
-
-abstract class IrStatementVisitor<out R, in T> {
-    open fun visitJumpTarget(node: IrJumpTarget, arg: T): R = visitStatement(node, arg)
-    open fun visitReturn(node: IrReturn, arg: T): R = visitStatement(node, arg)
-    open fun visitGoto(node: IrGoto, arg: T): R = visitStatement(node, arg)
-    open fun visitJsr(node: IrJsr, arg: T): R = visitStatement(node, arg)
-    open fun visitIfFalse(node: IrIfFalse, arg: T): R = visitStatement(node, arg)
-    open fun visitIfTrue(node: IrIfTrue, arg: T): R = visitStatement(node, arg)
-    open fun visitBreak(node: IrBreak, arg: T): R = visitStatement(node, arg)
-    open fun visitContinue(node: IrContinue, arg: T): R = visitStatement(node, arg)
-    open fun visitSwitch(node: IrSwitch, arg: T): R = visitStatement(node, arg)
-    open fun visitVariableDecl(node: IrVariableDecl, arg: T): R = visitStatement(node, arg)
-    open fun visitThrow(node: IrThrow, arg: T): R = visitStatement(node, arg)
-    open fun visitRethrow(node: IrRethrow, arg: T): R = visitStatement(node, arg)
-    open fun visitEmptyStatement(node: IrEmptyStatement, arg: T): R = visitStatement(node, arg)
-    open fun visitExpressionStatement(node: IrExpressionStatement, arg: T): R = visitStatement(node, arg)
-    open fun visitFunctionStatement(node: IrFunctionStatement, arg: T): R = visitStatement(node, arg)
-    open fun visitSetThisFn(node: IrSetThisFn, arg: T): R = visitStatement(node, arg)
-    open fun visitBlockStatement(node: IrBlockStatement, arg: T): R = visitStatement(node, arg)
-    open fun visitInternalScope(node: IrInternalScope, arg: T): R = visitBlockStatement(node, arg)
-    open fun visitBlock(node: IrBlock, arg: T): R = visitBlockStatement(node, arg)
-    open fun visitScope(node: IrScope, arg: T): R = visitBlockStatement(node, arg)
-    abstract fun visitStatement(node: IrStatement, arg: T): R
 }

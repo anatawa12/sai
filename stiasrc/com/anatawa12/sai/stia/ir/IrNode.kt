@@ -44,6 +44,120 @@ enum class IrUnaryOperatorType {
     VOID,
 }
 
+sealed class IrVariableInfo(val name: String) {
+    abstract val usedBy: Set<IrGettingName>
+    abstract val setBy: Set<IrSettingName>
+    abstract fun onUnusedBy(ref: IrGettingName)
+    abstract fun onUsedBy(ref: IrGettingName)
+    abstract fun onUnsetBy(ref: IrSettingName)
+    abstract fun onSetBy(ref: IrSettingName)
+
+    abstract override fun toString(): String
+}
+
+@Suppress("CanSealedSubClassBeObject")
+class IrInFunctionVariable(name: String, val revision: Int) : IrVariableInfo(name) {
+    var setBySingle: IrSettingName? = null
+    override val setBy: Set<IrSettingName> get() = setOfNotNull(setBySingle)
+    override val usedBy = mutableSetOf<IrGettingName>()
+
+    override fun onUnusedBy(ref: IrGettingName) {
+        check(usedBy.remove(ref)) { "$this is not used by $ref" }
+    }
+
+    override fun onUsedBy(ref: IrGettingName) {
+        check(setBySingle != null) { "$this is not assigned" }
+        usedBy += ref
+    }
+
+    override fun onUnsetBy(ref: IrSettingName) {
+        check(usedBy.isEmpty()) { "unsetting $this is allowed only if this is not used" }
+        setBySingle = null
+    }
+
+    override fun onSetBy(ref: IrSettingName) {
+        check(setBySingle == null) { "$this have already set by $setBySingle" }
+        setBySingle = ref
+    }
+
+    override fun toString(): String = "InFunction($name#$revision)"
+}
+
+@Suppress("CanSealedSubClassBeObject")
+class IrOuterVariable(name: String) : IrVariableInfo(name) {
+    override val setBy = mutableSetOf<IrSettingName>()
+    override val usedBy = mutableSetOf<IrGettingName>()
+
+    override fun onUnusedBy(ref: IrGettingName) {
+        check(usedBy.remove(ref)) { "$this is not used by $ref" }
+    }
+
+    override fun onUsedBy(ref: IrGettingName) {
+        usedBy += ref
+    }
+
+    override fun onUnsetBy(ref: IrSettingName) {
+        check(setBy.remove(ref)) { "$this is not used by $ref" }
+    }
+
+    override fun onSetBy(ref: IrSettingName) {
+        setBy += ref
+    }
+    override fun toString(): String = "Outer($name)"
+}
+
+interface IrGettingName
+interface IrGettingNameExpression : IrGettingName {
+    val variableName: String
+    var variableForGet: IrVariableInfo?
+}
+
+interface IrSettingName
+interface IrSettingNameExpression : IrSettingName {
+    val variableName: String
+    var variableForSet: IrVariableInfo?
+}
+
+@HasAccept("visitSetName", IrExpression::class)
+class IrSetName(
+    val name: String,
+    value: IrExpression,
+) : IrExpression(), IrSettingNameExpression {
+    var value: IrExpression by nodeDelegateOfIrExpression()
+
+    override val variableName: String get() = name
+    override var variableForSet by SettingVariableInfoDelegate()
+
+    init {
+        this.value = value
+    }
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(value)
+    }
+
+    override fun toString() = "IrSetName(name=$name, value=$value)"
+
+    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetName(this, arg)
+}
+
+@HasAccept("visitGetName", IrExpression::class)
+class IrGetName(
+    val name: String,
+) : IrExpression(), IrGettingNameExpression {
+    override val variableName: String get() = name
+    override var variableForGet by GettingVariableInfoDelegate()
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+    }
+
+    override fun toString() = "IrGetName(name=$name)"
+
+    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitGetName(this, arg)
+}
+
 @HasAccept("visitIncDec", IrExpression::class)
 sealed class IrIncDec(
     val isDecrement: Boolean,
@@ -63,15 +177,15 @@ class IrNameIncDec(
     val name: String,
     isDecrement: Boolean,
     isSuffix: Boolean,
-) : IrIncDec(isDecrement, isSuffix) {
+) : IrIncDec(isDecrement, isSuffix), IrGettingNameExpression, IrSettingNameExpression {
+    override val variableName: String get() = name
+    override var variableForGet by GettingVariableInfoDelegate()
+    override var variableForSet by SettingVariableInfoDelegate()
 
-    init {
-    }
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {}
 
-    override fun toString() = "IrNameIncDec(" +
-            "name=$name" +
-            "kind=${incDecInfo()}" +
-            ")"
+    override fun toString() = "IrNameIncDec(name=$name, kind=${incDecInfo()})"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNameIncDec(this, arg)
 }
@@ -92,18 +206,22 @@ class IrPropertyIncDec(
         this.name = name
     }
 
-    override fun toString() = "IrPropertyIncDec(" +
-            "owner=$owner" +
-            "name=$name" +
-            "isProp=$isProp" +
-            "kind=${incDecInfo()}" +
-            ")"
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(owner)
+        func(name)
+    }
+
+    override fun toString() = "IrPropertyIncDec(owner=$owner, name=$name, isProp=$isProp, kind=${incDecInfo()})"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitPropertyIncDec(this, arg)
 }
 
 // hand written
-sealed class IrLiteral<T>(val value: T) : IrExpression()
+sealed class IrLiteral<T>(val value: T) : IrExpression() {
+    @Suppress("OVERRIDE_BY_INLINE")
+    final override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {}
+}
 
 @HasAccept("visitNumberLiteral", IrExpression::class)
 class IrNumberLiteral(value: Double) : IrLiteral<Double>(value) {
@@ -156,60 +274,3 @@ enum class VariableKind {
         }
     }
 }
-
-// hand written
-@HasAccept("visitBlockStatement", IrStatement::class)
-sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement() {
-    override fun toString(): String = buildString { appendToString("") }.removeSuffix("\n")
-
-    @Suppress("RemoveCurlyBracesFromTemplate")
-    fun Appendable.appendToString(indent: String) {
-        appendLine("${indent}${kindName()}(")
-        val newIndent = "$indent  "
-        appendAboutThis(newIndent)
-        for (statement in statements) {
-            if (statement is IrBlockStatement)
-                statement.apply { appendToString(newIndent) }
-            else
-                appendLine("$newIndent$statement")
-        }
-        appendLine("${indent})")
-    }
-
-    protected abstract fun kindName(): String
-    protected abstract fun Appendable.appendAboutThis(indent: String)
-}
-
-@HasAccept("visitInternalScope", IrStatement::class)
-class IrInternalScope(statements: List<IrStatement>, val internalVar: IrInternalVariableId) : IrBlockStatement(statements) {
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitInternalScope(this, arg)
-
-    override fun kindName(): String = "IrInternalScope"
-    override fun Appendable.appendAboutThis(indent: String) {
-        appendLine("${indent}defines $internalVar")
-    }
-}
-
-@HasAccept("visitBlock", IrStatement::class)
-class IrBlock(statements: List<IrStatement>) : IrBlockStatement(statements) {
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitBlock(this, arg)
-
-    override fun kindName(): String = "IrBlock"
-    override fun Appendable.appendAboutThis(indent: String) {
-    }
-}
-
-@HasAccept("visitScope", IrStatement::class)
-class IrScope(statements: List<IrStatement>, val table: Map<String, IrSymbol>) : IrBlockStatement(statements) {
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitScope(this, arg)
-
-    override fun kindName(): String = "IrScope"
-    override fun Appendable.appendAboutThis(indent: String) {
-        for ((_, value) in table) {
-            appendLine("${indent}defines $value")
-        }
-    }
-}
-
-data class IrSymbol(val name: String, val kind: VariableKind)
-class IrInternalVariableId()

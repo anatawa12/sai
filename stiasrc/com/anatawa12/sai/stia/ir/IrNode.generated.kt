@@ -22,10 +22,16 @@ class IrBinaryOperator(
         this.right = right
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(left)
+        func(right)
+    }
+
     override fun toString() = "IrBinaryOperator(" +
-        "type=$type, " +
-        "left=$left, " +
-        "right=$right, " +
+        "type=$type" + ", " +
+        "left=$left" + ", " +
+        "right=$right" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitBinaryOperator(this, arg)
@@ -42,9 +48,14 @@ class IrUnaryOperator(
         this.expr = expr
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(expr)
+    }
+
     override fun toString() = "IrUnaryOperator(" +
-        "type=$type, " +
-        "expr=$expr, " +
+        "type=$type" + ", " +
+        "expr=$expr" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitUnaryOperator(this, arg)
@@ -64,10 +75,16 @@ class IrGetProperty(
         this.name = name
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(owner)
+        func(name)
+    }
+
     override fun toString() = "IrGetProperty(" +
-        "owner=$owner, " +
-        "name=$name, " +
-        "isProp=$isProp, " +
+        "owner=$owner" + ", " +
+        "name=$name" + ", " +
+        "isProp=$isProp" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitGetProperty(this, arg)
@@ -90,11 +107,18 @@ class IrSetProperty(
         this.value = value
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(owner)
+        func(name)
+        func(value)
+    }
+
     override fun toString() = "IrSetProperty(" +
-        "owner=$owner, " +
-        "name=$name, " +
-        "value=$value, " +
-        "isProp=$isProp, " +
+        "owner=$owner" + ", " +
+        "name=$name" + ", " +
+        "value=$value" + ", " +
+        "isProp=$isProp" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetProperty(this, arg)
@@ -116,10 +140,16 @@ class IrNewOrCall(
         setArgs(args)
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(function)
+        args.forEach{ it.let(func) }
+    }
+
     override fun toString() = "IrNewOrCall(" +
-        "function=$function, " +
-        "args=$args, " +
-        "isNewInstance=$isNewInstance, " +
+        "function=$function" + ", " +
+        "args=$args" + ", " +
+        "isNewInstance=$isNewInstance" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitNewOrCall(this, arg)
@@ -137,8 +167,13 @@ class IrCommaExpr(
         setExprs(exprs)
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        exprs.forEach{ it.let(func) }
+    }
+
     override fun toString() = "IrCommaExpr(" +
-        "exprs=$exprs, " +
+        "exprs=$exprs" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitCommaExpr(this, arg)
@@ -160,47 +195,20 @@ class IrConditional(
         this.ifFalse = ifFalse
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(condition)
+        func(ifTrue)
+        func(ifFalse)
+    }
+
     override fun toString() = "IrConditional(" +
-        "condition=$condition, " +
-        "ifTrue=$ifTrue, " +
-        "ifFalse=$ifFalse, " +
+        "condition=$condition" + ", " +
+        "ifTrue=$ifTrue" + ", " +
+        "ifFalse=$ifFalse" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitConditional(this, arg)
-}
-
-@HasAccept("visitSetName", IrExpression::class)
-class IrSetName(
-    val name: String,
-    value: IrExpression,
-) : IrExpression() {
-    var value: IrExpression by nodeDelegateOfIrExpression()
-
-    init {
-        this.value = value
-    }
-
-    override fun toString() = "IrSetName(" +
-        "name=$name, " +
-        "value=$value, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetName(this, arg)
-}
-
-@HasAccept("visitGetName", IrExpression::class)
-class IrGetName(
-    val name: String,
-) : IrExpression() {
-
-    init {
-    }
-
-    override fun toString() = "IrGetName(" +
-        "name=$name, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitGetName(this, arg)
 }
 
 // convert java exception to js object
@@ -212,276 +220,15 @@ class IrConvertException(
     init {
     }
 
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+    }
+
     override fun toString() = "IrConvertException(" +
-        "internalVar=$internalVar, " +
+        "internalVar=$internalVar" +
     ")"
 
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitConvertException(this, arg)
-}
-
-@HasAccept("visitJumpTarget", IrStatement::class)
-class IrJumpTarget(
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrJumpTarget(" +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitJumpTarget(this, arg)
-}
-
-@HasAccept("visitReturn", IrStatement::class)
-class IrReturn(
-    value: IrExpression?,
-) : IrStatement() {
-    var value: IrExpression? by nodeDelegateOfIrExpressionNullable()
-
-    init {
-        this.value = value
-    }
-
-    override fun toString() = "IrReturn(" +
-        "value=$value, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitReturn(this, arg)
-}
-
-@HasAccept("visitGoto", IrStatement::class)
-class IrGoto(
-    val target: IrJumpTarget,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrGoto(" +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitGoto(this, arg)
-}
-
-@HasAccept("visitJsr", IrStatement::class)
-class IrJsr(
-    val target: IrJumpTarget,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrJsr(" +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitJsr(this, arg)
-}
-
-@HasAccept("visitIfFalse", IrStatement::class)
-class IrIfFalse(
-    condition: IrExpression,
-    val target: IrJumpTarget,
-) : IrStatement() {
-    var condition: IrExpression by nodeDelegateOfIrExpression()
-
-    init {
-        this.condition = condition
-    }
-
-    override fun toString() = "IrIfFalse(" +
-        "condition=$condition, " +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitIfFalse(this, arg)
-}
-
-@HasAccept("visitIfTrue", IrStatement::class)
-class IrIfTrue(
-    condition: IrExpression,
-    val target: IrJumpTarget,
-) : IrStatement() {
-    var condition: IrExpression by nodeDelegateOfIrExpression()
-
-    init {
-        this.condition = condition
-    }
-
-    override fun toString() = "IrIfTrue(" +
-        "condition=$condition, " +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitIfTrue(this, arg)
-}
-
-// is IrBreak needed? maybe can be IrGoto
-@HasAccept("visitBreak", IrStatement::class)
-class IrBreak(
-    val target: IrJumpTarget,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrBreak(" +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitBreak(this, arg)
-}
-
-// is IrContinue needed? maybe can be IrGoto
-@HasAccept("visitContinue", IrStatement::class)
-class IrContinue(
-    val target: IrJumpTarget,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrContinue(" +
-        "target=$target, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitContinue(this, arg)
-}
-
-@HasAccept("visitSwitch", IrStatement::class)
-class IrSwitch(
-    expr: IrExpression,
-    cases: List<Pair<IrExpression, IrJumpTarget>>,
-) : IrStatement() {
-    var expr: IrExpression by nodeDelegateOfIrExpression()
-    private val casesDelegate = nodeListDelegateOfPairIrExpressionIrJumpTarget()
-    val cases: MutableList<Pair<IrExpression, IrJumpTarget>> by casesDelegate
-    fun setCases(cases: List<Pair<IrExpression, IrJumpTarget>>) = casesDelegate.set(cases)
-
-    init {
-        this.expr = expr
-        setCases(cases)
-    }
-
-    override fun toString() = "IrSwitch(" +
-        "expr=$expr, " +
-        "cases=$cases, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitSwitch(this, arg)
-}
-
-@HasAccept("visitVariableDecl", IrStatement::class)
-class IrVariableDecl(
-    variables: List<Pair<String, IrExpression?>>,
-    val kind: VariableKind,
-) : IrStatement() {
-    private val variablesDelegate = nodeListDelegateOfPairStringIrExpression()
-    val variables: MutableList<Pair<String, IrExpression?>> by variablesDelegate
-    fun setVariables(variables: List<Pair<String, IrExpression?>>) = variablesDelegate.set(variables)
-
-    init {
-        setVariables(variables)
-    }
-
-    override fun toString() = "IrVariableDecl(" +
-        "variables=$variables, " +
-        "kind=$kind, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitVariableDecl(this, arg)
-}
-
-@HasAccept("visitThrow", IrStatement::class)
-class IrThrow(
-    exception: IrExpression,
-) : IrStatement() {
-    var exception: IrExpression by nodeDelegateOfIrExpression()
-
-    init {
-        this.exception = exception
-    }
-
-    override fun toString() = "IrThrow(" +
-        "exception=$exception, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitThrow(this, arg)
-}
-
-@HasAccept("visitRethrow", IrStatement::class)
-class IrRethrow(
-    val internalVar: IrInternalVariableId,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrRethrow(" +
-        "internalVar=$internalVar, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitRethrow(this, arg)
-}
-
-@HasAccept("visitEmptyStatement", IrStatement::class)
-class IrEmptyStatement(
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrEmptyStatement(" +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitEmptyStatement(this, arg)
-}
-
-@HasAccept("visitExpressionStatement", IrStatement::class)
-class IrExpressionStatement(
-    expr: IrExpression,
-) : IrStatement() {
-    var expr: IrExpression by nodeDelegateOfIrExpression()
-
-    init {
-        this.expr = expr
-    }
-
-    override fun toString() = "IrExpressionStatement(" +
-        "expr=$expr, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitExpressionStatement(this, arg)
-}
-
-// TODO: body
-@HasAccept("visitFunctionStatement", IrStatement::class)
-class IrFunctionStatement(
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrFunctionStatement(" +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitFunctionStatement(this, arg)
-}
-
-@HasAccept("visitSetThisFn", IrStatement::class)
-class IrSetThisFn(
-    val name: String,
-) : IrStatement() {
-
-    init {
-    }
-
-    override fun toString() = "IrSetThisFn(" +
-        "name=$name, " +
-    ")"
-
-    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitSetThisFn(this, arg)
 }
 
 @HasVisitor(
@@ -496,8 +243,6 @@ class IrSetThisFn(
         IrNewOrCall::class,
         IrCommaExpr::class,
         IrConditional::class,
-        IrSetName::class,
-        IrGetName::class,
         IrConvertException::class,
         IrNumberLiteral::class,
         IrStringLiteral::class,
@@ -507,42 +252,12 @@ class IrSetThisFn(
         IrIncDec::class,
         IrNameIncDec::class,
         IrPropertyIncDec::class,
+        IrSetName::class,
+        IrGetName::class,
     ]
 )
 @HasAccept("visitExpression", IrExpression::class)
 sealed class IrExpression : IrNode() {
+    abstract fun runWithChildExpressions(func: (IrExpression) -> Unit)
     abstract fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R
 }
-
-@HasVisitor(
-    visitorType = IrStatementVisitor::class,
-    hasCustomDataParam = true,
-    acceptName = "accept",
-    subclasses = [
-        IrJumpTarget::class,
-        IrReturn::class,
-        IrGoto::class,
-        IrJsr::class,
-        IrIfFalse::class,
-        IrIfTrue::class,
-        IrBreak::class,
-        IrContinue::class,
-        IrSwitch::class,
-        IrVariableDecl::class,
-        IrThrow::class,
-        IrRethrow::class,
-        IrEmptyStatement::class,
-        IrExpressionStatement::class,
-        IrFunctionStatement::class,
-        IrSetThisFn::class,
-        IrBlockStatement::class,
-        IrInternalScope::class,
-        IrBlock::class,
-        IrScope::class,
-    ]
-)
-@HasAccept("visitStatement", IrStatement::class)
-sealed class IrStatement : IrNode() {
-    abstract fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R
-}
-

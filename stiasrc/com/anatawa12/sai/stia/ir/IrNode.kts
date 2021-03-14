@@ -28,11 +28,12 @@ class ClassGen(val name: String, val parent: String) {
 
     private val params = StringBuilder()
     private val init = StringBuilder()
-    private val toString = StringBuilder()
+    private val toString = mutableListOf<String>()
     private val body = StringBuilder()
+    private val runWithChildExpressions = StringBuilder()
 
     fun const(name: String, type: String) = addConstant(name, type)
-    fun list(name: String, type: String) = addList(name, type)
+    fun list(name: String, type: String, expressionGetter: String? = null) = addList(name, type, expressionGetter)
     @Suppress("PropertyName")
     operator fun String.invoke(type: String) = add(this, type)
     @Suppress("PropertyName")
@@ -43,24 +44,36 @@ class ClassGen(val name: String, val parent: String) {
 
     fun addConstant(name: String, type: String) {
         params.appendLine("    val $name: $type,")
-        toString.appendLine("        \"$name=\$$name, \" +")
+        toString.add("        \"$name=\$$name\" +")
     }
 
     fun add(name: String, type: String) {
         params.appendLine("    $name: $type,")
         init.appendLine("        this.$name = $name")
-        toString.appendLine("        \"$name=\$$name, \" +")
+        toString.add("        \"$name=\$$name\" +")
         body.appendLine("    var $name: $type by nodeDelegateOf${type.asFunName()}()")
+        when (type) {
+            IrExpression -> runWithChildExpressions.appendLine("        func($name)")
+            "$IrExpression?" -> runWithChildExpressions.appendLine("        $name?.let(func)")
+        }
     }
 
-    fun addList(name: String, type: String) {
+    fun addList(name: String, type: String, expressionGetter: String? = null) {
         val setName = "set${name.let { it[0].toUpperCase() + it.substring(1) }}"
         params.appendLine("    $name: List<$type>,")
         init.appendLine("        $setName($name)")
-        toString.appendLine("        \"$name=\$$name, \" +")
+        toString.add("        \"$name=\$$name\" +")
         body.appendLine("    private val ${name}Delegate = nodeListDelegateOf${type.asFunName()}()")
         body.appendLine("    val $name: MutableList<$type> by ${name}Delegate")
         body.appendLine("    fun $setName($name: List<$type>) = ${name}Delegate.set($name)")
+        @Suppress("NAME_SHADOWING")
+        val expressionGetter = expressionGetter ?: when (type) {
+            IrExpression -> "it"
+            "$IrExpression?" -> "it?"
+            else -> null
+        }
+        if (expressionGetter != null)
+            runWithChildExpressions.appendLine("        $name.forEach{ $expressionGetter.let(func) }")
     }
 
     fun print() {
@@ -75,8 +88,19 @@ class ClassGen(val name: String, val parent: String) {
         addCode(init)
         addCode("    }")
         addCode()
+        addCode("    @Suppress(\"OVERRIDE_BY_INLINE\")\n")
+        addCode("    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {")
+        addCode(runWithChildExpressions)
+        addCode("    }")
+        addCode()
         addCode("    override fun toString() = \"$name(\" +")
-        addCode(toString)
+        val it = toString.iterator()
+        for (s in it) {
+            if (it.hasNext())
+                addCode("$s \", \" +")
+            else
+                addCode(s)
+        }
         addCode("    \")\"")
         addCode()
         addCode("    override fun <R, T> accept(visitor: ${parent}Visitor<R, T>, arg: T): R = visitor.$visitName(this, arg)")
@@ -146,87 +170,9 @@ addCode()
     +"ifFalse"
 }
 
-"IrSetName"(IrExpression) {
-    const("name", "String")
-    +"value"
-}
-
-"IrGetName"(IrExpression) {
-    const("name", "String")
-}
-
 addCode("// convert java exception to js object")
 "IrConvertException"(IrExpression) {
     const("internalVar", "IrInternalVariableId")
-}
-
-// statements
-"IrJumpTarget"(IrStatement) {
-}
-
-"IrReturn"(IrStatement) {
-    add("value", "$IrExpression?")
-}
-
-"IrGoto"(IrStatement) {
-    const("target", "IrJumpTarget")
-}
-
-"IrJsr"(IrStatement) {
-    const("target", "IrJumpTarget")
-}
-
-"IrIfFalse"(IrStatement) {
-    +"condition"
-    const("target", "IrJumpTarget")
-}
-
-"IrIfTrue"(IrStatement) {
-    +"condition"
-    const("target", "IrJumpTarget")
-}
-
-addCode("// is IrBreak needed? maybe can be IrGoto")
-"IrBreak"(IrStatement) {
-    const("target", "IrJumpTarget")
-}
-
-addCode("// is IrContinue needed? maybe can be IrGoto")
-"IrContinue"(IrStatement) {
-    const("target", "IrJumpTarget")
-}
-
-"IrSwitch"(IrStatement) {
-    +"expr"
-    list("cases", "Pair<IrExpression, IrJumpTarget>")
-}
-
-"IrVariableDecl"(IrStatement) {
-    list("variables", "Pair<String, IrExpression?>")
-    const("kind", "VariableKind")
-}
-
-"IrThrow"(IrStatement) {
-    +"exception"
-}
-
-"IrRethrow"(IrStatement) {
-    const("internalVar", "IrInternalVariableId")
-}
-
-"IrEmptyStatement"(IrStatement) {
-}
-
-"IrExpressionStatement"(IrStatement) {
-    +"expr"
-}
-
-addCode("// TODO: body")
-"IrFunctionStatement"(IrStatement) {
-}
-
-"IrSetThisFn"(IrStatement) {
-    const("name", "String")
 }
 
 // add handwritten types to type mapping
@@ -237,22 +183,13 @@ types[IrExpression]!!.addAll(arrayOf(
     "IrBooleanLiteral",
     "IrRegexpLiteral",
     "IrIncDec",
+    "IrSetName",
+    "IrGetName",
 ))
 
 types["IrIncDec"] = mutableListOf(
     "IrNameIncDec",
     "IrPropertyIncDec",
-)
-
-// add handwritten types to type mapping
-types[IrStatement]!!.addAll(arrayOf(
-    "IrBlockStatement",
-))
-
-types["IrBlockStatement"] = mutableListOf(
-    "IrInternalScope",
-    "IrBlock",
-    "IrScope",
 )
 
 fun addSubclasses(name: String) {
@@ -273,12 +210,12 @@ fun addRootClass(name: String) {
     addCode(")")
     addCode("@HasAccept(\"visit${name.removePrefix("Ir")}\", $name::class)")
     addCode("sealed class $name : IrNode() {")
+    addCode("    abstract fun runWithChildExpressions(func: (IrExpression) -> Unit)")
     addCode("    abstract fun <R, T> accept(visitor: ${name}Visitor<R, T>, arg: T): R")
     addCode("}")
     addCode()
 }
 addRootClass(IrExpression)
-addRootClass(IrStatement)
 
 // generate main file
 File("IrNode.generated.kt").writeText(mainCode.toString())
@@ -298,8 +235,4 @@ File("IrVisitors.generated.kt").writeText(buildString {
     appendLine("    abstract fun visitExpression(node: IrExpression, arg: T): R")
     appendLine("}")
     appendLine()
-    appendLine("abstract class IrStatementVisitor<out R, in T> {")
-    addVisit(IrStatement)
-    appendLine("    abstract fun visitStatement(node: IrStatement, arg: T): R")
-    appendLine("}")
 })

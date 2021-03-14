@@ -190,8 +190,8 @@ class IrNodeGenerator {
         Token.IFEQ -> IrIfFalse(visitExpr(node.single()), getTargetOf(node.asJump().target))
         // jump if false
         Token.IFNE -> IrIfTrue(visitExpr(node.single()), getTargetOf(node.asJump().target))
-        Token.BREAK -> IrBreak(getTargetOf(node.asJump().jumpStatement.target))
-        Token.CONTINUE -> IrContinue(getTargetOf(node.asJump().jumpStatement.`continue`))
+        Token.BREAK -> IrGoto(getTargetOf(node.asJump().jumpStatement.target))
+        Token.CONTINUE -> IrGoto(getTargetOf(node.asJump().jumpStatement.`continue`))
 
         // switch statement
         Token.SWITCH -> IrSwitch(visitExpr(node.first()),
