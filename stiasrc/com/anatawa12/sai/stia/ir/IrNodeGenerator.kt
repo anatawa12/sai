@@ -218,7 +218,7 @@ class IrNodeGenerator {
         Token.LET,
         Token.CONST,
         -> IrVariableDecl(
-            node.map { it.string to it.singleOrNull()?.let(::visitExpr) },
+            node.map { IrDeclVariable(it.string, it.singleOrNull()?.let(::visitExpr)) },
             VariableKind.getByNodeType(node.type),
         )
 
@@ -353,7 +353,7 @@ class IrNodeGenerator {
 
             val scope = IrScope(
                 listOf(
-                    IrVariableDecl(listOf(name.string to IrConvertException(localBlock.toId())),
+                    IrVariableDecl(listOf(IrDeclVariable(name.string, IrConvertException(localBlock.toId()))),
                         VariableKind.LET),
                     visitStatement(withBody, with),
                 ),

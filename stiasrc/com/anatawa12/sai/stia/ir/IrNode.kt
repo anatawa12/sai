@@ -45,39 +45,47 @@ enum class IrUnaryOperatorType {
 }
 
 sealed class IrVariableInfo(val name: String) {
-    abstract val usedBy: Set<IrGettingName>
-    abstract val setBy: Set<IrSettingName>
-    abstract fun onUnusedBy(ref: IrGettingName)
-    abstract fun onUsedBy(ref: IrGettingName)
-    abstract fun onUnsetBy(ref: IrSettingName)
-    abstract fun onSetBy(ref: IrSettingName)
+    abstract val usedBy: Set<GettingVariableInfoDelegate<*>>
+    abstract val setBy: Set<SettingVariableInfoDelegate<*>>
+    abstract fun onUnusedBy(ref: GettingVariableInfoDelegate<*>)
+    abstract fun onUsedBy(ref: GettingVariableInfoDelegate<*>)
+    abstract fun onUnsetBy(ref: SettingVariableInfoDelegate<*>)
+    abstract fun onSetBy(ref: SettingVariableInfoDelegate<*>)
 
     abstract override fun toString(): String
 }
 
 @Suppress("CanSealedSubClassBeObject")
 class IrInFunctionVariable(name: String, val revision: Int) : IrVariableInfo(name) {
-    var setBySingle: IrSettingName? = null
-    override val setBy: Set<IrSettingName> get() = setOfNotNull(setBySingle)
-    override val usedBy = mutableSetOf<IrGettingName>()
+    var setBySingle: SettingVariableInfoDelegate<*>? = null
+    override val setBy: Set<SettingVariableInfoDelegate<*>> get() = setOfNotNull(setBySingle)
+    override val usedBy = mutableSetOf<GettingVariableInfoDelegate<*>>()
 
-    override fun onUnusedBy(ref: IrGettingName) {
+    override fun onUnusedBy(ref: GettingVariableInfoDelegate<*>) {
         check(usedBy.remove(ref)) { "$this is not used by $ref" }
     }
 
-    override fun onUsedBy(ref: IrGettingName) {
+    override fun onUsedBy(ref: GettingVariableInfoDelegate<*>) {
         check(setBySingle != null) { "$this is not assigned" }
         usedBy += ref
     }
 
-    override fun onUnsetBy(ref: IrSettingName) {
+    override fun onUnsetBy(ref: SettingVariableInfoDelegate<*>) {
         check(usedBy.isEmpty()) { "unsetting $this is allowed only if this is not used" }
         setBySingle = null
     }
 
-    override fun onSetBy(ref: IrSettingName) {
+    override fun onSetBy(ref: SettingVariableInfoDelegate<*>) {
         check(setBySingle == null) { "$this have already set by $setBySingle" }
         setBySingle = ref
+    }
+
+    fun replaceTo(replaceWith: IrInFunctionVariable) {
+        for (usedBy in usedBy.toList()) {
+            @Suppress("UNCHECKED_CAST")
+            (usedBy as GettingVariableInfoDelegate<IrInFunctionVariable>).value = replaceWith
+        }
+        check(usedBy.isEmpty())
     }
 
     override fun toString(): String = "InFunction($name#$revision)"
@@ -85,22 +93,22 @@ class IrInFunctionVariable(name: String, val revision: Int) : IrVariableInfo(nam
 
 @Suppress("CanSealedSubClassBeObject")
 class IrOuterVariable(name: String) : IrVariableInfo(name) {
-    override val setBy = mutableSetOf<IrSettingName>()
-    override val usedBy = mutableSetOf<IrGettingName>()
+    override val setBy = mutableSetOf<SettingVariableInfoDelegate<*>>()
+    override val usedBy = mutableSetOf<GettingVariableInfoDelegate<*>>()
 
-    override fun onUnusedBy(ref: IrGettingName) {
+    override fun onUnusedBy(ref: GettingVariableInfoDelegate<*>) {
         check(usedBy.remove(ref)) { "$this is not used by $ref" }
     }
 
-    override fun onUsedBy(ref: IrGettingName) {
+    override fun onUsedBy(ref: GettingVariableInfoDelegate<*>) {
         usedBy += ref
     }
 
-    override fun onUnsetBy(ref: IrSettingName) {
+    override fun onUnsetBy(ref: SettingVariableInfoDelegate<*>) {
         check(setBy.remove(ref)) { "$this is not used by $ref" }
     }
 
-    override fun onSetBy(ref: IrSettingName) {
+    override fun onSetBy(ref: SettingVariableInfoDelegate<*>) {
         setBy += ref
     }
     override fun toString(): String = "Outer($name)"

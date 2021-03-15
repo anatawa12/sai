@@ -8,9 +8,8 @@ class IrScopeSnapshot(val id: Int, val variable: List<IrInFunctionVariable>)
 class IrAllScopeSnapshot(val scopes: List<IrScopeSnapshot>)
 
 @HasAccept("visitJumpTarget", IrStatement::class)
-class IrJumpTarget() : IrStatement() {
-    val jumpFroms = mutableListOf<IrAllScopeSnapshot>()
-    lateinit var realScope: IrAllScopeSnapshot
+class IrJumpTarget() : IrStatement(), IrSettingName {
+    val ssaPhi = IrStaticSingleAssignPhi()
 
     @Suppress("OVERRIDE_BY_INLINE")
     override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
@@ -41,14 +40,15 @@ class IrReturn(value: IrExpression?) : IrStatement() {
 
 @HasAccept("visitSimpleJumping", IrStatement::class)
 sealed class IrSimpleJumping(val target: IrJumpTarget) : IrStatement() {
-    @Suppress("OVERRIDE_BY_INLINE")
-    final override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
-    }
 }
 
 @HasAccept("visitGoto", IrStatement::class)
 class IrGoto(target: IrJumpTarget) : IrSimpleJumping(target) {
     override fun toString() = "IrGoto(target=$target)"
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+    }
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitGoto(this, arg)
 }
@@ -56,6 +56,10 @@ class IrGoto(target: IrJumpTarget) : IrSimpleJumping(target) {
 @HasAccept("visitJsr", IrStatement::class)
 class IrJsr(target: IrJumpTarget) : IrSimpleJumping(target) {
     override fun toString() = "IrJsr(target=$target)"
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+    }
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitJsr(this, arg)
 }
@@ -69,6 +73,11 @@ class IrIfFalse(
 
     init {
         this.condition = condition
+    }
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(condition)
     }
 
     override fun toString() = "IrIfFalse(condition=$condition, target=$target)"
@@ -85,6 +94,11 @@ class IrIfTrue(
 
     init {
         this.condition = condition
+    }
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(condition)
     }
 
     override fun toString() = "IrIfTrue(condition=$condition, target=$target)"
@@ -118,14 +132,25 @@ class IrSwitch(
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitSwitch(this, arg)
 }
 
+class IrDeclVariable(val name: String, value: IrExpression?) : IrNode(), IrSettingName {
+    var variableForSet by SettingVariableInfoDelegate()
+    var value: IrExpression? by nodeDelegateOfIrExpressionNullable()
+
+    init {
+       this.value = value
+    }
+
+    override fun toString(): String = "DeclVariable(name=$name,value=$value)"
+}
+
 @HasAccept("visitVariableDecl", IrStatement::class)
 class IrVariableDecl(
-    variables: List<Pair<String, IrExpression?>>,
+    variables: List<IrDeclVariable>,
     val kind: VariableKind,
 ) : IrStatement() {
-    private val variablesDelegate = nodeListDelegateOf<Pair<String, IrExpression?>> { it.second }
-    val variables: MutableList<Pair<String, IrExpression?>> by variablesDelegate
-    fun setVariables(variables: List<Pair<String, IrExpression?>>) = variablesDelegate.set(variables)
+    private val variablesDelegate = nodeListDelegateOf<IrDeclVariable> { it }
+    val variables: MutableList<IrDeclVariable> by variablesDelegate
+    fun setVariables(variables: List<IrDeclVariable>) = variablesDelegate.set(variables)
 
     init {
         setVariables(variables)
@@ -133,7 +158,7 @@ class IrVariableDecl(
 
     @Suppress("OVERRIDE_BY_INLINE")
     override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
-        variables.forEach{ it.second?.let(func) }
+        variables.forEach{ it.value?.let(func) }
     }
 
     override fun toString() = "IrVariableDecl(variables=$variables, kind=$kind)"
@@ -285,7 +310,10 @@ class IrScope(statements: List<IrStatement>, val table: Map<String, IrSymbol>) :
     }
 }
 
-data class IrSymbol(val name: String, val kind: VariableKind)
+data class IrSymbol(val name: String, val kind: VariableKind) : IrSettingName {
+    var variableForSet by SettingVariableInfoDelegate()
+}
+
 class IrInternalVariableId()
 
 @HasVisitor(
