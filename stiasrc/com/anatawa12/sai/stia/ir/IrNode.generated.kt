@@ -124,6 +124,42 @@ class IrSetProperty(
     override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitSetProperty(this, arg)
 }
 
+@HasAccept("visitPropertyOperatorAssign", IrExpression::class)
+class IrPropertyOperatorAssign(
+    owner: IrExpression,
+    name: IrExpression,
+    val isProp: Boolean,
+    val operator: IrBinaryOperatorType,
+    operand: IrExpression,
+) : IrExpression() {
+    var owner: IrExpression by nodeDelegateOfIrExpression()
+    var name: IrExpression by nodeDelegateOfIrExpression()
+    var operand: IrExpression by nodeDelegateOfIrExpression()
+
+    init {
+        this.owner = owner
+        this.name = name
+        this.operand = operand
+    }
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
+        func(owner)
+        func(name)
+        func(operand)
+    }
+
+    override fun toString() = "IrPropertyOperatorAssign(" +
+        "owner=$owner" + ", " +
+        "name=$name" + ", " +
+        "isProp=$isProp" + ", " +
+        "operator=$operator" + ", " +
+        "operand=$operand" +
+    ")"
+
+    override fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R = visitor.visitPropertyOperatorAssign(this, arg)
+}
+
 @HasAccept("visitNewOrCall", IrExpression::class)
 class IrNewOrCall(
     function: IrExpression,
@@ -240,6 +276,7 @@ class IrConvertException(
         IrUnaryOperator::class,
         IrGetProperty::class,
         IrSetProperty::class,
+        IrPropertyOperatorAssign::class,
         IrNewOrCall::class,
         IrCommaExpr::class,
         IrConditional::class,
@@ -261,3 +298,4 @@ sealed class IrExpression : IrNode() {
     abstract fun runWithChildExpressions(func: (IrExpression) -> Unit)
     abstract fun <R, T> accept(visitor: IrExpressionVisitor<R, T>, arg: T): R
 }
+

@@ -40,6 +40,13 @@ object IrDumper {
                 append(expr.owner, "$indent  ")
                 append(expr.name, "$indent  ")
             }
+            is IrPropertyOperatorAssign -> {
+                val propElem = if (expr.isProp) "Prop" else "Elem"
+                appendLine("${indent}OperatorAssign$propElem ${expr.operator} ${expr.name}")
+                append(expr.owner, "$indent  ")
+                append(expr.name, "$indent  ")
+                append(expr.operand, "$indent  ")
+            }
             is IrNumberLiteral -> appendLine("${indent}NumberLiteral ${expr.value}")
             is IrStringLiteral -> appendLine("${indent}StringLiteral '${expr.value}'")
             is IrNullLiteral -> appendLine("${indent}NullLiteral ${expr.value}")

@@ -154,6 +154,14 @@ addCode()
     const("isProp", "Boolean")
 }
 
+"IrPropertyOperatorAssign"(IrExpression) {
+    +"owner"
+    +"name"
+    const("isProp", "Boolean")
+    const("operator", "IrBinaryOperatorType")
+    +"operand"
+}
+
 "IrNewOrCall"(IrExpression) {
     +"function"
     list("args", IrExpression)

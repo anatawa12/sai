@@ -9,6 +9,7 @@ abstract class IrExpressionVisitor<out R, in T> {
     open fun visitUnaryOperator(node: IrUnaryOperator, arg: T): R = visitExpression(node, arg)
     open fun visitGetProperty(node: IrGetProperty, arg: T): R = visitExpression(node, arg)
     open fun visitSetProperty(node: IrSetProperty, arg: T): R = visitExpression(node, arg)
+    open fun visitPropertyOperatorAssign(node: IrPropertyOperatorAssign, arg: T): R = visitExpression(node, arg)
     open fun visitNewOrCall(node: IrNewOrCall, arg: T): R = visitExpression(node, arg)
     open fun visitCommaExpr(node: IrCommaExpr, arg: T): R = visitExpression(node, arg)
     open fun visitConditional(node: IrConditional, arg: T): R = visitExpression(node, arg)
@@ -25,3 +26,4 @@ abstract class IrExpressionVisitor<out R, in T> {
     open fun visitGetName(node: IrGetName, arg: T): R = visitExpression(node, arg)
     abstract fun visitExpression(node: IrExpression, arg: T): R
 }
+

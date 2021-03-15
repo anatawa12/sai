@@ -100,6 +100,15 @@ class IrNodeGenerator {
             val args = node.drop(1)
             IrNewOrCall(visitExpr(function), args.map(::visitExpr), isNewInstance)
         }
+        Token.SETPROP_OP, // a.b op= c
+        Token.SETELEM_OP, // a.[b] op= c
+        -> {
+            val (owner, name, value) = node.asTriple()
+            val (useStack, operand) = value.asPair()
+            IrPropertyOperatorAssign(visitExpr(owner), visitExpr(name),
+                node.type == Token.SETPROP_OP, operatorAssignBinaryOperator(value.type),
+                visitExpr(operand))
+        }
         Token.THIS,
         -> unsupported("THIS")
         // literal
@@ -122,9 +131,6 @@ class IrNodeGenerator {
         -> unsupported("TYPEOFNAME")
         Token.USE_STACK, // use the value on the stack,
         -> unsupported("USE_STACK")
-        Token.SETPROP_OP, // a.b op= c
-        Token.SETELEM_OP, // a.[b] op= c
-        -> unsupported("OPERATOR_ASSIGN")
         // expr, expr, expr....
         Token.COMMA -> IrCommaExpr(node.map(::visitExpr))
         Token.OR -> visitBinary(node, OR)
@@ -172,6 +178,22 @@ class IrNodeGenerator {
         else -> unsupported("unsupported token for expression: ${node.type}")
     }
     // endregion expression accepter
+
+    private fun operatorAssignBinaryOperator(token: Int): IrBinaryOperatorType = when (token) {
+        Token.BITOR -> BITOR
+        Token.BITXOR -> BITXOR
+        Token.BITAND -> BITAND
+        Token.LSH -> LSH
+        Token.RSH -> RSH
+        Token.URSH -> URSH
+
+        Token.ADD -> ADD
+        Token.SUB -> SUB
+        Token.MUL -> MUL
+        Token.DIV -> DIV
+        Token.MOD -> MOD
+        else -> unsupported("op= assign operator; $token")
+    }
 
     private val targetMapping = mutableMapOf<Node, IrJumpTarget>()
     private fun getTargetOf(target: Node): IrJumpTarget {
