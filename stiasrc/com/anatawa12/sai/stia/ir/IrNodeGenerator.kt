@@ -286,108 +286,162 @@ class IrNodeGenerator {
 
     /**
      * transform 'try' statement to be without 'with' statement.
-     * the IRFactory uses 'with' for catch-cause-scope but Stia will not support 'with' so convert to 'let' declaration.
+     * the IRFactory uses 'with' for catch-cause-scope but
+     * Stia will not support 'with' block so convert to 'let' declaration.
+     *
+     * TRY [catch: #243] [finally: #297] 135 [local_block: #221]
+     *     BLOCK 135
+     *         TRY_BODY
+     *   $if (contains catch) {
+     *     GOTO [target: #294]
+     *     TARGET #243
+     *     LOCAL_BLOCK #244
+     *       $(
+     *         CATCH_SCOPE [catch_scope_prop: 0] [local_block: #244]
+     *             NAME e
+     *             LOCAL_LOAD [local_block: #221]
+     *         BLOCK 139
+     *             ENTERWITH
+     *                 LOCAL_LOAD [local_block: #244]
+     *             WITH 139
+     *                 BLOCK 139
+     *                     IFNE [target: #267]
+     *                         CONDITION
+     *                     BLOCK 139
+     *                         CATCH_BODY
+     *                         LEAVEWITH
+     *                         GOTO [target: #294]
+     *                     TARGET #267
+     *             LEAVEWITH
+     *       )*
+     *       $(
+     *         CATCH_SCOPE [catch_scope_prop: 0] [local_block: #244]
+     *             NAME e
+     *             LOCAL_LOAD [local_block: #221]
+     *         BLOCK 139
+     *             ENTERWITH
+     *                 LOCAL_LOAD [local_block: #244]
+     *             WITH 139
+     *                 BLOCK 139
+     *                     CATCH_BODY
+     *                     LEAVEWITH
+     *                     GOTO [target: #294]
+     *             LEAVEWITH
+     *       )?
+     *   $if (all catches are condition throw) {
+     *     RETHROW [local_block: #221]
+     *   }
+     *     TARGET #294
+     *   }
+     *   $if (contains finally) {
+     *     JSR [target: #297]
+     *     GOTO [target: #310]
+     *     TARGET #297
+     *     FINALLY [local_block: #221]
+     *         BLOCK 143
+     *             FINALY
+     *     TARGET #310
+     *   }
      */
+    @Suppress("UNUSED_VARIABLE")
     private fun transformTry(tryStat: Jump, localBlock: Node) : IrStatement {
         if (tryStat.type != Token.TRY) Kit.codeBug()
-        if (localBlock.type != Token.LOCAL_BLOCK)
-            unsupported("parent of TRY is not LOCAL_BLOCK")
-        if (localBlock.singleOrNull() != tryStat)
-            unsupported("child of LOCAL_BLOCK must be single TRY block")
-
-        val statements = mutableListOf<IrStatement>()
-        fun <T : Node> T.add(): T = apply { statements.add(visitStatement(this, tryStat)) }
-
-        val catchTarget = tryStat.target.nullable()
-            ?: return processBlock(tryStat)
-        // if there's no catch, no transform should be required
-
         val iter = tryStat.iterator()
-        iter.getNext(Token.BLOCK).add()
-        val gotoEndCatch = iter.getNext<Jump>(Token.GOTO).add()
-        iter.getNext(catchTarget).add()
-        val endCatch = gotoEndCatch.target
-        var cur: Node?
-        while (true) {
+        val block = iter.next()
+        var cur = iter.getNextOrNull()
+
+        val tryBlock = processBlock(block)
+        var conditionalCatches: List<IrConditionalCatch> = emptyList()
+        var simpleCatch: IrSimpleCatch? = null
+        var finally: IrFinally? = null
+
+        if (cur?.type == Token.GOTO) {
+            // means has catch
+            val gotoEndCatches = cur
+            val catchTarget = iter.next()
+            val catchesBlock = iter.next()
+            cur = iter.next()
+            val rethrow = cur.takeIf { it.type == Token.RETHROW }
+            if (rethrow != null)
+                cur = iter.next()
+            val endCatches = cur
             cur = iter.getNextOrNull()
-            if (cur?.type != Token.LOCAL_BLOCK) break
-            val catchLocalBlock: Node = cur
 
-            // verification.
-            /*
-            catchLocalBlock = LOCAL_BLOCK
-              CATCH_SCOPE (LOCAL_BLOCK_PROP = catchLocalBlock)
-                NAME
-                LOCAL_LOAD (LOCAL_BLOCK_PROP = localBlock)
-              BLOCK
-                ENTER_WITH
-                  LOCAL_LOAD (LOCAL_BLOCK_PROP = catchLocalBlock)
-                WITH
-                  BLOCK
-                    // if "catch (e if condition)"
-                    IFNE target
-                      ANY
-                    catchBlock = BLOCK
-                    target = TARGET
-                    // else
-                    catchBlock = this
-                    // endif
-                LEAVE_WITH
-            */
-            /*
-            catchBlock = BLOCK
-              ANY
-              LEAVEWITH
-              GOTO endCatch
-            */
-            val (catchScope, withOuterBlock) = catchLocalBlock.asPairOrNull() ?: unsupported("TRY format")
-            if (catchScope.type != Token.CATCH_SCOPE) unsupported("TRY format")
-            if (catchScope.getProp(Node.LOCAL_BLOCK_PROP) != catchLocalBlock) unsupported("TRY format")
-            if (withOuterBlock.type != Token.BLOCK) unsupported("TRY format")
-            val (name, catcScopeExpr) = catchScope.asPairOrNull() ?: unsupported("TRY format")
-            if (catcScopeExpr.type != Token.LOCAL_LOAD) unsupported("TRY format")
-            if (catcScopeExpr.getProp(Node.LOCAL_BLOCK_PROP) != localBlock) unsupported("TRY format")
-            val (enterWith, with, leaveWith) = withOuterBlock.asTripleOrNull() ?: unsupported("TRY format")
-            val localLoad1 = enterWith.singleOrNull() ?: unsupported("TRY format")
-            if (localLoad1.type != Token.LOCAL_LOAD) unsupported("TRY format")
-            if (localLoad1.getProp(Node.LOCAL_BLOCK_PROP) != catchLocalBlock) unsupported("TRY format")
-            if (with.type != Token.WITH) unsupported("TRY format")
-            val withBody = with.singleOrNull() ?: unsupported("TRY format")
-            if (leaveWith.type != Token.LEAVEWITH) unsupported("TRY format")
-            if (withBody.type != Token.BLOCK) unsupported("TRY format")
-            val catchBlock: Node
-            if (withBody.lastChild.type == Token.TARGET) {
-                // catch (e if condition)
-                val (gotoIf, catchBlock1, target) = withBody.asTripleOrNull() ?: unsupported("TRY format")
-                if (gotoIf.type != Token.IFNE) unsupported("TRY format")
-                if ((gotoIf as Jump).target != target) unsupported("TRY format")
-                catchBlock = catchBlock1
+            val catchNodes = catchesBlock.chunked(2) { (catch, block) -> catch to block }
+            conditionalCatches = if (rethrow != null) {
+                processConditional(catchNodes)
             } else {
-                // catch
-                catchBlock = withBody
+                processConditional(catchNodes.dropLast(1))
             }
-            val (leaveWith1, gotoEndCatch1) = catchBlock.takeLastOrNull(2) ?:  unsupported("TRY format")
-            if (leaveWith1.type != Token.LEAVEWITH) unsupported("TRY format")
-            if (gotoEndCatch1.type != Token.GOTO) unsupported("TRY format")
-            if ((gotoEndCatch1 as Jump).target != endCatch) unsupported("TRY format")
-            catchBlock.removeChild(leaveWith1)
-            catchBlock.removeChild(gotoEndCatch1)
+            simpleCatch = if (rethrow != null) null else processSimpleCatch(catchNodes.last())
+        }
+        if (cur?.type == Token.JSR) {
+            // means has finally
+            val jsr = cur
+            val gotoEnd = iter.next()
+            val finallyTarget = iter.next()
+            val finallyNode = iter.next()
+            val endTarget = iter.next()
+            val finallyBlock = finallyNode.single()
 
-            val scope = IrScope(
-                listOf(
-                    IrVariableDecl(listOf(IrDeclVariable(name.string, IrConvertException(localBlock.toId()))),
-                        VariableKind.LET),
-                    visitStatement(withBody, with),
-                ),
-                mapOf(name.string to IrSymbol(name.string, VariableKind.LET))
+            finally = IrFinally(processBlock(finallyBlock))
+        }
+
+        return IrTryCatch(
+            tryBlock = tryBlock,
+            conditionals = conditionalCatches,
+            simple = simpleCatch,
+            finally = finally,
+        )
+    }
+
+    private fun processConditional(scopeBlockPairs: List<Pair<Node, Node>>): List<IrConditionalCatch> =
+        scopeBlockPairs.map { (scope, withOuter) ->
+            val (enter, with, leave) = withOuter.asTriple()
+            val withInner = with.single()
+            val (ifne, block, target) = withInner.asTriple()
+
+            check(scope.type == Token.CATCH_SCOPE) { "invalid try" }
+            check(withOuter.type == Token.BLOCK) { "invalid try" }
+            check(enter.type == Token.ENTERWITH) { "invalid try" }
+            check(with.type == Token.WITH) { "invalid try" }
+            check(leave.type == Token.LEAVEWITH) { "invalid try" }
+            check(withInner.type == Token.BLOCK) { "invalid try" }
+            check(ifne.type == Token.IFNE) { "invalid try" }
+            check(block.type == Token.BLOCK) { "invalid try" }
+            check(target.type == Token.TARGET) { "invalid try" }
+
+            // remove LEAVEWITH, GOTO
+            block.removeChild(block.lastChild)
+            block.removeChild(block.lastChild)
+
+            IrConditionalCatch(
+                variableName = scope.firstChild.string,
+                condition = visitExpr(ifne.single()),
+                block = processBlock(block),
             )
-            statements.add(scope)
         }
-        cur?.add()
-        for (node in iter) {
-            node.add()
-        }
-        return IrBlock(statements)
+
+    private fun processSimpleCatch(scopeBlock: Pair<Node, Node>): IrSimpleCatch {
+        val (scope, withOuter) = scopeBlock
+        val (enter, with, leave) = withOuter.asTriple()
+        val block = with.single()
+
+        check(scope.type == Token.CATCH_SCOPE) { "invalid try" }
+        check(withOuter.type == Token.BLOCK) { "invalid try" }
+        check(enter.type == Token.ENTERWITH) { "invalid try" }
+        check(with.type == Token.WITH) { "invalid try" }
+        check(leave.type == Token.LEAVEWITH) { "invalid try" }
+        check(block.type == Token.BLOCK) { "invalid try" }
+
+        // remove LEAVEWITH, GOTO
+        block.removeChild(block.lastChild)
+        block.removeChild(block.lastChild)
+
+        return IrSimpleCatch(
+            variableName = scope.firstChild.string,
+            block = processBlock(block),
+        )
     }
 
     private fun processScope(node: Node): IrScope {

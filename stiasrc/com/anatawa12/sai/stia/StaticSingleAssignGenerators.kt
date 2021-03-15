@@ -43,6 +43,47 @@ class StaticSingleAssignGenerators {
                 is IrBlockStatement -> {
                     runBlock(stat, jumped)
                 }
+                is IrTryCatch -> {
+                    val mark = variables.markVariable()
+                    var jumped = statement(stat.tryBlock, jumped)
+                    if (!jumped) stat.postTryCatchFinally.onJumpFrom(variables.shotSnapshot())
+                    val tryBlockShot = variables.shotRangeSnapshot(mark)
+                    var prevSnapshot = variables.newAndSnapshot()
+                    stat.postTry.onRealScope(prevSnapshot)
+                    stat.postTry.onJumpFrom(tryBlockShot)
+                    val postTryMark = variables.markVariable()
+
+                    fun runCatch(catch: IrCatch) {
+                        catch.ssaPhi.onRealScope(variables.newAndSnapshot())
+                        catch.ssaPhi.onJumpFrom(prevSnapshot)
+                        catch.variableForSet = variables.startScopeOf(catch.variableName)
+                        val condition = catch.condition
+                        if (condition != null) {
+                            expression(condition)
+                            prevSnapshot = variables.shotSnapshot()
+                        }
+                        val catchJumped = statement(catch.block, jumped)
+                        variables.exitScope()
+                        jumped = jumped and catchJumped
+                        if (!catchJumped) stat.postTryCatchFinally.onJumpFrom(variables.shotSnapshot())
+                    }
+
+                    stat.conditionals.forEach(::runCatch)
+                    stat.simple?.let(::runCatch)
+
+                    val finally = stat.finally
+                    if (finally != null) {
+                        val finallyShot = variables.shotRangeSnapshot(postTryMark)
+                        finally.ssaPhi.onRealScope(variables.newAndSnapshot())
+                        finally.ssaPhi.onJumpFrom(finallyShot)
+                        val finallyJumped = statement(finally.block, false)
+                        if (!finallyJumped) stat.postTryCatchFinally.onJumpFrom(prevSnapshot)
+                        if (finallyJumped)
+                            jumped = true
+                    }
+                    stat.postTryCatchFinally.onRealScope(variables.newAndSnapshot())
+                    jumped
+                }
                 is IrJumpTarget -> {
                     if (!jumped) stat.ssaPhi.onJumpFrom(variables.shotSnapshot())
                     stat.ssaPhi.onRealScope(variables.newAndSnapshot())
@@ -118,6 +159,13 @@ class StaticSingleAssignGenerators {
                 scopeId++)
         }
 
+        fun startScopeOf(name: String): IrInFunctionVariable {
+            val variable = IrInFunctionVariable(name, 0)
+            scopes += VariableScope(mapOf(name to mutableListOf(variable)),
+                scopeId++)
+            return variable
+        }
+
         fun exitScope() {
             scopes.removeLast()
         }
@@ -129,7 +177,21 @@ class StaticSingleAssignGenerators {
         fun shotSnapshot() = IrAllScopeSnapshot(
             scopes.map { scope -> IrScopeSnapshot(scope.scopeId, scope.revisions.map { scope.getByName(it.key)!! }) }
         )
+
+        fun markVariable(): VariableMark = VariableMark(scopes.map { it.revisions.mapValues { it.value.lastIndex } })
+
+        fun shotRangeSnapshot(since: VariableMark): List<List<List<IrInFunctionVariable>>> {
+            return scopes.zip(since.indices).map { (scope, marks) ->
+                scope.revisions.map {
+                    scope.getRange(it.key, marks[it.key]!!)
+                }
+            }
+        }
     }
+
+    private class VariableMark(
+        val indices: List<Map<String, Int>>,
+    )
 
     private class VariableScope(
         val revisions: Map<String, MutableList<IrInFunctionVariable>>,
@@ -145,6 +207,8 @@ class StaticSingleAssignGenerators {
             revisionList.add(new)
             return new
         }
+
+        fun getRange(name: String, since: Int): List<IrInFunctionVariable> = revisions[name]!!.drop(since)
     }
 
     var modified = false
@@ -154,6 +218,23 @@ class StaticSingleAssignGenerators {
         when (stat) {
             is IrBlockStatement -> for (statement in stat.statements) optimize(statement)
             is IrJumpTarget -> optimize(stat.ssaPhi)
+            is IrTryCatch -> {
+                optimize(stat.tryBlock)
+                optimize(stat.postTry)
+                for (conditional in stat.conditionals) {
+                    optimize(conditional.ssaPhi)
+                    optimize(conditional.block)
+                }
+                stat.simple?.let { simple ->
+                    optimize(simple.ssaPhi)
+                    optimize(simple.block)
+                }
+                stat.finally?.let { finally ->
+                    optimize(finally.ssaPhi)
+                    optimize(finally.block)
+                }
+                optimize(stat.postTryCatchFinally)
+            }
             else -> {
                 // NOP
             }

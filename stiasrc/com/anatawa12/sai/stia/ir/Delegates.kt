@@ -4,6 +4,8 @@ import kotlin.reflect.KProperty
 
 fun nodeDelegateOfIrExpression() = IrDelegateProperty<IrExpression>(true)
 fun nodeDelegateOfIrExpressionNullable() = IrDelegateProperty<IrExpression?>(false)
+fun <T: IrNode> nodeDelegateOf() = IrDelegateProperty<T>(true)
+fun <T: IrNode> nodeDelegateOfNullable() = IrDelegateProperty<T?>(false)
 fun IrNode.nodeListDelegateOfIrExpression() = IrListDelegateProperty<IrExpression>(this) { it }
 
 fun <T> IrNode.nodeListDelegateOf(nodeGetter: (T) -> IrNode?) = IrListDelegateProperty<T>(this, nodeGetter)

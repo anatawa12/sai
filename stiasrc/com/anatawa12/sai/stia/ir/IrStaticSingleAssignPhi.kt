@@ -40,6 +40,22 @@ class IrStaticSingleAssignPhi {
         }
     }
 
+    fun onJumpFrom(thisScope: List<List<List<IrInFunctionVariable>>>) {
+        val scopes = checkNotNull(scopes) { "this scope is not set" }
+
+        require(scopes.size == thisScope.size) { "$thisScope is not sub-scope of this" }
+        for ((phis, scope) in scopes.zip(thisScope))
+            require(phis.size == scope.size) { "$thisScope is not sub-scope of this" }
+
+        for ((phis, scope) in scopes.zip(thisScope)) {
+            for ((phi, variables) in phis.zip(scope)) {
+                for (variable in variables) {
+                    phi.add(variable)
+                }
+            }
+        }
+    }
+
     class Phi(setTo: IrInFunctionVariable) : IrGettingName, IrSettingName {
         val setTo by SettingVariableInfoDelegate(setTo)
         val setFrom = mutableListOf<GettingVariableInfoDelegate<IrInFunctionVariable>>()

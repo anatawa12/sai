@@ -253,21 +253,25 @@ class IrSetThisFn(val name: String) : IrStatement(), IrSettingName {
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitSetThisFn(this, arg)
 }
 
+interface IndentedToString {
+    fun Appendable.appendToString(indent: String)
+}
+
 // hand written
 @HasAccept("visitBlockStatement", IrStatement::class)
-sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement() {
+sealed class IrBlockStatement(val statements: List<IrStatement>) : IrStatement(), IndentedToString {
     @Suppress("OVERRIDE_BY_INLINE")
     final override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {}
 
     override fun toString(): String = buildString { appendToString("") }.removeSuffix("\n")
 
     @Suppress("RemoveCurlyBracesFromTemplate")
-    fun Appendable.appendToString(indent: String) {
+    override fun Appendable.appendToString(indent: String) {
         appendLine("${indent}${kindName()}(")
         val newIndent = "$indent  "
         appendAboutThis(newIndent)
         for (statement in statements) {
-            if (statement is IrBlockStatement)
+            if (statement is IndentedToString)
                 statement.apply { appendToString(newIndent) }
             else
                 appendLine("$newIndent$statement")
@@ -310,6 +314,114 @@ class IrScope(statements: List<IrStatement>, val table: Map<String, IrSymbol>) :
     }
 }
 
+@HasAccept("visitTryCatch", IrStatement::class)
+class IrTryCatch (
+    tryBlock: IrBlock,
+    conditionals: List<IrConditionalCatch>,
+    simple: IrSimpleCatch?,
+    finally: IrFinally?,
+) : IrStatement(), IndentedToString {
+    val postTry = IrStaticSingleAssignPhi()
+    val postTryCatchFinally = IrStaticSingleAssignPhi()
+
+    var tryBlock by nodeDelegateOf<IrBlock>()
+    private val conditionalsDelegate = nodeListDelegateOf<IrConditionalCatch> { it }
+    val conditionals by conditionalsDelegate
+    fun setConditionals(value: List<IrConditionalCatch>) = conditionalsDelegate.set(value)
+    var simple by nodeDelegateOfNullable<IrSimpleCatch>()
+    var finally by nodeDelegateOfNullable<IrFinally>()
+
+    init {
+        this.tryBlock = tryBlock
+        setConditionals(conditionals)
+        this.simple = simple
+        this.finally = finally
+    }
+
+    @Suppress("OVERRIDE_BY_INLINE")
+    override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {}
+
+    override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitTryCatch(this, arg)
+
+    override fun toString(): String = buildString { appendToString("") }.removeSuffix("\n")
+
+    @Suppress("RemoveCurlyBracesFromTemplate")
+    override fun Appendable.appendToString(indent: String) {
+        appendLine("${indent}IrTryCatch(")
+        val newIndent = "$indent    "
+        appendLine("${indent}  try {")
+        tryBlock.run { appendToString(newIndent) }
+
+        for (conditional in conditionals) {
+            appendLine("${indent}  } catch conditional(${conditional.variableName} if ${conditional.condition}) {")
+            conditional.block.run { appendToString(newIndent) }
+        }
+        simple?.let { simple ->
+            appendLine("${indent}  } catch (${simple.variableName}) {")
+            simple.block.run { appendToString(newIndent) }
+        }
+        finally?.let { finally ->
+            appendLine("${indent}  } finally {")
+            finally.block.run { appendToString(newIndent) }
+        }
+        appendLine("${indent}  }")
+        appendLine("${indent})")
+    }
+}
+
+sealed class IrCatch(
+    val variableName: String,
+    block: IrBlock,
+) : IrNode(), IrSettingName {
+    val ssaPhi = IrStaticSingleAssignPhi()
+
+    var variableForSet by SettingVariableInfoDelegate()
+    abstract val condition: IrExpression?
+    var block by nodeDelegateOf<IrBlock>()
+
+    init {
+        this.block = block
+    }
+}
+
+class IrConditionalCatch(
+    variableName: String,
+    condition: IrExpression,
+    block: IrBlock,
+) : IrCatch(variableName, block), IrSettingName {
+    override var condition by nodeDelegateOfIrExpression()
+
+    init {
+        this.condition = condition
+    }
+
+    override fun toString(): String = "IrConditionalCatch(variableName=$variableName, " +
+            "condition=$condition, block=$block)"
+}
+
+class IrSimpleCatch(
+    variableName: String,
+    block: IrBlock,
+) : IrCatch(variableName, block), IrSettingName {
+    override val condition: IrExpression? get() = null
+
+    override fun toString(): String = "IrSimpleCatch(variableName=$variableName, block=$block)"
+}
+
+class IrFinally(
+    block: IrBlock,
+) : IrNode(), IrSettingName {
+    val ssaPhi = IrStaticSingleAssignPhi()
+
+    var block by nodeDelegateOf<IrBlock>()
+
+    init {
+        this.block = block
+    }
+
+    override fun toString(): String = "IrFinally(block=$block)"
+}
+
 data class IrSymbol(val name: String, val kind: VariableKind) : IrSettingName {
     var variableForSet by SettingVariableInfoDelegate()
 }
@@ -339,6 +451,7 @@ class IrInternalVariableId()
         IrInternalScope::class,
         IrBlock::class,
         IrScope::class,
+        IrTryCatch::class,
         IrJumpTarget::class,
     ]
 )
@@ -368,5 +481,6 @@ abstract class IrStatementVisitor<out R, in T> {
     open fun visitInternalScope(node: IrInternalScope, arg: T): R = visitBlockStatement(node, arg)
     open fun visitBlock(node: IrBlock, arg: T): R = visitBlockStatement(node, arg)
     open fun visitScope(node: IrScope, arg: T): R = visitBlockStatement(node, arg)
+    open fun visitTryCatch(node: IrTryCatch, arg: T): R = visitStatement(node, arg)
     abstract fun visitStatement(node: IrStatement, arg: T): R
 }

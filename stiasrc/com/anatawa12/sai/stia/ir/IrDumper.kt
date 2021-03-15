@@ -163,6 +163,33 @@ object IrDumper {
                 }
                 appendBlock(stat, "$indent  ")
             }
+            is IrTryCatch -> {
+                appendLine("${indent}TryCatch")
+                append(stat.tryBlock, "$indent  ")
+                appendSSA(stat.postTry, "$indent  ")
+                val catchFinallyIndent = "$indent    "
+
+                for (conditional in stat.conditionals) {
+                    appendLine("${indent}  Catch to ${conditional.variableForSet ?: conditional.variableName}")
+                    appendSSA(conditional.ssaPhi, "$indent    ")
+                    appendLine("${indent}    If")
+                    append(conditional.condition, "$catchFinallyIndent  ")
+                    append(conditional.block, catchFinallyIndent)
+                }
+
+                stat.simple?.let { simple ->
+                    appendLine("${indent}  Catch to ${simple.variableForSet ?: simple.variableName}")
+                    appendSSA(simple.ssaPhi, "$indent    ")
+                    append(simple.block, catchFinallyIndent)
+                }
+
+                stat.finally?.let { finally ->
+                    appendLine("${indent}  Finally")
+                    appendSSA(finally.ssaPhi, "$indent    ")
+                    append(finally.block, catchFinallyIndent)
+                }
+                appendSSA(stat.postTryCatchFinally, "$indent  ")
+            }
         }
     }
 
