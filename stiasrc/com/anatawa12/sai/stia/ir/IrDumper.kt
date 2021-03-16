@@ -16,7 +16,7 @@ object IrDumper {
     private fun Appendable.append(info: IrFunctionInformation, indent: String) {
         appendLine("${indent}FunctionInformation ${info.kind} ${info.name}")
         for (outerVariable in info.outerVariables.orEmpty()) {
-            appendLine("${indent}  Using $outerVariable")
+            appendLine("${indent}  Using ${outerVariable.value}")
         }
         append(info.body, "$indent  ")
     }
@@ -154,6 +154,7 @@ object IrDumper {
             }
             is IrFunctionStatement -> {
                 appendLine("${indent}FunctionStatement")
+                append(stat.functionInformation, "$indent  ")
             }
             is IrSetThisFn -> {
                 appendLine("${indent}SetThisFn to ${stat.variableForSet ?: stat.name}")

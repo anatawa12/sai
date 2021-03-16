@@ -11,7 +11,7 @@ class StaticSingleAssignGenerators {
     fun generateSSA(node: IrFunctionInformation) {
         variables.variables.clear()
         statement(node.body, false)
-        node.outerVariables = variables.variables.values.toList()
+        node.outerVariables = variables.variables.values.map { SettingVariableInfoDelegate(node, it) }
         modified = true
         while (modified) {
             modified = false
@@ -109,6 +109,21 @@ class StaticSingleAssignGenerators {
                     for (variable in stat.variables) {
                         if (variable.value != null)
                             variable.variableForSet = variables.setValue(variable.name)
+                    }
+                    false
+                }
+                is IrFunctionStatement -> {
+                    StaticSingleAssignGenerators().generateSSA(stat.functionInformation)
+                    stat.usingVariableMapping = stat.functionInformation.outerVariables!!.map { variable ->
+                        variable to GettingVariableInfoDelegate(stat, variables.getByName(variable.value.name))
+                    }
+                    for ((outer, thisScope) in stat.usingVariableMapping!!) {
+                        when (val value = thisScope.value) {
+                            is IrInFunctionVariable -> {}
+                            is IrOuterVariable -> {
+                                outer.value.replaceTo(value)
+                            }
+                        }
                     }
                     false
                 }

@@ -9,8 +9,24 @@ import com.anatawa12.sai.stia.ir.IrUnaryOperatorType.*
 //*
 class IrNodeGenerator {
     private val setThisFn = -1
+    private var scriptNodeBacked: ScriptNode? = null
+    private var scriptNode: ScriptNode
+        get() = scriptNodeBacked ?: error("scriptNode not initialized")
+        set(value) {
+            scriptNodeBacked = value
+        }
 
     fun transform(node: ScriptNode): IrFunctionInformation {
+        val cache = scriptNodeBacked
+        try {
+            scriptNode = node
+            return transformBacked(node)
+        } finally {
+            scriptNodeBacked = cache
+        }
+    }
+
+    private fun transformBacked(node: ScriptNode): IrFunctionInformation {
         replaceThisFunAssign(node)
         val asFunction = node as? FunctionNode
         return IrFunctionInformation(
@@ -265,7 +281,11 @@ class IrNodeGenerator {
         Token.EXPR_VOID, Token.EXPR_RESULT -> IrExpressionStatement(visitExpr(node.single()))
 
         // literal or root definition
-        Token.FUNCTION -> IrFunctionStatement(/*TODO*/)
+        Token.FUNCTION -> {
+            val funcIndex = node.getExistingIntProp(Node.FUNCTION_PROP)
+            val functionNode = scriptNode.getFunctionNode(funcIndex)
+            IrFunctionStatement(transform(functionNode))
+        }
 
         setThisFn -> IrSetThisFn(node.single().string)
         else -> unsupported("unsupported token for statement: ${node.type}")

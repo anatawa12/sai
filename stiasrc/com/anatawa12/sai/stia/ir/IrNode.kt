@@ -3,6 +3,7 @@ package com.anatawa12.sai.stia.ir
 import com.anatawa12.autoVisitor.HasAccept
 import com.anatawa12.sai.Token
 import com.anatawa12.sai.ast.RegExpLiteral
+import com.anatawa12.sai.stia.shortHash
 
 sealed class IrNode {
     var parent: IrNode? = null
@@ -20,8 +21,8 @@ class IrFunctionInformation(
     val kind: FunctionKind,
     val name: String,
     val body: IrScope,
-) : IrNode() {
-    var outerVariables: List<IrOuterVariable>? = null
+) : IrNode(), IrSettingName {
+    var outerVariables: List<SettingVariableInfoDelegate<IrOuterVariable>>? = null
     override fun toString(): String = "IrFunctionInformation(kind=$kind, name=$name, block=$body)"
 }
 
@@ -141,8 +142,22 @@ class IrOuterVariable(name: String) : IrVariableInfo(name) {
     override fun onSetBy(ref: SettingVariableInfoDelegate<*>) {
         setBy += ref
     }
-    override fun toString(): String = "Outer($name)"
+
+    fun replaceTo(replaceWith: IrOuterVariable) {
+        for (usedBy in usedBy.toList()) {
+            @Suppress("UNCHECKED_CAST")
+            (usedBy as GettingVariableInfoDelegate<in IrOuterVariable>).value = replaceWith
+        }
+        for (setBy in setBy.toList()) {
+            @Suppress("UNCHECKED_CAST")
+            (setBy as SettingVariableInfoDelegate<in IrOuterVariable>).value = replaceWith
+        }
+        check(usedBy.isEmpty())
+    }
+
+    override fun toString(): String = "Outer($name#${shortHash()})"
 }
+//#${shortHash()}
 
 interface IrGettingName
 interface IrGettingNameExpression : IrGettingName {

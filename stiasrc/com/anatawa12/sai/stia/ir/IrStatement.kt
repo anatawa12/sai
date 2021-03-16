@@ -230,12 +230,17 @@ class IrExpressionStatement(expr: IrExpression) : IrStatement() {
 
 // TODO: body
 @HasAccept("visitFunctionStatement", IrStatement::class)
-class IrFunctionStatement() : IrStatement() {
+class IrFunctionStatement(
+    val functionInformation: IrFunctionInformation
+) : IrStatement(), IrGettingName {
+    var usingVariableMapping: List<Pair<SettingVariableInfoDelegate<IrOuterVariable>,
+            GettingVariableInfoDelegate<IrVariableInfo>>>? = null
+
     @Suppress("OVERRIDE_BY_INLINE")
     override inline fun runWithChildExpressions(func: (IrExpression) -> Unit) {
     }
 
-    override fun toString() = "IrFunctionStatement()"
+    override fun toString() = "IrFunctionStatement($functionInformation)"
 
     override fun <R, T> accept(visitor: IrStatementVisitor<R, T>, arg: T): R = visitor.visitFunctionStatement(this, arg)
 }
