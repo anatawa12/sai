@@ -200,8 +200,8 @@ object IrDumper {
             appendLine("${indent}Scope#$index")
             for (phi in scope) {
                 appendLine("${indent}  ${phi.setTo}")
-                for (delegate in phi.setFrom) {
-                    appendLine("${indent}    ${delegate.value}")
+                for (setFrom in phi.setFrom.mapTo(mutableSetOf()) { it.value }) {
+                    appendLine("${indent}    ${setFrom}")
                 }
             }
         }
