@@ -350,7 +350,7 @@ class IrNodeGenerator {
         val block = iter.next()
         var cur = iter.getNextOrNull()
 
-        val tryBlock = processBlock(block)
+        val tryBlock = processScope(block)
         var conditionalCatches: List<IrConditionalCatch> = emptyList()
         var simpleCatch: IrSimpleCatch? = null
         var finally: IrFinally? = null
@@ -384,7 +384,7 @@ class IrNodeGenerator {
             val endTarget = iter.next()
             val finallyBlock = finallyNode.single()
 
-            finally = IrFinally(processBlock(finallyBlock))
+            finally = IrFinally(processScope(finallyBlock))
         }
 
         return IrTryCatch(
@@ -418,7 +418,7 @@ class IrNodeGenerator {
             IrConditionalCatch(
                 variableName = scope.firstChild.string,
                 condition = visitExpr(ifne.single()),
-                block = processBlock(block),
+                block = processScope(block),
             )
         }
 
@@ -440,7 +440,7 @@ class IrNodeGenerator {
 
         return IrSimpleCatch(
             variableName = scope.firstChild.string,
-            block = processBlock(block),
+            block = processScope(block),
         )
     }
 

@@ -316,7 +316,7 @@ class IrScope(statements: List<IrStatement>, val table: Map<String, IrSymbol>) :
 
 @HasAccept("visitTryCatch", IrStatement::class)
 class IrTryCatch (
-    tryBlock: IrBlock,
+    tryBlock: IrScope,
     conditionals: List<IrConditionalCatch>,
     simple: IrSimpleCatch?,
     finally: IrFinally?,
@@ -324,7 +324,7 @@ class IrTryCatch (
     val postTry = IrStaticSingleAssignPhi()
     val postTryCatchFinally = IrStaticSingleAssignPhi()
 
-    var tryBlock by nodeDelegateOf<IrBlock>()
+    var tryBlock by nodeDelegateOf<IrScope>()
     private val conditionalsDelegate = nodeListDelegateOf<IrConditionalCatch> { it }
     val conditionals by conditionalsDelegate
     fun setConditionals(value: List<IrConditionalCatch>) = conditionalsDelegate.set(value)
@@ -371,13 +371,13 @@ class IrTryCatch (
 
 sealed class IrCatch(
     val variableName: String,
-    block: IrBlock,
+    block: IrScope,
 ) : IrNode(), IrSettingName {
     val ssaPhi = IrStaticSingleAssignPhi()
 
     var variableForSet by SettingVariableInfoDelegate()
     abstract val condition: IrExpression?
-    var block by nodeDelegateOf<IrBlock>()
+    var block by nodeDelegateOf<IrScope>()
 
     init {
         this.block = block
@@ -387,7 +387,7 @@ sealed class IrCatch(
 class IrConditionalCatch(
     variableName: String,
     condition: IrExpression,
-    block: IrBlock,
+    block: IrScope,
 ) : IrCatch(variableName, block), IrSettingName {
     override var condition by nodeDelegateOfIrExpression()
 
@@ -401,7 +401,7 @@ class IrConditionalCatch(
 
 class IrSimpleCatch(
     variableName: String,
-    block: IrBlock,
+    block: IrScope,
 ) : IrCatch(variableName, block), IrSettingName {
     override val condition: IrExpression? get() = null
 
@@ -409,11 +409,11 @@ class IrSimpleCatch(
 }
 
 class IrFinally(
-    block: IrBlock,
+    block: IrScope,
 ) : IrNode(), IrSettingName {
     val ssaPhi = IrStaticSingleAssignPhi()
 
-    var block by nodeDelegateOf<IrBlock>()
+    var block by nodeDelegateOf<IrScope>()
 
     init {
         this.block = block
