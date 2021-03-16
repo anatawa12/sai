@@ -8,7 +8,17 @@ object IrDumper {
         when (node) {
             is IrExpression -> target.append(node, "")
             is IrStatement -> target.append(node, "")
+            is IrFunctionInformation -> target.append(node, "")
         }
+    }
+
+    @Suppress("RemoveCurlyBracesFromTemplate")
+    private fun Appendable.append(info: IrFunctionInformation, indent: String) {
+        appendLine("${indent}FunctionInformation ${info.kind} ${info.name}")
+        for (outerVariable in info.outerVariables.orEmpty()) {
+            appendLine("${indent}  Using $outerVariable")
+        }
+        append(info.body, "$indent  ")
     }
 
     @Suppress("RemoveCurlyBracesFromTemplate")

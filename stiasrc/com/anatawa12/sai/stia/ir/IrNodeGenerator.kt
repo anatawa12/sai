@@ -10,9 +10,21 @@ import com.anatawa12.sai.stia.ir.IrUnaryOperatorType.*
 class IrNodeGenerator {
     private val setThisFn = -1
 
-    fun transform(node: ScriptNode): IrScope {
+    fun transform(node: ScriptNode): IrFunctionInformation {
         replaceThisFunAssign(node)
-        return processScope(node)
+        val asFunction = node as? FunctionNode
+        return IrFunctionInformation(
+            kind = when (asFunction?.functionType) {
+                null -> FunctionKind.TOP_LEVEL
+                FunctionNode.FUNCTION_STATEMENT -> FunctionKind.FUNCTION
+                FunctionNode.FUNCTION_EXPRESSION -> FunctionKind.FUNCTION
+                FunctionNode.FUNCTION_EXPRESSION_STATEMENT -> FunctionKind.FUNCTION
+                FunctionNode.ARROW_FUNCTION -> FunctionKind.LAMBDA
+                else -> error("invalid functionType: ${asFunction.functionType}")
+            },
+            name = asFunction?.name ?: "<top-level>",
+            body = processScope(node),
+        )
     }
 
     private fun replaceThisFunAssign(node: ScriptNode) {

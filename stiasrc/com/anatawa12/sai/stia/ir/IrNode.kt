@@ -10,6 +10,21 @@ sealed class IrNode {
     abstract override fun toString(): String
 }
 
+enum class FunctionKind {
+    TOP_LEVEL,
+    FUNCTION,
+    LAMBDA,
+}
+
+class IrFunctionInformation(
+    val kind: FunctionKind,
+    val name: String,
+    val body: IrScope,
+) : IrNode() {
+    var outerVariables: List<IrOuterVariable>? = null
+    override fun toString(): String = "IrFunctionInformation(kind=$kind, name=$name, block=$body)"
+}
+
 enum class IrBinaryOperatorType {
     BITOR,
     BITXOR,
@@ -55,8 +70,22 @@ sealed class IrVariableInfo(val name: String) {
     abstract override fun toString(): String
 }
 
+class IrInFunctionVariableId(
+    val name: String
+) {
+    val versions = mutableListOf<IrInFunctionVariable>()
+
+    init {
+        versions.add(IrInFunctionVariable(this, 0))
+    }
+
+    fun current() = versions.last()
+    fun update(): IrInFunctionVariable =
+        IrInFunctionVariable(this, current().revision + 1).apply(versions::add)
+}
+
 @Suppress("CanSealedSubClassBeObject")
-class IrInFunctionVariable(name: String, val revision: Int) : IrVariableInfo(name) {
+class IrInFunctionVariable(val id: IrInFunctionVariableId, val revision: Int) : IrVariableInfo(id.name) {
     var setBySingle: SettingVariableInfoDelegate<*>? = null
     override val setBy: Set<SettingVariableInfoDelegate<*>> get() = setOfNotNull(setBySingle)
     override val usedBy = mutableSetOf<GettingVariableInfoDelegate<*>>()
@@ -86,6 +115,7 @@ class IrInFunctionVariable(name: String, val revision: Int) : IrVariableInfo(nam
             (usedBy as GettingVariableInfoDelegate<IrInFunctionVariable>).value = replaceWith
         }
         check(usedBy.isEmpty())
+        id.versions.remove(this)
     }
 
     override fun toString(): String = "InFunction($name#$revision)"

@@ -8,12 +8,14 @@ class StaticSingleAssignGenerators {
 
     private val variables = VariableManager()
 
-    fun generateSSA(node: IrScope) {
-        statement(node, false)
+    fun generateSSA(node: IrFunctionInformation) {
+        variables.variables.clear()
+        statement(node.body, false)
+        node.outerVariables = variables.variables.values.toList()
         modified = true
         while (modified) {
             modified = false
-            optimize(node)
+            optimize(node.body)
         }
     }
 
@@ -131,7 +133,7 @@ class StaticSingleAssignGenerators {
     private class VariableManager {
         private var scopeId = 0
         private val scopes = mutableListOf<VariableScope>()
-        private val variables = mutableMapOf<String, IrOuterVariable>()
+        val variables = mutableMapOf<String, IrOuterVariable>()
 
         fun getByName(name: String): IrVariableInfo {
             for (scope in scopes) scope.getByName(name)?.let { return it }
@@ -153,16 +155,16 @@ class StaticSingleAssignGenerators {
         fun startScope(scope: IrScope) {
             scopes += VariableScope(scope.table
                 .mapValues { entry ->
-                    mutableListOf(IrInFunctionVariable(entry.key, 0)
-                        .also { entry.value.variableForSet = it })
+                    IrInFunctionVariableId(entry.key)
+                        .also { entry.value.variableForSet = it.current() }
                 },
                 scopeId++)
         }
 
         fun startScopeOf(name: String): IrInFunctionVariable {
-            val variable = IrInFunctionVariable(name, 0)
-            scopes += VariableScope(mapOf(name to mutableListOf(variable)),
-                scopeId++)
+            val id = IrInFunctionVariableId(name)
+            val variable = id.current()
+            scopes += VariableScope(mapOf(name to id), scopeId++)
             return variable
         }
 
@@ -178,7 +180,7 @@ class StaticSingleAssignGenerators {
             scopes.map { scope -> IrScopeSnapshot(scope.scopeId, scope.revisions.map { scope.getByName(it.key)!! }) }
         )
 
-        fun markVariable(): VariableMark = VariableMark(scopes.map { it.revisions.mapValues { it.value.lastIndex } })
+        fun markVariable(): VariableMark = VariableMark(scopes.map { it.revisions.mapValues { it.value.versions.lastIndex } })
 
         fun shotRangeSnapshot(since: VariableMark): List<List<List<IrInFunctionVariable>>> {
             return scopes.zip(since.indices).map { (scope, marks) ->
@@ -194,21 +196,18 @@ class StaticSingleAssignGenerators {
     )
 
     private class VariableScope(
-        val revisions: Map<String, MutableList<IrInFunctionVariable>>,
+        val revisions: Map<String, IrInFunctionVariableId>,
         val scopeId: Int,
     ) {
         fun getByName(name: String): IrInFunctionVariable? {
-            return revisions[name]?.last()
+            return revisions[name]?.current()
         }
 
         fun setValue(name: String): IrInFunctionVariable? {
-            val revisionList = revisions[name] ?: return null
-            val new = IrInFunctionVariable(name, revisionList.size)
-            revisionList.add(new)
-            return new
+            return revisions[name]?.update()
         }
 
-        fun getRange(name: String, since: Int): List<IrInFunctionVariable> = revisions[name]!!.drop(since)
+        fun getRange(name: String, since: Int): List<IrInFunctionVariable> = revisions[name]!!.versions.drop(since)
     }
 
     var modified = false
