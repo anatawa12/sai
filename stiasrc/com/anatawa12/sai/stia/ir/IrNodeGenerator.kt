@@ -423,14 +423,11 @@ class IrNodeGenerator {
             check(block.type == Token.BLOCK) { "invalid try" }
             check(target.type == Token.TARGET) { "invalid try" }
 
-            // remove LEAVEWITH, GOTO
-            block.removeChild(block.lastChild)
-            block.removeChild(block.lastChild)
-
             IrConditionalCatch(
                 variableName = scope.firstChild.string,
                 condition = visitExpr(ifne.single()),
-                block = processScope(block),
+                // dropLast for remove LEAVEWITH, GOTO
+                block = processScope(block.asSequence().dropLast(2), block),
             )
         }
 
@@ -446,19 +443,17 @@ class IrNodeGenerator {
         check(leave.type == Token.LEAVEWITH) { "invalid try" }
         check(block.type == Token.BLOCK) { "invalid try" }
 
-        // remove LEAVEWITH, GOTO
-        block.removeChild(block.lastChild)
-        block.removeChild(block.lastChild)
-
         return IrSimpleCatch(
             variableName = scope.firstChild.string,
-            block = processScope(block),
+            // dropLast for remove LEAVEWITH, GOTO
+            block = processScope(block.asSequence().dropLast(2), block),
         )
     }
 
-    private fun processScope(node: Node): IrScope {
-        val statements = node.map { visitStatement(it, node) }
-        return IrScope(statements, (node as? Scope)?.symbolTable
+    private fun processScope(node: Node): IrScope = processScope(node.asSequence(), node)
+
+    private fun processScope(node: Sequence<Node>, parent: Node): IrScope {
+        return IrScope(node.mapTo(mutableListOf()) { visitStatement(it, parent) }, (parent as? Scope)?.symbolTable
             ?.mapValues { IrSymbol(it.value.name, VariableKind.getByNodeType(it.value.declType)) }.orEmpty())
     }
 

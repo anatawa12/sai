@@ -205,6 +205,57 @@ fun <T> Result<T>.getOrNone(): Option<T> = when {
 
 fun <T: Any> T?.asOption(): Option<T> = if (this == null) Option.none() else Option.some(this)
 fun <T> T.asSome(): Option<T> = Option.some(this)
+
+fun <T> Sequence<T>.dropLast(n: Int): Sequence<T> = when {
+    n < 0 -> throw IllegalArgumentException("Requested element count $n is less than zero.")
+    n == 0 -> this
+    else -> DropLastSequence(this, n)
+}
+
+private class DropLastSequence<T>(private val seq: Sequence<T>, val count: Int) : Sequence<T> {
+    override fun iterator(): Iterator<T> = IteratorImpl(seq.iterator(), count)
+
+    class IteratorImpl<T>(private val iter: Iterator<T>, count: Int) : Iterator<T> {
+        // null: hasNext returns null
+        // RETURNED: to be computed.
+        @Suppress("UNCHECKED_CAST")
+        private var buffer: Array<Any?>? = Array(count) { RETURNED }
+        private var index = 0
+
+        override fun hasNext(): Boolean {
+            val buffer = buffer ?: return false
+            while (buffer[index] == RETURNED) {
+                if (!iter.hasNext()) {
+                    this.buffer = null
+                    return false
+                }
+                buffer[index++] = iter.next()
+                if (index == buffer.size) index = 0
+            }
+            if (!iter.hasNext()) {
+                this.buffer = null
+                return false
+            }
+            return true
+        }
+
+        override fun next(): T {
+            if (!hasNext())
+                throw NoSuchElementException()
+            val buffer = buffer!!
+            @Suppress("UNCHECKED_CAST")
+            val result = buffer[index] as T
+            buffer[index] = RETURNED
+            return result
+        }
+
+        companion object {
+            private val RETURNED = Any()
+            private val END_REACHED = Any()
+        }
+    }
+}
+
 /*
 fun Node.toInformationString(): String {
     val node = this
