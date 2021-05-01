@@ -6,7 +6,7 @@
 *.html text
 *.htm text
 *.java text linguist-language=Java
-*.js text
+*.js text linguist-language=JavaScript
 *.jsp text
 *.php text
 *.properties text
